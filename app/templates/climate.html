@@ -1,0 +1,723 @@
+{% extends 'base.html' %}
+
+{% block title %}Climate Information - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    .climate-header {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        padding: 60px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 40px;
+    }
+    
+    .weather-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .weather-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .weather-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+    
+    .forecast-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .forecast-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .forecast-day {
+        font-weight: 600;
+        color: #3498db;
+    }
+    
+    .tip-card {
+        border-radius: 15px;
+        border-left: 5px solid #2ecc71;
+        transition: all 0.3s ease;
+    }
+    
+    .tip-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .region-selector {
+        background-color: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-top: -30px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .btn-rounded {
+        border-radius: 30px;
+        padding: 8px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-rounded:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .weather-condition {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+    
+    .temperature {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+    
+    .date {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-right: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="climate-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">Climate Information</h1>
+        <p class="lead mb-0 animate__animated animate__fadeInUp">Get daily weather updates and agricultural tips for your region</p>
+    </div>
+</section>
+
+<!-- Region Selector -->
+<section class="container mb-5">
+    <div class="region-selector" data-aos="fade-up">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <label for="regionSelect" class="form-label">Select Your Region</label>
+                <select class="form-select" id="regionSelect">
+                    <option value="Default" selected>Select Region</option>
+                    <option value="North India">North India</option>
+                    <option value="South India">South India</option>
+                    <option value="East India">East India</option>
+                    <option value="West India">West India</option>
+                    <option value="Central India">Central India</option>
+                    <option value="Northeast India">Northeast India</option>
+                </select>
+            </div>
+            <div class="col-md-6 d-flex justify-content-md-end">
+                <button id="useLocationBtn" class="btn btn-primary btn-rounded me-2">
+                    <i class="fas fa-location-arrow me-2"></i> Use My Location
+                </button>
+                <button id="updateWeatherBtn" class="btn btn-success btn-rounded">
+                    <i class="fas fa-sync-alt me-2"></i> Update
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Current Weather Section -->
+<section class="container mb-5">
+    <div class="row">
+        <div class="col-lg-6 mb-4" data-aos="fade-right">
+            <div class="card weather-card h-100">
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title mb-4">Current Weather</h3>
+                    <div id="currentWeather">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading weather data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4" data-aos="fade-left">
+            <div class="card weather-card h-100">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-4">Today's Farming Tips</h3>
+                    <div id="farmingTips">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading farming tips...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Weather Forecast Section -->
+<section class="container mb-5">
+    <h2 class="text-center mb-4" data-aos="fade-up">5-Day Forecast</h2>
+    <div class="row" id="forecastContainer">
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading forecast data...</p>
+        </div>
+    </div>
+</section>
+
+<!-- Seasonal Tips Section -->
+<section class="container mb-5">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6" data-aos="fade-right">
+            <h2>Seasonal Farming Tips</h2>
+            <p class="text-muted">Recommendations based on current season and weather patterns</p>
+        </div>
+        <div class="col-md-6 d-flex justify-content-md-end" data-aos="fade-left">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary active" data-season="current">Current Season</button>
+                <button type="button" class="btn btn-outline-primary" data-season="upcoming">Upcoming Season</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4" id="seasonalTips">
+        <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card tip-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <h4 class="mb-0">Crop Selection</h4>
+                    </div>
+                    <p>Choose crops that are well-suited to the current season and your local climate conditions. Consider drought-resistant varieties if rainfall is expected to be below average.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card tip-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <h4 class="mb-0">Water Management</h4>
+                    </div>
+                    <p>Implement efficient irrigation practices based on current soil moisture levels and expected rainfall. Consider rainwater harvesting to prepare for dry periods.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card tip-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-bug"></i>
+                        </div>
+                        <h4 class="mb-0">Pest Management</h4>
+                    </div>
+                    <p>Monitor for seasonal pests that are common during this time of year. Implement integrated pest management strategies to minimize chemical use while protecting crops.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="card tip-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h4 class="mb-0">Soil Health</h4>
+                    </div>
+                    <p>Apply appropriate soil amendments based on current soil conditions. Consider cover crops to improve soil structure and fertility during fallow periods.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Weather Alerts Section -->
+<section class="container mb-5">
+    <div class="card bg-light" data-aos="fade-up">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="mb-3">Get Weather Alerts</h3>
+                    <p class="mb-md-0">Subscribe to receive timely weather alerts and farming recommendations directly on your phone.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#alertsModal">
+                        <i class="fas fa-bell me-2"></i> Subscribe Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Alerts Modal -->
+<div class="modal fade" id="alertsModal" tabindex="-1" aria-labelledby="alertsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alertsModalLabel">Subscribe to Weather Alerts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="alertsForm">
+                    <div class="mb-3">
+                        <label for="alertName" class="form-label">Your Name</label>
+                        <input type="text" class="form-control" id="alertName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alertPhone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="alertPhone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alertRegion" class="form-label">Region</label>
+                        <select class="form-select" id="alertRegion" required>
+                            <option value="" selected disabled>Select your region</option>
+                            <option value="North India">North India</option>
+                            <option value="South India">South India</option>
+                            <option value="East India">East India</option>
+                            <option value="West India">West India</option>
+                            <option value="Central India">Central India</option>
+                            <option value="Northeast India">Northeast India</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Alert Types</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="weatherAlerts" checked>
+                            <label class="form-check-label" for="weatherAlerts">Weather Alerts</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="farmingTipsAlerts" checked>
+                            <label class="form-check-label" for="farmingTipsAlerts">Farming Tips</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cropPriceAlerts">
+                            <label class="form-check-label" for="cropPriceAlerts">Crop Price Updates</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitAlertsBtn">Subscribe</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Load current weather data
+        loadCurrentWeather();
+        
+        // Load forecast data
+        loadForecast();
+        
+        // Update weather button click event
+        $('#updateWeatherBtn').click(function() {
+            const region = $('#regionSelect').val();
+            loadCurrentWeather(region);
+            loadForecast(region);
+        });
+        
+        // Use location button click event
+        $('#useLocationBtn').click(function() {
+            if (navigator.geolocation) {
+                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Locating...');
+                $(this).prop('disabled', true);
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // Success
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        // Get region from coordinates (this would typically be an API call)
+                        // For demo, we'll just use a default region
+                        $('#regionSelect').val('Default');
+                        
+                        loadCurrentWeather('Default', lat, lng);
+                        loadForecast('Default', lat, lng);
+                        
+                        $('#useLocationBtn').html('<i class="fas fa-location-arrow me-2"></i> Use My Location');
+                        $('#useLocationBtn').prop('disabled', false);
+                    },
+                    function(error) {
+                        // Error
+                        console.error('Error getting location:', error);
+                        
+                        $('#useLocationBtn').html('<i class="fas fa-location-arrow me-2"></i> Use My Location');
+                        $('#useLocationBtn').prop('disabled', false);
+                        
+                        showAlert('warning', 'Unable to get your location. Please select a region manually.');
+                    }
+                );
+            } else {
+                showAlert('warning', 'Geolocation is not supported by your browser.');
+            }
+        });
+        
+        // Season tabs click event
+        $('.btn-group .btn').click(function() {
+            $('.btn-group .btn').removeClass('active');
+            $(this).addClass('active');
+            
+            // In a real app, this would load different seasonal tips
+            // For demo, we'll just show a loading indicator briefly
+            $('#seasonalTips').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Loading tips...</p></div>');
+            
+            setTimeout(function() {
+                // Reload the same tips for demo purposes
+                $('#seasonalTips').html(`
+                    <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card tip-card h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="info-icon">
+                                        <i class="fas fa-seedling"></i>
+                                    </div>
+                                    <h4 class="mb-0">Crop Selection</h4>
+                                </div>
+                                <p>Choose crops that are well-suited to the current season and your local climate conditions. Consider drought-resistant varieties if rainfall is expected to be below average.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card tip-card h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="info-icon">
+                                        <i class="fas fa-tint"></i>
+                                    </div>
+                                    <h4 class="mb-0">Water Management</h4>
+                                </div>
+                                <p>Implement efficient irrigation practices based on current soil moisture levels and expected rainfall. Consider rainwater harvesting to prepare for dry periods.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card tip-card h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="info-icon">
+                                        <i class="fas fa-bug"></i>
+                                    </div>
+                                    <h4 class="mb-0">Pest Management</h4>
+                                </div>
+                                <p>Monitor for seasonal pests that are common during this time of year. Implement integrated pest management strategies to minimize chemical use while protecting crops.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                        <div class="card tip-card h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="info-icon">
+                                        <i class="fas fa-leaf"></i>
+                                    </div>
+                                    <h4 class="mb-0">Soil Health</h4>
+                                </div>
+                                <p>Apply appropriate soil amendments based on current soil conditions. Consider cover crops to improve soil structure and fertility during fallow periods.</p>
+                            </div>
+                        </div>
+                    </div>
+                `);
+                
+                // Reinitialize AOS
+                AOS.refresh();
+            }, 1000);
+        });
+        
+        // Submit alerts form
+        $('#submitAlertsBtn').click(function() {
+            const form = $('#alertsForm')[0];
+            
+            if (form.checkValidity()) {
+                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Subscribing...');
+                $(this).prop('disabled', true);
+                
+                // Simulate API call
+                setTimeout(function() {
+                    $('#alertsModal').modal('hide');
+                    showAlert('success', 'You have successfully subscribed to weather alerts!');
+                    
+                    $('#submitAlertsBtn').html('Subscribe');
+                    $('#submitAlertsBtn').prop('disabled', false);
+                    form.reset();
+                }, 1500);
+            } else {
+                form.reportValidity();
+            }
+        });
+    });
+    
+    function loadCurrentWeather(region = 'Default', lat = null, lng = null) {
+        $('#currentWeather').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Loading weather data...</p></div>');
+        $('#farmingTips').html('<div class="text-center py-4"><div class="spinner-border text-success" role="status"></div><p class="mt-2">Loading farming tips...</p></div>');
+        
+        // Make API call to get current weather
+        $.ajax({
+            url: '/climate/api/climate/current',
+            method: 'GET',
+            data: { 
+                region: region,
+                lat: lat,
+                lon: lng
+            },
+            success: function(response) {
+                if (response.success) {
+                    const climate = response.climate;
+                    let weatherIcon = '';
+                    
+                    switch(climate.weather_condition.toLowerCase()) {
+                        case 'sunny':
+                            weatherIcon = '<i class="fas fa-sun weather-icon text-warning"></i>';
+                            break;
+                        case 'partly cloudy':
+                            weatherIcon = '<i class="fas fa-cloud-sun weather-icon text-secondary"></i>';
+                            break;
+                        case 'cloudy':
+                            weatherIcon = '<i class="fas fa-cloud weather-icon text-secondary"></i>';
+                            break;
+                        case 'light rain':
+                            weatherIcon = '<i class="fas fa-cloud-rain weather-icon text-info"></i>';
+                            break;
+                        case 'heavy rain':
+                            weatherIcon = '<i class="fas fa-cloud-showers-heavy weather-icon text-primary"></i>';
+                            break;
+                        default:
+                            weatherIcon = '<i class="fas fa-cloud-sun weather-icon text-secondary"></i>';
+                    }
+                    
+                    const weatherHtml = `
+                        <div class="text-center">
+                            ${weatherIcon}
+                            <div class="weather-condition">${climate.weather_condition}</div>
+                            <div class="temperature">${climate.temperature}°C</div>
+                            <div class="date">${climate.date}</div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="info-icon">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Rainfall</h5>
+                                    <p class="mb-0">${climate.rainfall_prediction}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Region</h5>
+                                    <p class="mb-0">${climate.region}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const tipsHtml = `
+                        <div class="mb-4">
+                            <h5>Today's Recommendation</h5>
+                            <p>${climate.farming_tip}</p>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> These recommendations are based on current weather conditions and seasonal patterns.
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-outline-success btn-sm" onclick="loadMoreTips()">
+                                <i class="fas fa-sync-alt me-2"></i> More Tips
+                            </button>
+                        </div>
+                    `;
+                    
+                    $('#currentWeather').html(weatherHtml);
+                    $('#farmingTips').html(tipsHtml);
+                } else {
+                    $('#currentWeather').html('<div class="text-center py-4"><p class="text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><br>Failed to load weather data</p></div>');
+                    $('#farmingTips').html('<div class="text-center py-4"><p class="text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><br>Failed to load farming tips</p></div>');
+                }
+            },
+            error: function() {
+                $('#currentWeather').html('<div class="text-center py-4"><p class="text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><br>Failed to load weather data</p></div>');
+                $('#farmingTips').html('<div class="text-center py-4"><p class="text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><br>Failed to load farming tips</p></div>');
+            }
+        });
+    }
+    
+    function loadForecast(region = 'Default', lat = null, lng = null) {
+        $('#forecastContainer').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Loading forecast data...</p></div>');
+        
+        // Make API call to get forecast
+        $.ajax({
+            url: '/climate/api/climate/forecast',
+            method: 'GET',
+            data: { 
+                region: region,
+                lat: lat,
+                lon: lng,
+                days: 5
+            },
+            success: function(response) {
+                if (response.success && response.forecast && response.forecast.length > 0) {
+                    let forecastHtml = '';
+                    
+                    response.forecast.forEach(function(day) {
+                        let weatherIcon = '';
+                        
+                        switch(day.weather_condition.toLowerCase()) {
+                            case 'sunny':
+                                weatherIcon = '<i class="fas fa-sun fa-2x text-warning"></i>';
+                                break;
+                            case 'partly cloudy':
+                                weatherIcon = '<i class="fas fa-cloud-sun fa-2x text-secondary"></i>';
+                                break;
+                            case 'cloudy':
+                                weatherIcon = '<i class="fas fa-cloud fa-2x text-secondary"></i>';
+                                break;
+                            case 'light rain':
+                                weatherIcon = '<i class="fas fa-cloud-rain fa-2x text-info"></i>';
+                                break;
+                            case 'heavy rain':
+                                weatherIcon = '<i class="fas fa-cloud-showers-heavy fa-2x text-primary"></i>';
+                                break;
+                            default:
+                                weatherIcon = '<i class="fas fa-cloud-sun fa-2x text-secondary"></i>';
+                        }
+                        
+                        // Format date
+                        const dateObj = new Date(day.date);
+                        const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                        
+                        forecastHtml += `
+                            <div class="col-md-4 col-lg-2 mb-4" data-aos="fade-up">
+                                <div class="card forecast-card h-100">
+                                    <div class="card-body text-center p-3">
+                                        <div class="forecast-day">${formattedDate}</div>
+                                        <div class="my-3">
+                                            ${weatherIcon}
+                                        </div>
+                                        <h4 class="mb-2">${day.temperature}°C</h4>
+                                        <p class="mb-0 small">${day.weather_condition}</p>
+                                        <p class="mb-0 small text-muted">${day.rainfall_prediction}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    $('#forecastContainer').html(forecastHtml);
+                    
+                    // Reinitialize AOS
+                    AOS.refresh();
+                } else {
+                    $('#forecastContainer').html('<div class="text-center py-4"><p class="text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><br>Failed to load forecast data</p></div>');
+                }
+            },
+            error: function() {
+                $('#forecastContainer').html('<div class="text-center py-4"><p class="text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><br>Failed to load forecast data</p></div>');
+            }
+        });
+    }
+    
+    function loadMoreTips() {
+        // This would typically be an API call to get more tips
+        // For demo, we'll just show a loading indicator briefly
+        $('#farmingTips').html('<div class="text-center py-4"><div class="spinner-border text-success" role="status"></div><p class="mt-2">Loading more tips...</p></div>');
+        
+        // Simulate API call
+        setTimeout(function() {
+            const tips = [
+                "Ensure proper spacing between plants to promote air circulation and reduce disease pressure.",
+                "Apply mulch around plants to conserve soil moisture and suppress weeds.",
+                "Monitor soil moisture regularly and adjust irrigation accordingly.",
+                "Consider intercropping compatible plants to maximize land use and reduce pest pressure."
+            ];
+            
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            
+            const tipsHtml = `
+                <div class="mb-4">
+                    <h5>Today's Recommendation</h5>
+                    <p>${randomTip}</p>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> These recommendations are based on current weather conditions and seasonal patterns.
+                </div>
+                <div class="text-end">
+                    <button class="btn btn-outline-success btn-sm" onclick="loadMoreTips()">
+                        <i class="fas fa-sync-alt me-2"></i> More Tips
+                    </button>
+                </div>
+            `;
+            
+            $('#farmingTips').html(tipsHtml);
+        }, 1000);
+    }
+    
+    function showAlert(type, message) {
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        
+        // Remove any existing alerts
+        $('.alert').alert('close');
+        
+        // Add new alert
+        $('.region-selector').prepend(alertHtml);
+        
+        // Auto dismiss after 5 seconds
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+    }
+</script>
+{% endblock %}

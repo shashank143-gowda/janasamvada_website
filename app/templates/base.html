@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}JanSamvaad - The People's Voice Assistant{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-fixes.css') }}">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #00cec9;
+            --accent-color: #fd79a8;
+            --danger-color: #ff7675;
+            --dark-color: #1a1a2e;
+            --darker-color: #121225;
+            --medium-dark-color: #2a2a42;
+            --light-color: #e2e2e2;
+            --text-color: #e2e2e2;
+            --text-muted: #a0a0a0;
+            --border-radius: 0.8rem;
+            --box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+            --transition-speed: 0.3s;
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --card-bg: #16213e;
+            --header-bg: linear-gradient(135deg, #6c5ce7 0%, #4834d4 100%);
+            --card-border: 1px solid rgba(255, 255, 255, 0.05);
+            --neon-glow: 0 0 10px rgba(108, 92, 231, 0.5), 0 0 20px rgba(108, 92, 231, 0.3);
+            --neon-text-shadow: 0 0 5px rgba(108, 92, 231, 0.7);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-color);
+            color: var(--text-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%232a2a42' fill-opacity='0.2'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .navbar {
+            background-color: var(--darker-color) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(108, 92, 231, 0.2);
+            padding: 0.8rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            padding: 0.5rem 1rem;
+            background-color: rgba(26, 26, 46, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+            text-shadow: var(--neon-text-shadow);
+            position: relative;
+        }
+        
+        .navbar-brand::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+            transition: width 0.3s ease;
+        }
+        
+        .navbar-brand:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--light-color) !important;
+            margin: 0 0.5rem;
+            padding: 0.5rem 1rem !important;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            border-radius: 50px;
+            z-index: -1;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover::before,
+        .nav-link.active::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .btn {
+            border-radius: 50px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn:hover::after {
+            height: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), #4834d4);
+            border: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, var(--secondary-color), #00a8a3);
+            border: none;
+        }
+            transition: all 0.3s ease;
+        }
+        
+        .btn-custom-secondary:hover {
+            background-color: #27ae60;
+            border-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        footer {
+            background-color: var(--darker-color);
+            color: var(--light-color);
+            border-top: 1px solid rgba(108, 92, 231, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(108, 92, 231, 0.05);
+            z-index: 0;
+        }
+        
+        footer::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(253, 121, 168, 0.05);
+            z-index: 0;
+        }
+        
+        footer .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, rgba(108, 92, 231, 0.2), rgba(253, 121, 168, 0.2));
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(108, 92, 231, 0.3);
+        }
+        
+        .social-icons a:hover {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            transform: translateY(-3px);
+            box-shadow: var(--neon-glow);
+        }
+        
+        /* Custom animations */
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--darker-color);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4834d4;
+        }
+        
+        /* Hero section */
+        .hero-section {
+            background: var(--header-bg);
+            color: white;
+            padding: 6rem 0;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+        
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: -5%;
+            left: -5%;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+        
+        .hero-section .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-title {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--light-color), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Feature cards */
+        .feature-card {
+            border: var(--card-border);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background-color: var(--card-bg);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(108, 92, 231, 0.1), rgba(253, 121, 168, 0.1));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-15px);
+            box-shadow: var(--neon-glow);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            color: var(--accent-color);
+        }
+        
+        /* Custom button styles */
+        .btn-rounded {
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-rounded::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-rounded:hover::after {
+            height: 100%;
+        }
+        
+        .btn-rounded:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Particle background */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <style>
+        .modern-navbar {
+            background-color: var(--darker-color) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(108, 92, 231, 0.2);
+            padding: 0.8rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .modern-navbar.scrolled {
+            padding: 0.5rem 1rem;
+            background-color: rgba(26, 26, 46, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        .modern-navbar.scrolled .nav-link {
+            color: var(--light-color) !important;
+        }
+        
+        .modern-navbar.scrolled .nav-link:hover, 
+        .modern-navbar.scrolled .nav-link.active {
+            color: white !important;
+        }
+        
+        .modern-navbar .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            color: var(--primary-color) !important;
+            text-shadow: var(--neon-text-shadow);
+        }
+        
+        .modern-navbar .navbar-brand span {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: #3498db;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .modern-navbar .nav-item {
+            position: relative;
+            margin: 0 5px;
+        }
+        
+        .modern-navbar .nav-link {
+            color: var(--light-color) !important;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .modern-navbar .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            border-radius: 50px;
+            z-index: -1;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .modern-navbar .nav-link:hover::before,
+        .modern-navbar .nav-link.active::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .modern-navbar .nav-link:hover, 
+        .modern-navbar .nav-link.active {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .modern-navbar .nav-link i {
+            margin-right: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .auth-buttons .nav-link {
+            margin-left: 5px;
+        }
+        
+        .auth-buttons .login-btn {
+            background: linear-gradient(45deg, rgba(108, 92, 231, 0.2), rgba(253, 121, 168, 0.2));
+            border-radius: 50px;
+            padding: 8px 20px;
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            color: var(--light-color) !important;
+        }
+        
+        .auth-buttons .login-btn:hover {
+            box-shadow: var(--neon-glow);
+            transform: translateY(-2px);
+        }
+        
+        .auth-buttons .register-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white !important;
+            border-radius: 50px;
+            padding: 8px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .auth-buttons .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--neon-glow);
+        }
+        
+        .auth-buttons .admin-btn {
+            background: linear-gradient(45deg, #e74a3b, #c0392b); 
+            color: white !important; 
+            border-radius: 50px; 
+            padding: 8px 20px; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .auth-buttons .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .user-dropdown .dropdown-toggle {
+            background: linear-gradient(45deg, rgba(108, 92, 231, 0.2), rgba(253, 121, 168, 0.2));
+            border-radius: 50px;
+            padding: 8px 20px;
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            color: var(--light-color) !important;
+        }
+        
+        .user-dropdown .dropdown-toggle::after {
+            display: none;
+        }
+        
+        .user-dropdown .dropdown-menu {
+            border: var(--card-border);
+            border-radius: var(--border-radius);
+            background-color: var(--card-bg);
+            box-shadow: var(--box-shadow);
+            padding: 15px;
+            min-width: 200px;
+        }
+        
+        .user-dropdown .dropdown-item {
+            border-radius: var(--border-radius);
+            padding: 10px 15px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+        }
+        
+        .user-dropdown .dropdown-item:hover {
+            background-color: var(--medium-dark-color);
+            transform: translateX(5px);
+            color: var(--primary-color);
+        }
+        
+        .user-dropdown .dropdown-divider {
+            margin: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            color: #3498db;
+            font-size: 1rem;
+        }
+        
+        .mega-menu {
+            position: static !important;
+        }
+        
+        .mega-menu-content {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .mega-menu-column {
+            padding: 0 15px;
+        }
+        
+        .mega-menu-title {
+            font-weight: 600;
+            color: #3498db;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .mega-menu-item {
+            display: block;
+            padding: 8px 0;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .mega-menu-item:hover {
+            color: #3498db;
+            transform: translateX(5px);
+        }
+        
+        .mega-menu-item i {
+            margin-right: 8px;
+            color: #3498db;
+        }
+        
+        @media (max-width: 991.98px) {
+            .modern-navbar .navbar-collapse {
+                background-color: #2c3e50;
+                border-radius: 15px;
+                padding: 20px;
+                margin-top: 15px;
+                box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            }
+            
+            .modern-navbar .nav-link {
+                padding: 12px 20px;
+                margin-bottom: 5px;
+            }
+            
+            .auth-buttons {
+                margin-top: 15px;
+            }
+            
+            .auth-buttons .nav-link {
+                margin: 5px 0;
+                text-align: center;
+            }
+        }
+    </style>
+
+    <nav class="navbar navbar-expand-lg modern-navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand animate__animated animate__fadeInLeft" href="{{ url_for('main.index') }}">
+                <div class="brand-logo">
+                    <i class="fas fa-hands-helping"></i>
+                </div>
+                JanSamvaad
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto animate__animated animate__fadeInDown">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('main.index') %}active{% endif %}" href="{{ url_for('main.index') }}">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('services_bp.services_page') %}active{% endif %}" href="{{ url_for('services_bp.services_page') }}">
+                            <i class="fas fa-hospital"></i> Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('schemes_bp.schemes_page') %}active{% endif %}" href="{{ url_for('schemes_bp.schemes_page') }}">
+                            <i class="fas fa-scroll"></i> Schemes
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('hazards_bp.hazards_page') %}active{% endif %}" href="{{ url_for('hazards_bp.hazards_page') }}">
+                            <i class="fas fa-exclamation-triangle"></i> Hazards
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('corruption_bp.corruption_page') %}active{% endif %}" href="{{ url_for('corruption_bp.corruption_page') }}">
+                            <i class="fas fa-gavel"></i> Anti-Corruption
+                        </a>
+                    </li>
+                    <!-- Dhvani AI removed as requested -->
+                    <li class="nav-item dropdown mega-menu">
+                        <a class="nav-link dropdown-toggle" href="#" id="megaMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-th-large"></i> More
+                        </a>
+                        <div class="dropdown-menu mega-menu-content" aria-labelledby="megaMenuDropdown">
+                            <div class="row">
+                                <div class="col-md-4 mega-menu-column">
+                                    <h5 class="mega-menu-title">Governance</h5>
+                                    <a href="{{ url_for('corruption_bp.corruption_page') }}" class="mega-menu-item text-decoration-none">
+                                        <i class="fas fa-gavel"></i> Anti-Corruption
+                                    </a>
+                                    <a href="#" class="mega-menu-item text-decoration-none">
+                                        <i class="fas fa-vote-yea"></i> E-Governance
+                                    </a>
+                                    <a href="#" class="mega-menu-item text-decoration-none">
+                                        <i class="fas fa-landmark"></i> Public Policy
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mega-menu-column">
+                                    <h5 class="mega-menu-title">Environment</h5>
+                                    <a href="{{ url_for('climate_bp.climate_page') }}" class="mega-menu-item text-decoration-none">
+                                        <i class="fas fa-cloud-sun-rain"></i> Climate Information
+                                    </a>
+                                    <a href="{{ url_for('trees_bp.trees_page') }}" class="mega-menu-item text-decoration-none">
+                                        <i class="fas fa-tree"></i> Plant Trees
+                                    </a>
+                                    <a href="#" class="mega-menu-item text-decoration-none">
+                                        <i class="fas fa-water"></i> Water Conservation
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mega-menu-column">
+                                    <h5 class="mega-menu-title">Community</h5>
+                                    <a href="#" class="mega-menu-item text-decoration-none">
+                                        <i class="fas fa-users"></i> Community Forums
+                                    </a>
+                                    <a href="#" class="mega-menu-item text-decoration-none">
+                                        <i class="fas fa-hands-helping"></i> Volunteer
+                                    </a>
+                                    <a href="#" class="mega-menu-item text-decoration-none">
+                                        <i class="fas fa-book-reader"></i> Education Resources
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="navbar-nav auth-buttons animate__animated animate__fadeInRight">
+                    {% if session.get('user_id') %}
+                    <li class="nav-item dropdown user-dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {{ session.get('username') }}
+                            <i class="fas fa-chevron-down ms-2" style="font-size: 0.8rem;"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user me-2 text-primary"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('trees_bp.rewards_page') }}"><i class="fas fa-gift me-2 text-primary"></i>My Rewards</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-bell me-2 text-primary"></i>Notifications</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2 text-primary"></i>Settings</a></li>
+                            {% if session.get('is_admin') %}
+                            <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="fas fa-user-shield me-2 text-danger"></i>Admin Dashboard</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2 text-danger"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link login-btn" href="{{ url_for('auth.login') }}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link register-btn" href="{{ url_for('auth.register') }}">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="nav-link admin-btn" href="{{ url_for('admin.login') }}">
+                            <i class="fas fa-user-shield"></i> Admin
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <footer class="mt-5 py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 reveal">
+                    <h5 class="mb-3 pb-2 neon-text">JanSamvaad</h5>
+                    <p>The People's Voice Assistant</p>
+                    <p>Empowering rural communities through technology and innovation. Bridging the digital divide and bringing essential services to every village.</p>
+                    <div class="social-icons mt-3">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 reveal">
+                    <h5 class="mb-3 pb-2 neon-text">Quick Links</h5>
+                    <ul class="list-unstyled staggered-list">
+                        <li class="mb-2 list-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none"><i class="fas fa-chevron-right me-2"></i> Home</a></li>
+                        <li class="mb-2 list-item"><a href="{{ url_for('services_bp.services_page') }}" class="text-decoration-none"><i class="fas fa-chevron-right me-2"></i> Services</a></li>
+                        <li class="mb-2 list-item"><a href="{{ url_for('schemes_bp.schemes_page') }}" class="text-decoration-none"><i class="fas fa-chevron-right me-2"></i> Schemes</a></li>
+                        <li class="mb-2 list-item"><a href="{{ url_for('hazards_bp.hazards_page') }}" class="text-decoration-none"><i class="fas fa-chevron-right me-2"></i> Hazards</a></li>
+                        <li class="mb-2 list-item"><a href="{{ url_for('corruption_bp.corruption_page') }}" class="text-decoration-none"><i class="fas fa-chevron-right me-2"></i> Anti-Corruption</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4 reveal">
+                    <h5 class="mb-3 pb-2 neon-text">Contact Us</h5>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt me-2 text-primary"></i> JanSamvaad Office<br>
+                        Rural Development Center<br>
+                        Ranchi, Jharkhand</p>
+                        <p><i class="fas fa-phone me-2 text-primary"></i> +91 1234567890</p>
+                        <p><i class="fas fa-envelope me-2 text-primary"></i> info@jansamvaad.org</p>
+                        <p><i class="fas fa-headset me-2 text-primary"></i> Toll Free: 1800-123-4567</p>
+                    </address>
+                </div>
+            </div>
+            <hr class="border-top border-secondary">
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="mb-0">&copy; 2023 JanSamvaad. All rights reserved. | <a href="#" class="text-decoration-none">Privacy Policy</a> | <a href="#" class="text-decoration-none">Terms of Service</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script>
+        // Initialize AOS animation library
+        AOS.init({
+            duration: 800,
+            once: false,
+            offset: 100,
+            easing: 'ease-in-out'
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.modern-navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+                navbar.classList.add('shadow');
+            } else {
+                navbar.classList.remove('scrolled');
+                navbar.classList.remove('shadow');
+            }
+        });
+        
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add floating effect to specific elements
+            addFloatingEffect('.float-animation');
+            
+            // Add pulse effect to call-to-action buttons
+            addPulseEffect('.btn-cta');
+        });
+        
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+    
+    <!-- AI Assistant Button - Direct Link -->
+    <a href="{{ url_for('dhvani_bp.dedicated_assistant') }}" style="position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, rgb(52, 152, 219), rgb(44, 62, 80)); color: white; border: none; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px; font-size: 24px; cursor: pointer; z-index: 9999; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+        <i class="fas fa-robot"></i>
+    </a>
+    
+    <!-- Translator removed as requested -->
+</body>
+</html>

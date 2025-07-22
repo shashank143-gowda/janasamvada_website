@@ -1,0 +1,1358 @@
+{% extends 'base.html' %}
+
+{% block title %}Government Schemes - JanSamvaad{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="schemes-hero position-relative overflow-hidden">
+    <!-- Background with overlay -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary" style="opacity: 0.9; background: linear-gradient(135deg, #6c5ce7, #8e44ad);"></div>
+    
+    <!-- Wave shape divider -->
+    <div class="position-absolute bottom-0 start-0 w-100">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" style="width: 100%; height: 80px;">
+            <path fill="#ffffff" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+    
+    <div class="container position-relative py-5">
+        <div class="row align-items-center py-5">
+            <div class="col-lg-6 text-white mb-5 mb-lg-0">
+                <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInUp">Government Schemes</h1>
+                <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    Discover government schemes and benefits available to you. Get detailed information about eligibility, application process, and more.
+                </p>
+                <div class="d-flex flex-wrap gap-3 animate__animated animate__fadeInUp animate__delay-2s">
+                    <button class="btn btn-light btn-lg px-4 d-flex align-items-center" id="exploreAllBtn">
+                        <i class="fas fa-list-ul me-2"></i> Explore All Schemes
+                    </button>
+                    <button class="btn btn-outline-light btn-lg px-4 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#eligibilityCheckerModal">
+                        <i class="fas fa-check-circle me-2"></i> Check Eligibility
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-6 animate__animated animate__fadeInRight">
+                <div class="position-relative">
+                    <img src="{{ url_for('static', filename='img/schemes-hero.jpg') }}" alt="Government Schemes" class="img-fluid rounded-4 shadow-lg" style="transform: perspective(1000px) rotateY(-15deg) rotateX(5deg); transition: all 0.5s ease;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Schemes Categories Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Browse Schemes by Category</h2>
+            <p class="text-muted">Select a category to find specific schemes</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <!-- Agriculture -->
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="category-card text-center p-4 h-100" data-category="agriculture">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-tractor text-success"></i>
+                    </div>
+                    <h5 class="category-title">Agriculture</h5>
+                </div>
+            </div>
+            
+            <!-- Education -->
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="category-card text-center p-4 h-100" data-category="education">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-graduation-cap text-primary"></i>
+                    </div>
+                    <h5 class="category-title">Education</h5>
+                </div>
+            </div>
+            
+            <!-- Health -->
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="category-card text-center p-4 h-100" data-category="health">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-heartbeat text-danger"></i>
+                    </div>
+                    <h5 class="category-title">Health</h5>
+                </div>
+            </div>
+            
+            <!-- Women & Child -->
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="category-card text-center p-4 h-100" data-category="women">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-female text-pink"></i>
+                    </div>
+                    <h5 class="category-title">Women & Child</h5>
+                </div>
+            </div>
+            
+            <!-- Employment -->
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="category-card text-center p-4 h-100" data-category="employment">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-briefcase text-warning"></i>
+                    </div>
+                    <h5 class="category-title">Employment</h5>
+                </div>
+            </div>
+            
+            <!-- Housing -->
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="category-card text-center p-4 h-100" data-category="housing">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-home text-info"></i>
+                    </div>
+                    <h5 class="category-title">Housing</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Schemes Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h2 class="fw-bold mb-0">Featured Schemes</h2>
+                <p class="text-muted">Popular government initiatives</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-primary mb-2 mb-md-0" id="askAiBtn">
+                    <i class="fas fa-robot me-2"></i> Ask AI Assistant
+                </button>
+            </div>
+        </div>
+        
+        <div class="row g-4" id="featuredSchemes">
+            <!-- Featured schemes will be loaded here -->
+            <div class="col-12">
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Schemes Search Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Find the Right Scheme</h2>
+            <p class="text-muted">Search and filter schemes based on your requirements</p>
+        </div>
+        
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label for="categoryFilter" class="form-label">Category</label>
+                        <select class="form-select" id="categoryFilter">
+                            <option value="all" selected>All Categories</option>
+                            <option value="agriculture">Agriculture</option>
+                            <option value="education">Education</option>
+                            <option value="health">Health</option>
+                            <option value="women">Women & Child</option>
+                            <option value="employment">Employment</option>
+                            <option value="housing">Housing</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label for="schemeSearch" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="schemeSearch" placeholder="Search by name or keyword">
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button class="btn btn-primary w-100" id="applyFiltersBtn">
+                            <i class="fas fa-filter me-2"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-info d-none" id="loadingAlert">
+            <div class="d-flex align-items-center">
+                <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div>Searching for schemes...</div>
+            </div>
+        </div>
+        
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <span class="badge bg-primary rounded-pill" id="resultsCount">0 results</span>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-outline-primary active" id="gridViewBtn">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="btn btn-outline-primary" id="listViewBtn">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="schemesGridView">
+            <div class="row g-4" id="schemesContainer">
+                <!-- Schemes will be loaded here -->
+            </div>
+        </div>
+        
+        <div id="schemesListView" class="d-none">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Scheme Name</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Ministry</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schemesTableBody">
+                            <!-- Schemes will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-warning d-none" id="noResultsAlert">
+            <i class="fas fa-exclamation-circle me-2"></i> No schemes found matching your criteria. Try changing your filters.
+        </div>
+        
+        <div class="text-center mt-4">
+            <button class="btn btn-outline-primary" id="loadMoreBtn">
+                <i class="fas fa-sync me-2"></i> Load More
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Scheme Detail Modal -->
+<div class="modal fade" id="schemeDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="schemeDetailTitle">Scheme Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="schemeDetailContent">
+                <!-- Content will be dynamically populated -->
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-primary" id="schemeApplyBtn" target="_blank">
+                    <i class="fas fa-external-link-alt me-2"></i> Apply Online
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Eligibility Checker Modal -->
+<div class="modal fade" id="eligibilityCheckerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title">Eligibility Checker</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-4">Answer a few questions to find schemes you may be eligible for</p>
+                
+                <form id="eligibilityForm">
+                    <div class="mb-3">
+                        <label class="form-label">Age Group</label>
+                        <select class="form-select" id="ageGroup">
+                            <option value="">Select your age group</option>
+                            <option value="child">Below 18 years</option>
+                            <option value="youth">18-35 years</option>
+                            <option value="adult">36-60 years</option>
+                            <option value="senior">Above 60 years</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Gender</label>
+                        <select class="form-select" id="gender">
+                            <option value="">Select your gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Occupation</label>
+                        <select class="form-select" id="occupation">
+                            <option value="">Select your occupation</option>
+                            <option value="farmer">Farmer</option>
+                            <option value="student">Student</option>
+                            <option value="business">Business Owner</option>
+                            <option value="employed">Employed</option>
+                            <option value="unemployed">Unemployed</option>
+                            <option value="retired">Retired</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Annual Income (₹)</label>
+                        <select class="form-select" id="income">
+                            <option value="">Select your annual income</option>
+                            <option value="low">Below 2.5 Lakh</option>
+                            <option value="middle">2.5 Lakh - 5 Lakh</option>
+                            <option value="high">5 Lakh - 10 Lakh</option>
+                            <option value="vhigh">Above 10 Lakh</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="checkEligibilityBtn">Check Eligibility</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Eligibility Results Modal -->
+<div class="modal fade" id="eligibilityResultsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title">Recommended Schemes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info mb-4">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-info-circle fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading">Based on your profile</h5>
+                            <p class="mb-0">Here are schemes you may be eligible for. Please check specific eligibility criteria for each scheme.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="eligibleSchemesContainer">
+                    <!-- Eligible schemes will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveResultsBtn">
+                    <i class="fas fa-download me-2"></i> Save Results
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .schemes-hero {
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .category-card {
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-color);
+    }
+    
+    .category-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .scheme-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        border: none;
+    }
+    
+    .scheme-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+    }
+    
+    .scheme-category {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .scheme-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 3rem;
+    }
+    
+    .scheme-ministry {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+    
+    .scheme-description {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 4.5rem;
+    }
+    
+    .scheme-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .scheme-deadline {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .text-pink {
+        color: #e84393;
+    }
+    
+    .bg-agriculture {
+        background-color: rgba(46, 204, 113, 0.2);
+        color: #27ae60;
+    }
+    
+    .bg-education {
+        background-color: rgba(52, 152, 219, 0.2);
+        color: #2980b9;
+    }
+    
+    .bg-health {
+        background-color: rgba(231, 76, 60, 0.2);
+        color: #c0392b;
+    }
+    
+    .bg-women {
+        background-color: rgba(232, 67, 147, 0.2);
+        color: #e84393;
+    }
+    
+    .bg-employment {
+        background-color: rgba(243, 156, 18, 0.2);
+        color: #f39c12;
+    }
+    
+    .bg-housing {
+        background-color: rgba(26, 188, 156, 0.2);
+        color: #16a085;
+    }
+    
+    .bg-other {
+        background-color: rgba(149, 165, 166, 0.2);
+        color: #7f8c8d;
+    }
+    
+    .scheme-detail-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .scheme-detail-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-right: 1.5rem;
+    }
+    
+    .scheme-detail-title {
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+    
+    .scheme-detail-ministry {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+    
+    .scheme-detail-section {
+        margin-bottom: 1.5rem;
+    }
+    
+    .scheme-detail-section-title {
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--primary-color);
+    }
+    
+    .eligibility-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+    
+    .eligibility-item i {
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+        margin-top: 0.25rem;
+    }
+    
+    .document-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+    
+    .document-item i {
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+        margin-top: 0.25rem;
+    }
+    
+    .benefit-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+    
+    .benefit-item i {
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+        margin-top: 0.25rem;
+    }
+    
+    .scheme-detail-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .scheme-detail-meta-item {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+    
+    .scheme-detail-meta-item i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const exploreAllBtn = document.getElementById('exploreAllBtn');
+        const categoryCards = document.querySelectorAll('.category-card');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const schemeSearch = document.getElementById('schemeSearch');
+        const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+        const schemesContainer = document.getElementById('schemesContainer');
+        const schemesTableBody = document.getElementById('schemesTableBody');
+        const loadingAlert = document.getElementById('loadingAlert');
+        const noResultsAlert = document.getElementById('noResultsAlert');
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        const schemesGridView = document.getElementById('schemesGridView');
+        const schemesListView = document.getElementById('schemesListView');
+        const askAiBtn = document.getElementById('askAiBtn');
+        const resultsCount = document.getElementById('resultsCount');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const featuredSchemes = document.getElementById('featuredSchemes');
+        const checkEligibilityBtn = document.getElementById('checkEligibilityBtn');
+        const eligibilityCheckerModal = new bootstrap.Modal(document.getElementById('eligibilityCheckerModal'));
+        const eligibilityResultsModal = new bootstrap.Modal(document.getElementById('eligibilityResultsModal'));
+        
+        // State
+        let schemesData = [];
+        let filteredSchemes = [];
+        let currentCategory = 'all';
+        let currentSearchTerm = '';
+        let currentPage = 1;
+        let itemsPerPage = 9;
+        let totalPages = 1;
+        
+        // Sample data for featured schemes (replace with API call)
+        const featuredSchemesData = [
+            {
+                id: 1,
+                name: "PM Kisan Samman Nidhi",
+                category: "agriculture",
+                ministry: "Ministry of Agriculture & Farmers Welfare",
+                description: "Income support of ₹6,000 per year in three equal installments to all land holding farmer families.",
+                deadline: "Ongoing",
+                image: "https://source.unsplash.com/random/300x200/?farmer"
+            },
+            {
+                id: 2,
+                name: "Pradhan Mantri Awas Yojana",
+                category: "housing",
+                ministry: "Ministry of Housing and Urban Affairs",
+                description: "Housing for all by 2022 - financial assistance for construction of houses for urban and rural poor.",
+                deadline: "31 Dec 2022",
+                image: "https://source.unsplash.com/random/300x200/?house"
+            },
+            {
+                id: 3,
+                name: "Ayushman Bharat",
+                category: "health",
+                ministry: "Ministry of Health and Family Welfare",
+                description: "Health insurance coverage of ₹5 lakh per family per year for secondary and tertiary care hospitalization.",
+                deadline: "Ongoing",
+                image: "https://source.unsplash.com/random/300x200/?hospital"
+            }
+        ];
+        
+        // Initialize
+        loadFeaturedSchemes();
+        fetchSchemes();
+        
+        // Event Listeners
+        exploreAllBtn.addEventListener('click', function() {
+            categoryFilter.value = 'all';
+            currentCategory = 'all';
+            schemeSearch.value = '';
+            currentSearchTerm = '';
+            currentPage = 1;
+            fetchSchemes();
+            
+            // Scroll to schemes section
+            document.querySelector('.bg-light').nextElementSibling.scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+        
+        categoryCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const category = this.dataset.category;
+                categoryFilter.value = category;
+                currentCategory = category;
+                currentPage = 1;
+                
+                // Scroll to schemes section
+                document.querySelector('.bg-light').nextElementSibling.scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                fetchSchemes();
+            });
+        });
+        
+        applyFiltersBtn.addEventListener('click', function() {
+            currentCategory = categoryFilter.value;
+            currentSearchTerm = schemeSearch.value.trim();
+            currentPage = 1;
+            fetchSchemes();
+        });
+        
+        schemeSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFiltersBtn.click();
+            }
+        });
+        
+        gridViewBtn.addEventListener('click', function() {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            schemesGridView.classList.remove('d-none');
+            schemesListView.classList.add('d-none');
+        });
+        
+        listViewBtn.addEventListener('click', function() {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            schemesListView.classList.remove('d-none');
+            schemesGridView.classList.add('d-none');
+        });
+        
+        askAiBtn.addEventListener('click', function() {
+            // Trigger chatbot with context about schemes
+            if (window.openChatbot) {
+                window.openChatbot("I need information about government schemes");
+            } else {
+                alert("AI Assistant is not available. Please try again later.");
+            }
+        });
+        
+        loadMoreBtn.addEventListener('click', function() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadMoreSchemes();
+            }
+        });
+        
+        checkEligibilityBtn.addEventListener('click', function() {
+            const ageGroup = document.getElementById('ageGroup').value;
+            const gender = document.getElementById('gender').value;
+            const occupation = document.getElementById('occupation').value;
+            const income = document.getElementById('income').value;
+            
+            if (!ageGroup || !gender || !occupation || !income) {
+                alert('Please fill all fields to check eligibility');
+                return;
+            }
+            
+            // Find eligible schemes based on profile
+            const eligibleSchemes = findEligibleSchemes(ageGroup, gender, occupation, income);
+            
+            // Display eligible schemes
+            displayEligibleSchemes(eligibleSchemes);
+            
+            // Hide eligibility checker modal and show results modal
+            eligibilityCheckerModal.hide();
+            eligibilityResultsModal.show();
+        });
+        
+        document.getElementById('saveResultsBtn').addEventListener('click', function() {
+            alert('Results saved successfully! You can access them in your profile.');
+        });
+        
+        // Functions
+        function loadFeaturedSchemes() {
+            featuredSchemes.innerHTML = '';
+            
+            featuredSchemesData.forEach(scheme => {
+                const schemeCard = document.createElement('div');
+                schemeCard.className = 'col-md-4';
+                schemeCard.innerHTML = `
+                    <div class="card scheme-card shadow-sm h-100">
+                        <div class="position-relative">
+                            <img src="${scheme.image}" class="card-img-top" alt="${scheme.name}" style="height: 180px; object-fit: cover;">
+                            <span class="scheme-category bg-${scheme.category}">${getCategoryName(scheme.category)}</span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="scheme-title">${scheme.name}</h5>
+                            <div class="scheme-ministry">${scheme.ministry}</div>
+                            <p class="scheme-description">${scheme.description}</p>
+                            <div class="scheme-footer">
+                                <span class="scheme-deadline">
+                                    <i class="far fa-calendar-alt me-1"></i> ${scheme.deadline}
+                                </span>
+                                <button class="btn btn-sm btn-primary view-details-btn" data-scheme-id="${scheme.id}">
+                                    <i class="fas fa-info-circle me-1"></i> Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                featuredSchemes.appendChild(schemeCard);
+            });
+            
+            // Add event listeners to view details buttons
+            document.querySelectorAll('.view-details-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const schemeId = parseInt(this.dataset.schemeId);
+                    const scheme = featuredSchemesData.find(s => s.id === schemeId) || 
+                                  schemesData.find(s => s.id === schemeId);
+                    if (scheme) {
+                        showSchemeDetails(scheme);
+                    }
+                });
+            });
+        }
+        
+        function fetchSchemes() {
+            loadingAlert.classList.remove('d-none');
+            noResultsAlert.classList.add('d-none');
+            schemesContainer.innerHTML = '';
+            schemesTableBody.innerHTML = '';
+            loadMoreBtn.style.display = 'none';
+            
+            // Check if we have local data (for demo purposes)
+            if (window.governmentSchemes && window.governmentSchemes.length > 0) {
+                schemesData = window.governmentSchemes;
+                applyFilters();
+            } else {
+                // Fallback to API if local data is not available
+                fetch('/schemes_bp/api/schemes')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.schemes.length > 0) {
+                            schemesData = data.schemes;
+                            applyFilters();
+                        } else {
+                            loadingAlert.classList.add('d-none');
+                            noResultsAlert.classList.remove('d-none');
+                            resultsCount.textContent = '0 results';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching schemes:', error);
+                        loadingAlert.classList.add('d-none');
+                        alert('Error fetching schemes. Please try again.');
+                    });
+            }
+        }
+        
+        function applyFilters() {
+            // Filter schemes based on category and search term
+            filteredSchemes = schemesData.filter(scheme => {
+                const categoryMatch = currentCategory === 'all' || scheme.category === currentCategory;
+                const searchMatch = !currentSearchTerm || 
+                                   scheme.name.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                                   scheme.description.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                                   scheme.ministry.toLowerCase().includes(currentSearchTerm.toLowerCase());
+                return categoryMatch && searchMatch;
+            });
+            
+            // Calculate total pages
+            totalPages = Math.ceil(filteredSchemes.length / itemsPerPage);
+            
+            // Update results count
+            resultsCount.textContent = `${filteredSchemes.length} results`;
+            
+            // Display schemes
+            if (filteredSchemes.length > 0) {
+                displaySchemes(filteredSchemes.slice(0, itemsPerPage));
+                loadingAlert.classList.add('d-none');
+                
+                // Show load more button if there are more pages
+                if (totalPages > 1) {
+                    loadMoreBtn.style.display = 'block';
+                } else {
+                    loadMoreBtn.style.display = 'none';
+                }
+            } else {
+                loadingAlert.classList.add('d-none');
+                noResultsAlert.classList.remove('d-none');
+            }
+        }
+        
+        function loadMoreSchemes() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const nextPageSchemes = filteredSchemes.slice(startIndex, endIndex);
+            
+            displaySchemes(nextPageSchemes, true);
+            
+            // Hide load more button if we've reached the last page
+            if (currentPage >= totalPages) {
+                loadMoreBtn.style.display = 'none';
+            }
+        }
+        
+        function displaySchemes(schemes, append = false) {
+            if (!append) {
+                schemesContainer.innerHTML = '';
+                schemesTableBody.innerHTML = '';
+            }
+            
+            schemes.forEach(scheme => {
+                // Grid view
+                const schemeCard = document.createElement('div');
+                schemeCard.className = 'col-md-6 col-lg-4';
+                schemeCard.innerHTML = `
+                    <div class="card scheme-card shadow-sm h-100">
+                        <div class="position-relative">
+                            <img src="${scheme.image || `https://source.unsplash.com/random/300x200/?${scheme.category}`}" class="card-img-top" alt="${scheme.name}" style="height: 180px; object-fit: cover;">
+                            <span class="scheme-category bg-${scheme.category}">${getCategoryName(scheme.category)}</span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="scheme-title">${scheme.name}</h5>
+                            <div class="scheme-ministry">${scheme.ministry}</div>
+                            <p class="scheme-description">${scheme.description}</p>
+                            <div class="scheme-footer">
+                                <span class="scheme-deadline">
+                                    <i class="far fa-calendar-alt me-1"></i> ${scheme.deadline || 'Ongoing'}
+                                </span>
+                                <button class="btn btn-sm btn-primary view-details-btn" data-scheme-id="${scheme.id}">
+                                    <i class="fas fa-info-circle me-1"></i> Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                schemesContainer.appendChild(schemeCard);
+                
+                // List view
+                const schemeRow = document.createElement('tr');
+                schemeRow.innerHTML = `
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3" style="width: 40px; height: 40px; border-radius: 50%; background-color: rgba(108, 92, 231, 0.1); display: flex; align-items: center; justify-content: center;">
+                                ${getCategoryIcon(scheme.category)}
+                            </div>
+                            <div>
+                                <div class="fw-bold">${scheme.name}</div>
+                                <div class="small text-muted">${scheme.deadline || 'Ongoing'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-${scheme.category}">${getCategoryName(scheme.category)}</span></td>
+                    <td>${scheme.ministry}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary view-details-btn" data-scheme-id="${scheme.id}">
+                            <i class="fas fa-info-circle me-1"></i> Details
+                        </button>
+                    </td>
+                `;
+                
+                schemesTableBody.appendChild(schemeRow);
+            });
+            
+            // Add event listeners to view details buttons
+            document.querySelectorAll('.view-details-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const schemeId = parseInt(this.dataset.schemeId);
+                    const scheme = schemesData.find(s => s.id === schemeId) || 
+                                  featuredSchemesData.find(s => s.id === schemeId);
+                    if (scheme) {
+                        showSchemeDetails(scheme);
+                    }
+                });
+            });
+        }
+        
+        function showSchemeDetails(scheme) {
+            const modal = new bootstrap.Modal(document.getElementById('schemeDetailModal'));
+            const modalTitle = document.getElementById('schemeDetailTitle');
+            const modalContent = document.getElementById('schemeDetailContent');
+            const applyBtn = document.getElementById('schemeApplyBtn');
+            
+            modalTitle.textContent = scheme.name;
+            applyBtn.href = scheme.apply_link || '#';
+            
+            // Show loading spinner
+            modalContent.innerHTML = `
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `;
+            
+            modal.show();
+            
+            // Simulate loading for better UX
+            setTimeout(() => {
+                // Check if we have detailed data for this scheme
+                const schemeDetails = getSchemeDetails(scheme.id);
+                
+                modalContent.innerHTML = `
+                    <div class="scheme-detail-header">
+                        <div class="scheme-detail-icon bg-${scheme.category}">
+                            ${getCategoryIcon(scheme.category)}
+                        </div>
+                        <div>
+                            <h4 class="scheme-detail-title">${scheme.name}</h4>
+                            <div class="scheme-detail-ministry">${scheme.ministry}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="scheme-detail-meta">
+                        <div class="scheme-detail-meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span>${getCategoryName(scheme.category)}</span>
+                        </div>
+                        <div class="scheme-detail-meta-item">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>Deadline: ${scheme.deadline || 'Ongoing'}</span>
+                        </div>
+                        <div class="scheme-detail-meta-item">
+                            <i class="fas fa-globe"></i>
+                            <span>Coverage: ${schemeDetails.coverage || 'National'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="scheme-detail-section">
+                        <h5 class="scheme-detail-section-title">Description</h5>
+                        <p>${schemeDetails.description || scheme.description}</p>
+                    </div>
+                    
+                    <div class="scheme-detail-section">
+                        <h5 class="scheme-detail-section-title">Eligibility Criteria</h5>
+                        <div>
+                            ${schemeDetails.eligibility.map(item => `
+                                <div class="eligibility-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>${item}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="scheme-detail-section">
+                        <h5 class="scheme-detail-section-title">Benefits</h5>
+                        <div>
+                            ${schemeDetails.benefits.map(item => `
+                                <div class="benefit-item">
+                                    <i class="fas fa-gift"></i>
+                                    <div>${item}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="scheme-detail-section">
+                        <h5 class="scheme-detail-section-title">Required Documents</h5>
+                        <div>
+                            ${schemeDetails.documents.map(item => `
+                                <div class="document-item">
+                                    <i class="fas fa-file-alt"></i>
+                                    <div>${item}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="scheme-detail-section">
+                        <h5 class="scheme-detail-section-title">How to Apply</h5>
+                        <p>${schemeDetails.how_to_apply}</p>
+                    </div>
+                </div>
+            `;
+            }, 500); // Simulate loading for better UX
+        }
+        
+        function findEligibleSchemes(ageGroup, gender, occupation, income) {
+            // This is a simplified eligibility check for demo purposes
+            // In a real application, this would be more complex and likely server-side
+            
+            return schemesData.filter(scheme => {
+                // Agriculture schemes for farmers
+                if (scheme.category === 'agriculture' && occupation === 'farmer') {
+                    return true;
+                }
+                
+                // Education schemes for students
+                if (scheme.category === 'education' && occupation === 'student') {
+                    return true;
+                }
+                
+                // Women-specific schemes
+                if (scheme.category === 'women' && gender === 'female') {
+                    return true;
+                }
+                
+                // Employment schemes for unemployed
+                if (scheme.category === 'employment' && occupation === 'unemployed') {
+                    return true;
+                }
+                
+                // Health schemes for all
+                if (scheme.category === 'health') {
+                    return true;
+                }
+                
+                // Housing schemes for low income
+                if (scheme.category === 'housing' && (income === 'low' || income === 'middle')) {
+                    return true;
+                }
+                
+                // Senior citizen schemes
+                if (ageGroup === 'senior') {
+                    return scheme.name.toLowerCase().includes('senior') || 
+                           scheme.description.toLowerCase().includes('senior') ||
+                           scheme.description.toLowerCase().includes('elderly');
+                }
+                
+                return false;
+            });
+        }
+        
+        function displayEligibleSchemes(schemes) {
+            const container = document.getElementById('eligibleSchemesContainer');
+            container.innerHTML = '';
+            
+            if (schemes.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        No schemes found matching your profile. Try changing your criteria or explore all schemes.
+                    </div>
+                `;
+                return;
+            }
+            
+            schemes.forEach(scheme => {
+                const schemeCard = document.createElement('div');
+                schemeCard.className = 'card mb-3 shadow-sm';
+                schemeCard.innerHTML = `
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3" style="width: 40px; height: 40px; border-radius: 50%; background-color: rgba(108, 92, 231, 0.1); display: flex; align-items: center; justify-content: center;">
+                                ${getCategoryIcon(scheme.category)}
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">${scheme.name}</h5>
+                                <div class="small text-muted">${scheme.ministry}</div>
+                            </div>
+                            <span class="ms-auto badge bg-${scheme.category}">${getCategoryName(scheme.category)}</span>
+                        </div>
+                        <p class="card-text">${scheme.description}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">
+                                <i class="far fa-calendar-alt me-1"></i> ${scheme.deadline || 'Ongoing'}
+                            </span>
+                            <button class="btn btn-sm btn-primary view-details-btn" data-scheme-id="${scheme.id}" data-bs-dismiss="modal">
+                                <i class="fas fa-info-circle me-1"></i> View Details
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(schemeCard);
+            });
+            
+            // Add event listeners to view details buttons
+            container.querySelectorAll('.view-details-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const schemeId = parseInt(this.dataset.schemeId);
+                    const scheme = schemesData.find(s => s.id === schemeId);
+                    if (scheme) {
+                        // Close the eligibility results modal
+                        eligibilityResultsModal.hide();
+                        
+                        // Show scheme details
+                        setTimeout(() => {
+                            showSchemeDetails(scheme);
+                        }, 500);
+                    }
+                });
+            });
+        }
+        
+        function getCategoryName(category) {
+            switch(category) {
+                case 'agriculture':
+                    return 'Agriculture';
+                case 'education':
+                    return 'Education';
+                case 'health':
+                    return 'Health';
+                case 'women':
+                    return 'Women & Child';
+                case 'employment':
+                    return 'Employment';
+                case 'housing':
+                    return 'Housing';
+                default:
+                    return 'Other';
+            }
+        }
+        
+        function getCategoryIcon(category) {
+            switch(category) {
+                case 'agriculture':
+                    return '<i class="fas fa-tractor"></i>';
+                case 'education':
+                    return '<i class="fas fa-graduation-cap"></i>';
+                case 'health':
+                    return '<i class="fas fa-heartbeat"></i>';
+                case 'women':
+                    return '<i class="fas fa-female"></i>';
+                case 'employment':
+                    return '<i class="fas fa-briefcase"></i>';
+                case 'housing':
+                    return '<i class="fas fa-home"></i>';
+                default:
+                    return '<i class="fas fa-file-alt"></i>';
+            }
+        }
+        
+        function getSchemeDetails(schemeId) {
+            // This would typically come from an API call
+            // For demo purposes, we'll return mock data
+            return {
+                description: "This scheme aims to provide financial assistance and support to eligible beneficiaries. It is designed to improve living standards and promote economic growth.",
+                eligibility: [
+                    "Indian citizen residing in the country",
+                    "Age between 18-65 years (varies by scheme)",
+                    "Annual family income below specified threshold",
+                    "Must have valid identification documents",
+                    "Other criteria specific to the scheme"
+                ],
+                benefits: [
+                    "Financial assistance through direct benefit transfer",
+                    "Subsidies on essential services and goods",
+                    "Access to specialized training and education",
+                    "Healthcare benefits and insurance coverage",
+                    "Priority access to other government services"
+                ],
+                documents: [
+                    "Aadhaar Card",
+                    "Income Certificate",
+                    "Residence Proof",
+                    "Bank Account Details",
+                    "Passport Size Photographs",
+                    "Category Certificate (if applicable)"
+                ],
+                how_to_apply: "Applications can be submitted online through the official portal or at designated Common Service Centers (CSCs). Fill the application form with accurate details and upload the required documents. After submission, track your application using the reference number provided.",
+                coverage: "National",
+                contact: "Toll-Free Helpline: 1800-XXX-XXXX, Email: support@scheme.gov.in"
+            };
+        }
+        
+        // Sample data for demonstration
+        window.governmentSchemes = [
+            {
+                id: 1,
+                name: "PM Kisan Samman Nidhi",
+                category: "agriculture",
+                ministry: "Ministry of Agriculture & Farmers Welfare",
+                description: "Income support of ₹6,000 per year in three equal installments to all land holding farmer families.",
+                deadline: "Ongoing",
+                apply_link: "https://pmkisan.gov.in/"
+            },
+            {
+                id: 2,
+                name: "Pradhan Mantri Awas Yojana",
+                category: "housing",
+                ministry: "Ministry of Housing and Urban Affairs",
+                description: "Housing for all by 2022 - financial assistance for construction of houses for urban and rural poor.",
+                deadline: "31 Dec 2022",
+                apply_link: "https://pmaymis.gov.in/"
+            },
+            {
+                id: 3,
+                name: "Ayushman Bharat",
+                category: "health",
+                ministry: "Ministry of Health and Family Welfare",
+                description: "Health insurance coverage of ₹5 lakh per family per year for secondary and tertiary care hospitalization.",
+                deadline: "Ongoing",
+                apply_link: "https://pmjay.gov.in/"
+            },
+            {
+                id: 4,
+                name: "PM Mudra Yojana",
+                category: "employment",
+                ministry: "Ministry of Finance",
+                description: "Loans up to ₹10 lakh to non-corporate, non-farm small/micro enterprises to encourage entrepreneurship.",
+                deadline: "Ongoing",
+                apply_link: "https://www.mudra.org.in/"
+            },
+            {
+                id: 5,
+                name: "Sukanya Samriddhi Yojana",
+                category: "women",
+                ministry: "Ministry of Finance",
+                description: "Small savings scheme for girl child with higher interest rate and tax benefits.",
+                deadline: "Ongoing",
+                apply_link: "https://www.indiapost.gov.in/Financial/Pages/Content/Sukanya-Samriddhi-Account.aspx"
+            },
+            {
+                id: 6,
+                name: "PM Vidya Lakshmi",
+                category: "education",
+                ministry: "Ministry of Education",
+                description: "Portal for students seeking education loans for higher studies in India and abroad.",
+                deadline: "Ongoing",
+                apply_link: "https://www.vidyalakshmi.co.in/"
+            },
+            {
+                id: 7,
+                name: "Kisan Credit Card",
+                category: "agriculture",
+                ministry: "Ministry of Agriculture & Farmers Welfare",
+                description: "Credit facility for farmers to meet agricultural needs with flexible repayment options.",
+                deadline: "Ongoing",
+                apply_link: "https://pmkisan.gov.in/"
+            },
+            {
+                id: 8,
+                name: "Pradhan Mantri Ujjwala Yojana",
+                category: "women",
+                ministry: "Ministry of Petroleum and Natural Gas",
+                description: "Free LPG connections to women from Below Poverty Line (BPL) households.",
+                deadline: "Ongoing",
+                apply_link: "https://pmuy.gov.in/"
+            },
+            {
+                id: 9,
+                name: "National Pension Scheme",
+                category: "employment",
+                ministry: "Ministry of Finance",
+                description: "Voluntary retirement savings scheme to enable subscribers to make decisions about their future.",
+                deadline: "Ongoing",
+                apply_link: "https://www.npscra.nsdl.co.in/"
+            },
+            {
+                id: 10,
+                name: "PM Fasal Bima Yojana",
+                category: "agriculture",
+                ministry: "Ministry of Agriculture & Farmers Welfare",
+                description: "Crop insurance scheme to protect farmers from crop failure due to natural calamities.",
+                deadline: "Seasonal",
+                apply_link: "https://pmfby.gov.in/"
+            },
+            {
+                id: 11,
+                name: "Atal Pension Yojana",
+                category: "employment",
+                ministry: "Ministry of Finance",
+                description: "Pension scheme for unorganized sector workers with guaranteed minimum pension.",
+                deadline: "Ongoing",
+                apply_link: "https://www.npscra.nsdl.co.in/scheme-details.php"
+            },
+            {
+                id: 12,
+                name: "PM Shram Yogi Maandhan",
+                category: "employment",
+                ministry: "Ministry of Labour and Employment",
+                description: "Pension scheme for unorganized workers with monthly income up to ₹15,000.",
+                deadline: "Ongoing",
+                apply_link: "https://maandhan.in/"
+            }
+        ];
+    });
+</script>
+{% endblock %}

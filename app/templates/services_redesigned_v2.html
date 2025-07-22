@@ -1,0 +1,1125 @@
+{% extends 'base.html' %}
+
+{% block title %}Public Services - JanSamvaad{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="services-hero position-relative overflow-hidden">
+    <!-- Background with overlay -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary" style="opacity: 0.9; background: linear-gradient(135deg, #3498db, #1abc9c);"></div>
+    
+    <!-- Wave shape divider -->
+    <div class="position-absolute bottom-0 start-0 w-100">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" style="width: 100%; height: 80px;">
+            <path fill="#ffffff" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+    
+    <div class="container position-relative py-5">
+        <div class="row align-items-center py-5">
+            <div class="col-lg-6 text-white mb-5 mb-lg-0">
+                <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInUp">Essential Services Near You</h1>
+                <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    Find hospitals, police stations, government offices and other essential services in your area with real-time information and directions.
+                </p>
+                <div class="d-flex flex-wrap gap-3 animate__animated animate__fadeInUp animate__delay-2s">
+                    <button class="btn btn-light btn-lg px-4 d-flex align-items-center" id="useLocationBtn">
+                        <i class="fas fa-location-arrow me-2"></i> Use My Location
+                    </button>
+                    <button class="btn btn-outline-light btn-lg px-4 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#searchModal">
+                        <i class="fas fa-search me-2"></i> Search Area
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-6 animate__animated animate__fadeInRight">
+                <div class="position-relative">
+                    <img src="{{ url_for('static', filename='img/services-hero.jpg') }}" alt="Public Services" class="img-fluid rounded-4 shadow-lg" style="transform: perspective(1000px) rotateY(-15deg) rotateX(5deg); transition: all 0.5s ease;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Categories Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Browse Services by Category</h2>
+            <p class="text-muted">Select a category to find specific services</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="service-category-card" data-type="hospital">
+                    <div class="icon-wrapper bg-danger-subtle">
+                        <i class="fas fa-hospital text-danger"></i>
+                    </div>
+                    <h5>Hospitals</h5>
+                    <span class="badge bg-danger-subtle text-danger">Healthcare</span>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="service-category-card" data-type="police">
+                    <div class="icon-wrapper bg-primary-subtle">
+                        <i class="fas fa-shield-alt text-primary"></i>
+                    </div>
+                    <h5>Police</h5>
+                    <span class="badge bg-primary-subtle text-primary">Security</span>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="service-category-card" data-type="fire">
+                    <div class="icon-wrapper bg-warning-subtle">
+                        <i class="fas fa-fire-extinguisher text-warning"></i>
+                    </div>
+                    <h5>Fire Stations</h5>
+                    <span class="badge bg-warning-subtle text-warning">Emergency</span>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="service-category-card" data-type="school">
+                    <div class="icon-wrapper bg-success-subtle">
+                        <i class="fas fa-school text-success"></i>
+                    </div>
+                    <h5>Schools</h5>
+                    <span class="badge bg-success-subtle text-success">Education</span>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="service-category-card" data-type="government">
+                    <div class="icon-wrapper bg-info-subtle">
+                        <i class="fas fa-landmark text-info"></i>
+                    </div>
+                    <h5>Govt. Offices</h5>
+                    <span class="badge bg-info-subtle text-info">Administration</span>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="service-category-card" data-type="all">
+                    <div class="icon-wrapper bg-secondary-subtle">
+                        <i class="fas fa-th-large text-secondary"></i>
+                    </div>
+                    <h5>All Services</h5>
+                    <span class="badge bg-secondary-subtle text-secondary">View All</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Services Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Filters Column -->
+            <div class="col-lg-4">
+                <div class="sticky-top pt-4" style="top: 100px;">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h3 class="card-title mb-0 fw-bold">Filter Services</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <label class="form-label fw-medium">Service Type</label>
+                                <div class="d-flex flex-wrap gap-2" id="serviceTypeFilter">
+                                    <button class="btn btn-sm btn-primary active" data-type="all">All</button>
+                                    <button class="btn btn-sm btn-outline-primary" data-type="hospital">
+                                        <i class="fas fa-hospital me-1"></i> Hospitals
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-type="police">
+                                        <i class="fas fa-shield-alt me-1"></i> Police
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-type="fire">
+                                        <i class="fas fa-fire-extinguisher me-1"></i> Fire
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-type="school">
+                                        <i class="fas fa-school me-1"></i> Schools
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-type="government">
+                                        <i class="fas fa-landmark me-1"></i> Govt. Offices
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="radiusRange" class="form-label fw-medium">Distance (km): <span id="radiusValue">10</span></label>
+                                <input type="range" class="form-range" id="radiusRange" min="1" max="50" value="10">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-medium">Current Location</label>
+                                <div class="location-display p-3 rounded-3 bg-light border" id="currentLocationDisplay">
+                                    <small class="text-muted">Please enable location access</small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button class="btn btn-primary rounded-pill" id="applyFiltersBtn">
+                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mt-4">
+                        <div class="card-body p-0">
+                            <div class="p-4 bg-primary text-white">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-robot fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1">Need Help?</h5>
+                                        <p class="mb-0 small">Our AI assistant can help you locate the right service</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <button class="btn btn-outline-primary w-100" id="askAiBtn">
+                                    <i class="fas fa-comment-dots me-2"></i> Ask AI Assistant
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Services List Column -->
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-0 fw-bold">Nearby Services</h2>
+                        <p class="text-muted mb-0" id="resultsCount">Showing all services in your area</p>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary active" id="listViewBtn">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="btn btn-outline-primary" id="mapViewBtn">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- List View -->
+                <div id="servicesListView">
+                    <div class="alert alert-info d-flex align-items-center" id="loadingAlert">
+                        <div class="spinner-border spinner-border-sm me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div>Loading nearby services...</div>
+                    </div>
+                    
+                    <div id="servicesContainer" class="row g-4"></div>
+                    
+                    <div class="alert alert-warning d-none" id="noResultsAlert">
+                        <i class="fas fa-exclamation-circle me-2"></i> No services found in this area. Try increasing the distance or changing filters.
+                    </div>
+                </div>
+                
+                <!-- Map View -->
+                <div id="servicesMapView" class="d-none">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="card-body p-0">
+                            <div id="servicesMap" style="height: 600px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Services Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Emergency Services</h2>
+            <p class="text-muted">Important contacts for emergency situations</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="emergency-card bg-danger text-white">
+                    <div class="emergency-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3>112</h3>
+                    <p>National Emergency Number</p>
+                    <a href="tel:112" class="btn btn-light text-danger">
+                        <i class="fas fa-phone me-2"></i> Call Now
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="emergency-card bg-primary text-white">
+                    <div class="emergency-icon">
+                        <i class="fas fa-ambulance"></i>
+                    </div>
+                    <h3>108</h3>
+                    <p>Ambulance Services</p>
+                    <a href="tel:108" class="btn btn-light text-primary">
+                        <i class="fas fa-phone me-2"></i> Call Now
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="emergency-card bg-warning text-white">
+                    <div class="emergency-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <h3>101</h3>
+                    <p>Fire Emergency Services</p>
+                    <a href="tel:101" class="btn btn-light text-warning">
+                        <i class="fas fa-phone me-2"></i> Call Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title">Search Area</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="stateSelect" class="form-label">State</label>
+                    <select class="form-select" id="stateSelect">
+                        <option value="">Select State</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Telangana">Telangana</option>
+                        <!-- Add more states as needed -->
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="districtSelect" class="form-label">District</label>
+                    <select class="form-select" id="districtSelect" disabled>
+                        <option value="">Select District</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="locationSearch" class="form-label">Search Location</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="locationSearch" placeholder="Enter area, landmark, or pincode">
+                        <button class="btn btn-outline-primary" type="button" id="searchLocationBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmSearchBtn">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Detail Modal -->
+<div class="modal fade" id="serviceDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceDetailTitle">Service Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="serviceDetailContent">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-primary" id="serviceDirectionsBtn" target="_blank">
+                    <i class="fas fa-directions me-1"></i> Get Directions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Service Category Cards - Overridden by theme-fixes.css */
+    .service-category-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 15px;
+    }
+    
+    .service-category-card .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+    
+    .service-category-card i {
+        font-size: 24px;
+    }
+    
+    .service-category-card h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    /* Service Cards */
+    .service-card {
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .service-card .service-icon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+    
+    .service-card .card-body {
+        padding: 20px;
+    }
+    
+    .service-card .service-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
+    
+    .service-card .service-address {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin-bottom: 15px;
+    }
+    
+    .service-card .service-contact {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin-bottom: 15px;
+    }
+    
+    .service-card .service-distance {
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    /* Emergency Cards */
+    .emergency-card {
+        border-radius: 12px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .emergency-card .emergency-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    
+    .emergency-card .emergency-icon i {
+        font-size: 30px;
+    }
+    
+    .emergency-card h3 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .emergency-card p {
+        margin-bottom: 20px;
+        opacity: 0.9;
+    }
+    
+    /* Location Display */
+    .location-display {
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDf8fmG-LH14KqvPA33y-ZCKqBFhmWzD0s&libraries=places"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const useLocationBtn = document.getElementById('useLocationBtn');
+        const refreshLocationBtn = document.getElementById('refreshLocationBtn');
+        const currentLocationDisplay = document.getElementById('currentLocationDisplay');
+        const radiusRange = document.getElementById('radiusRange');
+        const radiusValue = document.getElementById('radiusValue');
+        const serviceTypeFilter = document.getElementById('serviceTypeFilter');
+        const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+        const servicesContainer = document.getElementById('servicesContainer');
+        const loadingAlert = document.getElementById('loadingAlert');
+        const noResultsAlert = document.getElementById('noResultsAlert');
+        const listViewBtn = document.getElementById('listViewBtn');
+        const mapViewBtn = document.getElementById('mapViewBtn');
+        const servicesListView = document.getElementById('servicesListView');
+        const servicesMapView = document.getElementById('servicesMapView');
+        const askAiBtn = document.getElementById('askAiBtn');
+        const resultsCount = document.getElementById('resultsCount');
+        
+        // State
+        let currentLocation = null;
+        let currentRadius = 10;
+        let currentServiceType = 'all';
+        let servicesData = [];
+        let map = null;
+        let markers = [];
+        
+        // Initialize
+        initializeMap();
+        
+        // Event listeners
+        useLocationBtn.addEventListener('click', getUserLocation);
+        
+        radiusRange.addEventListener('input', function() {
+            currentRadius = this.value;
+            radiusValue.textContent = currentRadius;
+        });
+        
+        serviceTypeFilter.addEventListener('click', function(e) {
+            // Find the button - could be the button itself or an icon inside the button
+            let targetButton = e.target;
+            
+            // If we clicked on an icon inside the button, get the parent button
+            if (e.target.tagName === 'I') {
+                targetButton = e.target.parentElement;
+            }
+            
+            // Only proceed if we have a button
+            if (targetButton.tagName === 'BUTTON') {
+                // Remove active class from all buttons
+                serviceTypeFilter.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-primary');
+                });
+                
+                // Add active class to clicked button
+                targetButton.classList.add('active');
+                targetButton.classList.remove('btn-outline-primary');
+                targetButton.classList.add('btn-primary');
+                
+                // Update the current service type
+                currentServiceType = targetButton.dataset.type;
+                console.log("Service type changed to:", currentServiceType);
+            }
+        });
+        
+        // Service category cards
+        document.querySelectorAll('.service-category-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const type = this.dataset.type;
+                console.log("Service category card clicked:", type);
+                
+                // Update filter buttons
+                serviceTypeFilter.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-primary');
+                    
+                    if (btn.dataset.type === type) {
+                        btn.classList.add('active');
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-primary');
+                    }
+                });
+                
+                // Update the current service type
+                currentServiceType = type;
+                console.log("Service type updated to:", currentServiceType);
+                
+                // Scroll to services section
+                document.querySelector('.bg-light').scrollIntoView({ behavior: 'smooth' });
+                
+                // If location is available, fetch services
+                if (currentLocation) {
+                    fetchServices();
+                } else {
+                    getUserLocation();
+                }
+            });
+        });
+        
+        applyFiltersBtn.addEventListener('click', function() {
+            // Make sure we have the current service type from the active button
+            const activeButton = serviceTypeFilter.querySelector('button.active');
+            if (activeButton) {
+                currentServiceType = activeButton.dataset.type;
+            }
+            
+            // Now fetch services with the updated filters
+            fetchServices();
+        });
+        
+        listViewBtn.addEventListener('click', function() {
+            listViewBtn.classList.add('active');
+            mapViewBtn.classList.remove('active');
+            servicesListView.classList.remove('d-none');
+            servicesMapView.classList.add('d-none');
+        });
+        
+        mapViewBtn.addEventListener('click', function() {
+            mapViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            servicesMapView.classList.remove('d-none');
+            servicesListView.classList.add('d-none');
+            
+            // Refresh map
+            if (map) {
+                google.maps.event.trigger(map, 'resize');
+                if (currentLocation) {
+                    map.setCenter({lat: currentLocation.lat, lng: currentLocation.lng});
+                }
+            }
+        });
+        
+        askAiBtn.addEventListener('click', function() {
+            // Open chatbot
+            const chatbotToggle = document.getElementById('chatbotToggle');
+            if (chatbotToggle) {
+                chatbotToggle.click();
+            }
+        });
+        
+        // Functions
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                currentLocationDisplay.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <small>Getting your location...</small>
+                    </div>
+                `;
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        currentLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        // Reverse geocode to get address
+                        reverseGeocode(currentLocation);
+                        
+                        // Fetch services
+                        fetchServices();
+                    },
+                    function(error) {
+                        currentLocationDisplay.innerHTML = `
+                            <small class="text-danger">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                Error: ${getGeolocationErrorMessage(error)}
+                            </small>
+                        `;
+                    }
+                );
+            } else {
+                currentLocationDisplay.innerHTML = `
+                    <small class="text-danger">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        Geolocation is not supported by this browser
+                    </small>
+                `;
+            }
+        }
+        
+        function getGeolocationErrorMessage(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    return "Location access denied. Please enable location services.";
+                case error.POSITION_UNAVAILABLE:
+                    return "Location information unavailable.";
+                case error.TIMEOUT:
+                    return "Location request timed out.";
+                case error.UNKNOWN_ERROR:
+                    return "An unknown error occurred.";
+                default:
+                    return "Error getting location.";
+            }
+        }
+        
+        function reverseGeocode(location) {
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({'location': location}, function(results, status) {
+                if (status === 'OK' && results[0]) {
+                    currentLocationDisplay.innerHTML = `
+                        <div>
+                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                            <span>${results[0].formatted_address}</span>
+                        </div>
+                    `;
+                } else {
+                    currentLocationDisplay.innerHTML = `
+                        <div>
+                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                            <span>Lat: ${location.lat.toFixed(6)}, Lng: ${location.lng.toFixed(6)}</span>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        function fetchServices() {
+            console.log("Fetching services with filters:", {
+                location: currentLocation,
+                radius: currentRadius,
+                serviceType: currentServiceType
+            });
+            
+            if (!currentLocation) {
+                showToast('Please enable location access or search for an area first', 'warning');
+                return;
+            }
+            
+            loadingAlert.classList.remove('d-none');
+            noResultsAlert.classList.add('d-none');
+            servicesContainer.innerHTML = '';
+            clearMarkers();
+            
+            // Construct the URL with proper parameters
+            let url = `/services/api/services/nearby?lat=${currentLocation.lat}&lng=${currentLocation.lng}&radius=${currentRadius}`;
+            
+            // Add service type filter if not 'all'
+            if (currentServiceType && currentServiceType !== 'all') {
+                url += `&type=${currentServiceType}`;
+            }
+            
+            console.log("Fetching services with URL:", url);
+            
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingAlert.classList.add('d-none');
+                    console.log("API response:", data);
+                    
+                    if (data.success && data.services.length > 0) {
+                        servicesData = data.services;
+                        renderServicesList(servicesData);
+                        addMarkersToMap(servicesData);
+                        
+                        // Update results count with service type info
+                        let serviceTypeText = currentServiceType === 'all' ? 'all types' : currentServiceType;
+                        resultsCount.textContent = `Showing ${servicesData.length} ${serviceTypeText} services within ${currentRadius} km`;
+                    } else {
+                        noResultsAlert.classList.remove('d-none');
+                        servicesContainer.innerHTML = ''; // Clear any previous results
+                        clearMarkers(); // Clear map markers
+                        
+                        // Update results count with service type info
+                        let serviceTypeText = currentServiceType === 'all' ? '' : currentServiceType + ' ';
+                        resultsCount.textContent = `No ${serviceTypeText}services found within ${currentRadius} km`;
+                    }
+                })
+                .catch(error => {
+                    loadingAlert.classList.add('d-none');
+                    console.error("API error:", error);
+                    showToast('Error fetching services: ' + error.message, 'danger');
+                    
+                    // Clear any previous results
+                    servicesContainer.innerHTML = '';
+                    clearMarkers();
+                    resultsCount.textContent = 'Error loading services';
+                });
+        }
+        
+        function renderServicesList(services) {
+            servicesContainer.innerHTML = '';
+            
+            services.forEach(service => {
+                const serviceCard = document.createElement('div');
+                serviceCard.className = 'col-md-6';
+                serviceCard.innerHTML = `
+                    <div class="service-card">
+                        <div class="service-icon ${getServiceTypeColorClass(service.type)}">
+                            ${getServiceTypeIcon(service.type)}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="service-title">${service.name}</h5>
+                            <div class="service-address">
+                                <i class="fas fa-map-marker-alt me-2 text-muted"></i>
+                                ${service.address}
+                            </div>
+                            <div class="service-contact">
+                                <i class="fas fa-phone me-2 text-muted"></i>
+                                ${service.contact || 'Not available'}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="service-distance">
+                                    <i class="fas fa-route me-1 text-primary"></i>
+                                    ${service.distance} km away
+                                </span>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1 view-details-btn" data-service-id="${service.id}">
+                                        <i class="fas fa-info-circle me-1"></i> Details
+                                    </button>
+                                    <a href="${service.map_link}" class="btn btn-sm btn-primary" target="_blank">
+                                        <i class="fas fa-directions me-1"></i> Directions
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                servicesContainer.appendChild(serviceCard);
+            });
+            
+            // Add event listeners to view details buttons
+            document.querySelectorAll('.view-details-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const serviceId = this.dataset.serviceId;
+                    const service = servicesData.find(s => s.id == serviceId);
+                    showServiceDetails(service);
+                });
+            });
+        }
+        
+        function getServiceTypeIcon(type) {
+            switch(type.toLowerCase()) {
+                case 'hospital':
+                    return '<i class="fas fa-hospital text-white"></i>';
+                case 'police':
+                    return '<i class="fas fa-shield-alt text-white"></i>';
+                case 'fire':
+                    return '<i class="fas fa-fire-extinguisher text-white"></i>';
+                case 'school':
+                    return '<i class="fas fa-school text-white"></i>';
+                case 'government':
+                    return '<i class="fas fa-landmark text-white"></i>';
+                default:
+                    return '<i class="fas fa-building text-white"></i>';
+            }
+        }
+        
+        function getServiceTypeColorClass(type) {
+            switch(type.toLowerCase()) {
+                case 'hospital':
+                    return 'bg-danger';
+                case 'police':
+                    return 'bg-primary';
+                case 'fire':
+                    return 'bg-warning';
+                case 'school':
+                    return 'bg-success';
+                case 'government':
+                    return 'bg-info';
+                default:
+                    return 'bg-secondary';
+            }
+        }
+        
+        function showServiceDetails(service) {
+            const modal = new bootstrap.Modal(document.getElementById('serviceDetailModal'));
+            const modalTitle = document.getElementById('serviceDetailTitle');
+            const modalContent = document.getElementById('serviceDetailContent');
+            const directionsBtn = document.getElementById('serviceDirectionsBtn');
+            
+            modalTitle.textContent = service.name;
+            directionsBtn.href = service.map_link;
+            
+            modalContent.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3 ${getServiceTypeColorClass(service.type)}" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    ${getServiceTypeIcon(service.type)}
+                                </div>
+                                <h5 class="mb-0">${service.name}</h5>
+                            </div>
+                            <div class="badge ${getServiceTypeColorClass(service.type)} mb-3">${service.type}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">Address</h6>
+                            <p>${service.address}</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">Contact</h6>
+                            <p>${service.contact || 'Not available'}</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">Distance</h6>
+                            <p>${service.distance} km from your location</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">Location</h6>
+                            <div id="serviceDetailMap" style="height: 250px; border-radius: 12px;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.show();
+            
+            // Initialize the detail map
+            setTimeout(() => {
+                const detailMap = new google.maps.Map(document.getElementById('serviceDetailMap'), {
+                    center: { lat: service.latitude, lng: service.longitude },
+                    zoom: 15,
+                    mapTypeControl: false,
+                    streetViewControl: false
+                });
+                
+                new google.maps.Marker({
+                    position: { lat: service.latitude, lng: service.longitude },
+                    map: detailMap,
+                    title: service.name
+                });
+            }, 500);
+        }
+        
+        function initializeMap() {
+            map = new google.maps.Map(document.getElementById('servicesMap'), {
+                center: { lat: 20.5937, lng: 78.9629 }, // Center of India
+                zoom: 5,
+                mapTypeControl: false
+            });
+        }
+        
+        function addMarkersToMap(services) {
+            clearMarkers();
+            
+            const bounds = new google.maps.LatLngBounds();
+            
+            // Add user location marker
+            if (currentLocation) {
+                const userMarker = new google.maps.Marker({
+                    position: { lat: currentLocation.lat, lng: currentLocation.lng },
+                    map: map,
+                    title: 'Your Location',
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillColor: '#4285F4',
+                        fillOpacity: 1,
+                        strokeColor: '#FFFFFF',
+                        strokeWeight: 2
+                    }
+                });
+                
+                markers.push(userMarker);
+                bounds.extend(userMarker.getPosition());
+                
+                // Add circle for radius
+                const radiusCircle = new google.maps.Circle({
+                    strokeColor: '#4285F4',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#4285F4',
+                    fillOpacity: 0.1,
+                    map: map,
+                    center: { lat: currentLocation.lat, lng: currentLocation.lng },
+                    radius: currentRadius * 1000 // Convert km to meters
+                });
+                
+                markers.push(radiusCircle);
+            }
+            
+            // Add service markers
+            services.forEach(service => {
+                const marker = new google.maps.Marker({
+                    position: { lat: service.latitude, lng: service.longitude },
+                    map: map,
+                    title: service.name,
+                    icon: getMarkerIcon(service.type)
+                });
+                
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div style="max-width: 200px;">
+                            <h6 style="margin-bottom: 5px;">${service.name}</h6>
+                            <p style="font-size: 12px; margin-bottom: 5px;">${service.address}</p>
+                            <p style="font-size: 12px; margin-bottom: 10px;">${service.distance} km away</p>
+                            <a href="${service.map_link}" target="_blank" style="font-size: 12px; color: #1a73e8; text-decoration: none;">
+                                <i class="fas fa-directions"></i> Get Directions
+                            </a>
+                        </div>
+                    `
+                });
+                
+                marker.addListener('click', function() {
+                    // Close all open info windows
+                    markers.forEach(m => {
+                        if (m.infoWindow) {
+                            m.infoWindow.close();
+                        }
+                    });
+                    
+                    infoWindow.open(map, marker);
+                });
+                
+                marker.infoWindow = infoWindow;
+                markers.push(marker);
+                bounds.extend(marker.getPosition());
+            });
+            
+            // Fit map to bounds
+            if (!bounds.isEmpty()) {
+                map.fitBounds(bounds);
+            }
+        }
+        
+        function getMarkerIcon(type) {
+            let icon = '';
+            let color = '';
+            
+            switch(type.toLowerCase()) {
+                case 'hospital':
+                    icon = 'hospital';
+                    color = '#dc3545';
+                    break;
+                case 'police':
+                    icon = 'shield-alt';
+                    color = '#0d6efd';
+                    break;
+                case 'fire':
+                    icon = 'fire-extinguisher';
+                    color = '#fd7e14';
+                    break;
+                case 'school':
+                    icon = 'school';
+                    color = '#198754';
+                    break;
+                case 'government':
+                    icon = 'landmark';
+                    color = '#0dcaf0';
+                    break;
+                default:
+                    icon = 'building';
+                    color = '#6c757d';
+            }
+            
+            return {
+                url: `https://api.iconify.design/fa-solid/${icon}.svg?color=${encodeURIComponent(color)}&width=32&height=32`,
+                scaledSize: new google.maps.Size(32, 32)
+            };
+        }
+        
+        function clearMarkers() {
+            markers.forEach(marker => {
+                marker.setMap(null);
+            });
+            markers = [];
+        }
+        
+        function showToast(message, type = 'info') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                toastContainer.style.zIndex = '1050';
+                document.body.appendChild(toastContainer);
+            }
+            
+            // Create a unique ID for this toast
+            const toastId = 'toast-' + Date.now();
+            
+            // Create toast element
+            const toastEl = document.createElement('div');
+            toastEl.id = toastId;
+            toastEl.className = `toast align-items-center text-white bg-${type} border-0`;
+            toastEl.setAttribute('role', 'alert');
+            toastEl.setAttribute('aria-live', 'assertive');
+            toastEl.setAttribute('aria-atomic', 'true');
+            
+            // Create toast content
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            
+            // Add toast to container
+            toastContainer.appendChild(toastEl);
+            
+            // Initialize and show the toast
+            const toast = new bootstrap.Toast(toastEl, {
+                animation: true,
+                autohide: true,
+                delay: 5000
+            });
+            toast.show();
+            
+            // Remove toast element after it's hidden
+            toastEl.addEventListener('hidden.bs.toast', function() {
+                toastEl.remove();
+            });
+        }
+        
+        // Initialize with user location
+        getUserLocation();
+    });
+</script>
+{% endblock %}

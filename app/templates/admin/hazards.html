@@ -1,0 +1,359 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Manage Hazards - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Manage Hazards</h1>
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-primary shadow-sm">
+                <i class="fas fa-arrow-left fa-sm text-white-50 me-1"></i> Back to Dashboard
+            </a>
+            <a href="#" class="btn btn-sm btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="fas fa-download fa-sm text-white-50 me-1"></i> Export Data
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters Row -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Filters</h6>
+                    <a href="{{ url_for('admin.hazards') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-redo fa-sm"></i> Reset
+                    </a>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="hazard_type" class="form-label">Hazard Type</label>
+                            <select class="form-select" id="hazard_type" name="hazard_type">
+                                <option value="">All Types</option>
+                                <option value="road">Road</option>
+                                <option value="water">Water</option>
+                                <option value="electricity">Electricity</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_from" class="form-label">Date From</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_to" class="form-label">Date To</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to">
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter me-1"></i> Apply Filters
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hazards Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All Hazards</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="hazardsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Upvotes</th>
+                            <th>Reported By</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for hazard in hazards.items %}
+                        <tr>
+                            <td>{{ hazard.id }}</td>
+                            <td>{{ hazard.title }}</td>
+                            <td>
+                                <span class="badge rounded-pill 
+                                    {% if hazard.hazard_type == 'road' %}bg-warning
+                                    {% elif hazard.hazard_type == 'water' %}bg-info
+                                    {% elif hazard.hazard_type == 'electricity' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ hazard.hazard_type }}
+                                </span>
+                            </td>
+                            <td>{{ hazard.location_description }}</td>
+                            <td>
+                                <span class="badge rounded-pill 
+                                    {% if hazard.status == 'pending' %}bg-warning
+                                    {% elif hazard.status == 'in-progress' %}bg-primary
+                                    {% elif hazard.status == 'resolved' %}bg-success
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ hazard.status }}
+                                </span>
+                            </td>
+                            <td>{{ hazard.upvotes }}</td>
+                            <td>{{ hazard.user.username if hazard.user else 'Anonymous' }}</td>
+                            <td>{{ hazard.created_at.strftime('%d %b, %Y') }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="#" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewModal{{ hazard.id }}">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('admin.edit_hazard', hazard_id=hazard.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ hazard.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- View Modal -->
+                                <div class="modal fade" id="viewModal{{ hazard.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ hazard.id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="viewModalLabel{{ hazard.id }}">{{ hazard.title }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h6 class="font-weight-bold">Description</h6>
+                                                        <p>{{ hazard.description }}</p>
+                                                        
+                                                        <h6 class="font-weight-bold mt-3">Location Details</h6>
+                                                        <p>{{ hazard.location_description }}</p>
+                                                        
+                                                        <div class="row mt-3">
+                                                            <div class="col-md-6">
+                                                                <h6 class="font-weight-bold">Latitude</h6>
+                                                                <p>{{ hazard.latitude }}</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <h6 class="font-weight-bold">Longitude</h6>
+                                                                <p>{{ hazard.longitude }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        {% if hazard.image_path %}
+                                                        <div class="mb-3">
+                                                            <h6 class="font-weight-bold">Image</h6>
+                                                            <img src="{{ url_for('static', filename=hazard.image_path) }}" class="img-fluid rounded" alt="Hazard Image">
+                                                        </div>
+                                                        {% endif %}
+                                                        
+                                                        {% if hazard.video_path %}
+                                                        <div class="mb-3">
+                                                            <h6 class="font-weight-bold">Video</h6>
+                                                            <video controls class="w-100 rounded">
+                                                                <source src="{{ url_for('static', filename=hazard.video_path) }}" type="video/mp4">
+                                                                Your browser does not support the video tag.
+                                                            </video>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="row mt-3">
+                                                    <div class="col-md-12">
+                                                        <h6 class="font-weight-bold">Status Update</h6>
+                                                        <form method="post" action="{{ url_for('admin.edit_hazard', hazard_id=hazard.id) }}" class="d-flex">
+                                                            <select class="form-select me-2" name="status">
+                                                                <option value="pending" {% if hazard.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                                <option value="in-progress" {% if hazard.status == 'in-progress' %}selected{% endif %}>In Progress</option>
+                                                                <option value="resolved" {% if hazard.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                                                            </select>
+                                                            <button type="submit" class="btn btn-primary">Update Status</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ hazard.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ hazard.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteModalLabel{{ hazard.id }}">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete the hazard report: <strong>{{ hazard.title }}</strong>?</p>
+                                                <p class="text-danger"><small>This action cannot be undone.</small></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form method="post" action="{{ url_for('admin.delete_hazard', hazard_id=hazard.id) }}">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-4">
+                    {% if hazards.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.hazards', page=hazards.prev_num) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in hazards.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == hazards.page %}
+                            <li class="page-item active">
+                                <a class="page-link" href="{{ url_for('admin.hazards', page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin.hazards', page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">...</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if hazards.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.hazards', page=hazards.next_num) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Export Hazards Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="exportFormat" class="form-label">Export Format</label>
+                        <select class="form-select" id="exportFormat">
+                            <option value="csv">CSV</option>
+                            <option value="excel">Excel</option>
+                            <option value="pdf">PDF</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exportData" class="form-label">Data to Export</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="currentPage" checked>
+                            <label class="form-check-label" for="currentPage">
+                                Current Page
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="allData">
+                            <label class="form-check-label" for="allData">
+                                All Data
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="filteredData">
+                            <label class="form-check-label" for="filteredData">
+                                Filtered Data
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Export</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize the hazards table with DataTables
+    $(document).ready(function() {
+        $('#hazardsTable').DataTable({
+            "paging": false,  // Disable DataTables paging as we're using Flask-SQLAlchemy pagination
+            "ordering": true,
+            "info": false,
+            "searching": false  // Disable DataTables search as we have our own filter form
+        });
+        
+        // Set filter values from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('hazard_type')) {
+            document.getElementById('hazard_type').value = urlParams.get('hazard_type');
+        }
+        if (urlParams.has('status')) {
+            document.getElementById('status').value = urlParams.get('status');
+        }
+        if (urlParams.has('date_from')) {
+            document.getElementById('date_from').value = urlParams.get('date_from');
+        }
+        if (urlParams.has('date_to')) {
+            document.getElementById('date_to').value = urlParams.get('date_to');
+        }
+    });
+</script>
+{% endblock %}

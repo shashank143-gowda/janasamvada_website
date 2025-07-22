@@ -1,0 +1,642 @@
+{% extends 'base.html' %}
+
+{% block title %}Dhvani.ai Integration - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dhvani-header {
+        background: linear-gradient(135deg, #6c5ce7, #8e44ad);
+        color: white;
+        padding: 60px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 40px;
+    }
+    
+    .feature-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: none;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin: 0 auto 20px;
+    }
+    
+    .chat-container {
+        height: 400px;
+        overflow-y: auto;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+        max-width: 80%;
+    }
+    
+    .user-message {
+        background-color: #6c5ce7;
+        color: white;
+        border-radius: 15px 15px 0 15px;
+        padding: 10px 15px;
+        margin-left: auto;
+    }
+    
+    .bot-message {
+        background-color: #f1f1f1;
+        color: #333;
+        border-radius: 15px 15px 15px 0;
+        padding: 10px 15px;
+        margin-right: auto;
+    }
+    
+    .message-time {
+        font-size: 0.7rem;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    
+    .language-selector {
+        border-radius: 20px;
+        padding: 8px 15px;
+        border: 1px solid #ced4da;
+        background-color: white;
+    }
+    
+    .chat-input {
+        border-radius: 30px;
+        padding: 12px 20px;
+        border: 1px solid #ced4da;
+    }
+    
+    .send-btn {
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #6c5ce7;
+        color: white;
+        border: none;
+        margin-left: 10px;
+    }
+    
+    .send-btn:hover {
+        background-color: #5b4bc4;
+        transform: scale(1.05);
+    }
+    
+    .audio-controls {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .record-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #e74c3c;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .record-btn:hover {
+        background-color: #c0392b;
+        transform: scale(1.05);
+    }
+    
+    .record-btn.recording {
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .transcript-container {
+        background-color: white;
+        border-radius: 10px;
+        padding: 15px;
+        min-height: 100px;
+        border: 1px solid #ced4da;
+    }
+    
+    .tts-container {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+    }
+    
+    .play-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #2ecc71;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .play-btn:hover {
+        background-color: #27ae60;
+        transform: scale(1.05);
+    }
+    
+    .tts-input {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        min-height: 100px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="dhvani-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">Dhvani.ai Integration</h1>
+        <p class="lead mb-0 animate__animated animate__fadeInUp">Experience multilingual AI-powered chat, speech recognition, and text-to-speech</p>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="container mb-5">
+    <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card feature-card text-center p-4">
+                <div class="feature-icon bg-primary-subtle text-primary">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 class="h4 mb-3">AI Chatbot</h3>
+                <p class="mb-0">Chat with our AI assistant in multiple Indian languages including Kannada, Hindi, Tamil, and more.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card feature-card text-center p-4">
+                <div class="feature-icon bg-danger-subtle text-danger">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <h3 class="h4 mb-3">Speech Recognition</h3>
+                <p class="mb-0">Convert your speech to text in various Indian languages with high accuracy.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card feature-card text-center p-4">
+                <div class="feature-icon bg-success-subtle text-success">
+                    <i class="fas fa-volume-up"></i>
+                </div>
+                <h3 class="h4 mb-3">Text to Speech</h3>
+                <p class="mb-0">Convert text to natural-sounding speech in multiple Indian languages.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Chatbot Section -->
+<section class="container mb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-robot me-2"></i> AI Chatbot
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chat-container" id="chatContainer">
+                        <div class="d-flex mb-3">
+                            <div class="message bot-message">
+                                <div>Hello! How can I help you today?</div>
+                                <div class="message-time">Now</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="srcLang" class="form-label">Source Language</label>
+                            <select class="form-select language-selector" id="srcLang">
+                                <option value="english" selected>English</option>
+                                <option value="hindi">Hindi</option>
+                                <option value="kannada">Kannada</option>
+                                <option value="tamil">Tamil</option>
+                                <option value="telugu">Telugu</option>
+                                <option value="malayalam">Malayalam</option>
+                                <option value="marathi">Marathi</option>
+                                <option value="bengali">Bengali</option>
+                                <option value="gujarati">Gujarati</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tgtLang" class="form-label">Target Language</label>
+                            <select class="form-select language-selector" id="tgtLang">
+                                <option value="english">English</option>
+                                <option value="hindi">Hindi</option>
+                                <option value="kannada" selected>Kannada</option>
+                                <option value="tamil">Tamil</option>
+                                <option value="telugu">Telugu</option>
+                                <option value="malayalam">Malayalam</option>
+                                <option value="marathi">Marathi</option>
+                                <option value="bengali">Bengali</option>
+                                <option value="gujarati">Gujarati</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex">
+                        <input type="text" class="form-control chat-input" id="chatInput" placeholder="Type your message here...">
+                        <button class="send-btn" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Speech Recognition Section -->
+<section class="container mb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white py-3">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-microphone me-2"></i> Speech Recognition
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="audio-controls d-flex align-items-center justify-content-center mb-4">
+                        <button class="record-btn" id="recordBtn">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <div class="ms-4">
+                            <div id="recordingStatus">Click to start recording</div>
+                            <select class="form-select language-selector mt-2" id="asrLang">
+                                <option value="english">English</option>
+                                <option value="hindi">Hindi</option>
+                                <option value="kannada" selected>Kannada</option>
+                                <option value="tamil">Tamil</option>
+                                <option value="telugu">Telugu</option>
+                                <option value="malayalam">Malayalam</option>
+                                <option value="marathi">Marathi</option>
+                                <option value="bengali">Bengali</option>
+                                <option value="gujarati">Gujarati</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <h5>Transcript</h5>
+                    <div class="transcript-container" id="transcriptContainer">
+                        <p class="text-muted">Your transcribed text will appear here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Text to Speech Section -->
+<section class="container mb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white py-3">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-volume-up me-2"></i> Text to Speech
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <label for="ttsText" class="form-label">Enter Text</label>
+                        <textarea class="form-control tts-input" id="ttsText" rows="4" placeholder="Enter text to convert to speech..."></textarea>
+                    </div>
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="ttsLang" class="form-label">Language</label>
+                            <select class="form-select language-selector" id="ttsLang">
+                                <option value="english">English</option>
+                                <option value="hindi">Hindi</option>
+                                <option value="kannada" selected>Kannada</option>
+                                <option value="tamil">Tamil</option>
+                                <option value="telugu">Telugu</option>
+                                <option value="malayalam">Malayalam</option>
+                                <option value="marathi">Marathi</option>
+                                <option value="bengali">Bengali</option>
+                                <option value="gujarati">Gujarati</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ttsVoice" class="form-label">Voice</label>
+                            <select class="form-select language-selector" id="ttsVoice">
+                                <option value="female" selected>Female</option>
+                                <option value="male">Male</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-success" id="ttsBtn">
+                            <i class="fas fa-play me-2"></i> Generate Speech
+                        </button>
+                        <div id="audioPlayer" class="d-none">
+                            <audio controls id="ttsAudio">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chat functionality
+        const chatContainer = document.getElementById('chatContainer');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const srcLang = document.getElementById('srcLang');
+        const tgtLang = document.getElementById('tgtLang');
+        
+        // Speech recognition variables
+        const recordBtn = document.getElementById('recordBtn');
+        const recordingStatus = document.getElementById('recordingStatus');
+        const transcriptContainer = document.getElementById('transcriptContainer');
+        const asrLang = document.getElementById('asrLang');
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        
+        // Text to speech variables
+        const ttsText = document.getElementById('ttsText');
+        const ttsLang = document.getElementById('ttsLang');
+        const ttsVoice = document.getElementById('ttsVoice');
+        const ttsBtn = document.getElementById('ttsBtn');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const ttsAudio = document.getElementById('ttsAudio');
+        
+        // Function to add a message to the chat
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'd-flex mb-3';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = isUser ? 'message user-message' : 'message bot-message';
+            
+            const messageText = document.createElement('div');
+            messageText.textContent = message;
+            
+            const messageTime = document.createElement('div');
+            messageTime.className = 'message-time';
+            messageTime.textContent = 'Now';
+            
+            messageContent.appendChild(messageText);
+            messageContent.appendChild(messageTime);
+            messageDiv.appendChild(messageContent);
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Send message function
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage(message, true);
+            chatInput.value = '';
+            
+            // Show loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'd-flex mb-3 loading-message';
+            loadingDiv.innerHTML = `
+                <div class="message bot-message">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div>Thinking...</div>
+                    </div>
+                </div>
+            `;
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Send request to API
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    prompt: message,
+                    src_lang: srcLang.value,
+                    tgt_lang: tgtLang.value
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove loading indicator
+                const loadingMessage = document.querySelector('.loading-message');
+                if (loadingMessage) {
+                    chatContainer.removeChild(loadingMessage);
+                }
+                
+                // Add bot response
+                if (data.error) {
+                    addMessage('Sorry, there was an error: ' + data.error);
+                } else {
+                    addMessage(data.response || 'I received your message but I\'m not sure how to respond.');
+                }
+            })
+            .catch(error => {
+                // Remove loading indicator
+                const loadingMessage = document.querySelector('.loading-message');
+                if (loadingMessage) {
+                    chatContainer.removeChild(loadingMessage);
+                }
+                
+                // Add error message
+                addMessage('Sorry, there was an error communicating with the server.');
+                console.error('Error:', error);
+            });
+        }
+        
+        // Event listeners for chat
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Speech recognition functionality
+        recordBtn.addEventListener('click', function() {
+            if (isRecording) {
+                // Stop recording
+                stopRecording();
+            } else {
+                // Start recording
+                startRecording();
+            }
+        });
+        
+        function startRecording() {
+            // Request microphone access
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    isRecording = true;
+                    recordBtn.classList.add('recording');
+                    recordingStatus.textContent = 'Recording... Click to stop';
+                    
+                    // Create media recorder
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.addEventListener('dataavailable', event => {
+                        audioChunks.push(event.data);
+                    });
+                    
+                    mediaRecorder.addEventListener('stop', () => {
+                        // Create audio blob
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        
+                        // Create form data
+                        const formData = new FormData();
+                        formData.append('audio', audioBlob, 'recording.wav');
+                        formData.append('language', asrLang.value);
+                        
+                        // Show loading indicator
+                        transcriptContainer.innerHTML = '<div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+                        
+                        // Send to server
+                        fetch('/api/transcribe', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                transcriptContainer.innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+                            } else {
+                                transcriptContainer.innerHTML = `<p>${data.transcript || 'No speech detected'}</p>`;
+                            }
+                        })
+                        .catch(error => {
+                            transcriptContainer.innerHTML = '<p class="text-danger">Error communicating with the server</p>';
+                            console.error('Error:', error);
+                        });
+                        
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    });
+                    
+                    // Start recording
+                    mediaRecorder.start();
+                })
+                .catch(error => {
+                    console.error('Error accessing microphone:', error);
+                    recordingStatus.textContent = 'Error accessing microphone';
+                });
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordingStatus.textContent = 'Processing...';
+                mediaRecorder.stop();
+            }
+        }
+        
+        // Text to speech functionality
+        ttsBtn.addEventListener('click', function() {
+            const text = ttsText.value.trim();
+            if (!text) {
+                alert('Please enter some text to convert to speech');
+                return;
+            }
+            
+            // Show loading
+            ttsBtn.disabled = true;
+            ttsBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+            
+            // Hide audio player if visible
+            audioPlayer.classList.add('d-none');
+            
+            // Send request to API
+            fetch('/api/tts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: text,
+                    language: ttsLang.value,
+                    voice: ttsVoice.value
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                ttsBtn.disabled = false;
+                ttsBtn.innerHTML = '<i class="fas fa-play me-2"></i> Generate Speech';
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else if (data.audio_url) {
+                    // Set audio source and show player
+                    ttsAudio.src = data.audio_url;
+                    audioPlayer.classList.remove('d-none');
+                    ttsAudio.play();
+                }
+            })
+            .catch(error => {
+                ttsBtn.disabled = false;
+                ttsBtn.innerHTML = '<i class="fas fa-play me-2"></i> Generate Speech';
+                alert('Error communicating with the server');
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+{% endblock %}

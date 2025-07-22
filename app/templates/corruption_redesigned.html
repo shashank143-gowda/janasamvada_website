@@ -1,0 +1,691 @@
+{% extends 'base.html' %}
+
+{% block title %}Anti-Corruption Portal - JanSamvaad{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="schemes-hero position-relative overflow-hidden">
+    <!-- Background with overlay -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary" style="opacity: 0.9; background: linear-gradient(135deg, #e74c3c, #c0392b);"></div>
+    
+    <!-- Wave shape divider -->
+    <div class="position-absolute bottom-0 start-0 w-100">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" style="width: 100%; height: 80px;">
+            <path fill="#ffffff" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+    
+    <div class="container position-relative py-5">
+        <div class="row align-items-center py-5">
+            <div class="col-lg-6 text-white mb-5 mb-lg-0">
+                <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInUp">Anti-Corruption Portal</h1>
+                <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    Report corruption and bribery incidents anonymously and securely. Help us build a transparent and corruption-free society.
+                </p>
+                <div class="d-flex flex-wrap gap-3 animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="{{ url_for('corruption_bp.report_corruption_page') }}" class="btn btn-light btn-lg px-4 d-flex align-items-center">
+                        <i class="fas fa-plus-circle me-2"></i> Report Corruption
+                    </a>
+                    <button class="btn btn-outline-light btn-lg px-4 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#trackReportModal">
+                        <i class="fas fa-search me-2"></i> Track Report
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-6 animate__animated animate__fadeInRight">
+                <div class="position-relative">
+                    <img src="{{ url_for('static', filename='img/corruption-hero.jpg') }}" alt="Anti-Corruption" class="img-fluid rounded-4 shadow-lg" style="transform: perspective(1000px) rotateY(-15deg) rotateX(5deg); transition: all 0.5s ease;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card stats-card bg-primary text-white text-center p-4 h-100">
+                    <div class="stats-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stats-number">127</div>
+                    <div class="stats-label">Total Reports</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card stats-card bg-warning text-white text-center p-4 h-100">
+                    <div class="stats-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stats-number">42</div>
+                    <div class="stats-label">Under Review</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card stats-card bg-info text-white text-center p-4 h-100">
+                    <div class="stats-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="stats-number">35</div>
+                    <div class="stats-label">Investigating</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="card stats-card bg-success text-white text-center p-4 h-100">
+                    <div class="stats-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stats-number">50</div>
+                    <div class="stats-label">Resolved</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Report by Department</h2>
+            <p class="text-muted">Select a department to report corruption</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="revenue">
+                    <div class="icon-wrapper bg-danger-subtle">
+                        <i class="fas fa-landmark text-danger"></i>
+                    </div>
+                    <h5>Revenue Department</h5>
+                    <p class="small text-muted">Land records, property registration</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="police">
+                    <div class="icon-wrapper bg-primary-subtle">
+                        <i class="fas fa-shield-alt text-primary"></i>
+                    </div>
+                    <h5>Police Department</h5>
+                    <p class="small text-muted">Law enforcement, security</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="health">
+                    <div class="icon-wrapper bg-success-subtle">
+                        <i class="fas fa-hospital text-success"></i>
+                    </div>
+                    <h5>Health Department</h5>
+                    <p class="small text-muted">Hospitals, healthcare services</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="education">
+                    <div class="icon-wrapper bg-info-subtle">
+                        <i class="fas fa-graduation-cap text-info"></i>
+                    </div>
+                    <h5>Education Department</h5>
+                    <p class="small text-muted">Schools, colleges, universities</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="pwd">
+                    <div class="icon-wrapper bg-warning-subtle">
+                        <i class="fas fa-road text-warning"></i>
+                    </div>
+                    <h5>Public Works</h5>
+                    <p class="small text-muted">Roads, bridges, construction</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="municipal">
+                    <div class="icon-wrapper bg-secondary-subtle">
+                        <i class="fas fa-city text-secondary"></i>
+                    </div>
+                    <h5>Municipal Corporation</h5>
+                    <p class="small text-muted">Urban development, services</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="transport">
+                    <div class="icon-wrapper bg-dark-subtle">
+                        <i class="fas fa-bus text-dark"></i>
+                    </div>
+                    <h5>Transport Department</h5>
+                    <p class="small text-muted">Licenses, vehicle registration</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="other">
+                    <div class="icon-wrapper bg-danger-subtle">
+                        <i class="fas fa-building text-danger"></i>
+                    </div>
+                    <h5>Other Departments</h5>
+                    <p class="small text-muted">All other government departments</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">How It Works</h2>
+            <p class="text-muted">Simple 4-step process to report and track corruption</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <h3 class="mb-0">1</h3>
+                        </div>
+                        <h4>Report</h4>
+                        <p>Submit your corruption report with details about the incident, location, and department involved.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <h3 class="mb-0">2</h3>
+                        </div>
+                        <h4>Review</h4>
+                        <p>Our team reviews the report to verify details and determine the appropriate action.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <h3 class="mb-0">3</h3>
+                        </div>
+                        <h4>Investigate</h4>
+                        <p>The report is forwarded to the appropriate authorities for investigation and action.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <h3 class="mb-0">4</h3>
+                        </div>
+                        <h4>Resolve</h4>
+                        <p>The issue is resolved, and appropriate action is taken against the corrupt practices.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Reports Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold" data-aos="fade-right">Recent Reports</h2>
+            <div class="dropdown" data-aos="fade-left">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-2"></i> Filter
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                    <li><a class="dropdown-item active" href="#">All Reports</a></li>
+                    <li><a class="dropdown-item" href="#">Under Review</a></li>
+                    <li><a class="dropdown-item" href="#">Investigating</a></li>
+                    <li><a class="dropdown-item" href="#">Resolved</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Most Recent</a></li>
+                    <li><a class="dropdown-item" href="#">Most Viewed</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <span class="badge bg-warning text-white position-absolute top-0 end-0 mt-3 me-3">Under Review</span>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-danger-subtle me-3" style="width: 50px; height: 50px;">
+                                <i class="fas fa-landmark text-danger"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">Bribery for Ration Card</h5>
+                                <p class="text-muted small mb-0">Food & Civil Supplies Department</p>
+                            </div>
+                        </div>
+                        <p class="card-text">Official demanded ₹2,000 bribe for processing ration card application which should be free of cost.</p>
+                        <div class="d-flex align-items-center text-muted small mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i> Ranchi, Jharkhand
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-calendar-alt me-2"></i> May 15, 2023
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-dark"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill me-2">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <span class="badge bg-info text-white position-absolute top-0 end-0 mt-3 me-3">Investigating</span>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-warning-subtle me-3" style="width: 50px; height: 50px;">
+                                <i class="fas fa-road text-warning"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">Corruption in Road Construction</h5>
+                                <p class="text-muted small mb-0">Public Works Department</p>
+                            </div>
+                        </div>
+                        <p class="card-text">Substandard materials being used in road construction despite full budget allocation. Road developed cracks within a month.</p>
+                        <div class="d-flex align-items-center text-muted small mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i> Patna, Bihar
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-calendar-alt me-2"></i> May 10, 2023
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-dark"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill me-2">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <span class="badge bg-success text-white position-absolute top-0 end-0 mt-3 me-3">Resolved</span>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-danger-subtle me-3" style="width: 50px; height: 50px;">
+                                <i class="fas fa-landmark text-danger"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">Bribery for Land Registration</h5>
+                                <p class="text-muted small mb-0">Revenue Department</p>
+                            </div>
+                        </div>
+                        <p class="card-text">Official demanded ₹10,000 bribe for land registration process. After investigation, the official was suspended.</p>
+                        <div class="d-flex align-items-center text-muted small mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i> Jaipur, Rajasthan
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-calendar-alt me-2"></i> April 28, 2023
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-dark"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill me-2">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <span class="badge bg-warning text-white position-absolute top-0 end-0 mt-3 me-3">Under Review</span>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary-subtle me-3" style="width: 50px; height: 50px;">
+                                <i class="fas fa-shield-alt text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">Bribery for FIR Registration</h5>
+                                <p class="text-muted small mb-0">Police Department</p>
+                            </div>
+                        </div>
+                        <p class="card-text">Police officer demanded ₹5,000 to register an FIR for theft case. Refused to file complaint without payment.</p>
+                        <div class="d-flex align-items-center text-muted small mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i> Lucknow, Uttar Pradesh
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-calendar-alt me-2"></i> May 5, 2023
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-dark"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill me-2">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="500">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <span class="badge bg-info text-white position-absolute top-0 end-0 mt-3 me-3">Investigating</span>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-success-subtle me-3" style="width: 50px; height: 50px;">
+                                <i class="fas fa-hospital text-success"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">Corruption in Medicine Procurement</h5>
+                                <p class="text-muted small mb-0">Health Department</p>
+                            </div>
+                        </div>
+                        <p class="card-text">Expired medicines being distributed in government hospital. Officials involved in procurement fraud.</p>
+                        <div class="d-flex align-items-center text-muted small mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i> Bhopal, Madhya Pradesh
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-calendar-alt me-2"></i> May 2, 2023
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-dark"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill me-2">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="600">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <span class="badge bg-success text-white position-absolute top-0 end-0 mt-3 me-3">Resolved</span>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-info-subtle me-3" style="width: 50px; height: 50px;">
+                                <i class="fas fa-graduation-cap text-info"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">Admission Bribery in College</h5>
+                                <p class="text-muted small mb-0">Education Department</p>
+                            </div>
+                        </div>
+                        <p class="card-text">College principal demanding bribes for admission despite students meeting eligibility criteria. Principal suspended after investigation.</p>
+                        <div class="d-flex align-items-center text-muted small mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i> Chennai, Tamil Nadu
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-calendar-alt me-2"></i> April 15, 2023
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-dark"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill me-2">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <button class="btn btn-outline-primary btn-lg px-4 rounded-pill">
+                <i class="fas fa-plus me-2"></i> Load More Reports
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Frequently Asked Questions</h2>
+            <p class="text-muted">Find answers to common questions about reporting corruption</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Is my identity protected when I report corruption?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, your identity is completely protected. All reports are anonymous by default, and we do not collect any personally identifiable information unless you choose to provide it. Our system is designed to ensure whistleblower protection.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                What happens after I submit a corruption report?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                After submission, your report goes through a verification process by our team. Once verified, it is forwarded to the appropriate authorities for investigation. You will receive a unique tracking ID to check the status of your report.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                What kind of evidence should I provide with my report?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Any evidence that supports your claim is helpful, such as photos, videos, audio recordings, documents, receipts, or written communications. However, reports without evidence are also accepted and investigated based on the information provided.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                How long does it take to investigate a corruption report?
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                The investigation timeline varies depending on the complexity of the case, the department involved, and the available evidence. Simple cases may be resolved within a few weeks, while complex cases might take several months. You can always check the status using your tracking ID.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item border-0 shadow-sm">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                Can I report corruption on behalf of someone else?
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, you can report corruption incidents that you have witnessed or that have been shared with you by others. The most important aspect is providing accurate and detailed information about the incident to facilitate proper investigation.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Track Report Modal -->
+<div class="modal fade" id="trackReportModal" tabindex="-1" aria-labelledby="trackReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="trackReportModalLabel">Track Your Report</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted mb-4">Enter your report tracking ID to check the current status of your corruption report.</p>
+                <form id="trackReportForm">
+                    <div class="mb-3">
+                        <label for="trackingId" class="form-label">Tracking ID</label>
+                        <input type="text" class="form-control form-control-lg" id="trackingId" placeholder="Enter your tracking ID" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger btn-lg">Track Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS for this page -->
+<style>
+    .schemes-hero {
+        padding: 80px 0 100px;
+        margin-bottom: 30px;
+    }
+    
+    .scheme-category-card {
+        background-color: white;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    .scheme-category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .icon-wrapper {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        font-size: 1.8rem;
+    }
+    
+    .stats-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .stats-label {
+        color: white;
+        font-size: 0.9rem;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+        box-shadow: none;
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(231, 76, 60, 0.25);
+    }
+    
+    .accordion-button::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23e74c3c'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Department category cards click event
+        const categoryCards = document.querySelectorAll('.scheme-category-card');
+        categoryCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const category = this.dataset.category;
+                window.location.href = "{{ url_for('corruption_bp.report_corruption_page') }}?department=" + category;
+            });
+        });
+        
+        // Track report form submission
+        const trackReportForm = document.getElementById('trackReportForm');
+        if (trackReportForm) {
+            trackReportForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const trackingId = document.getElementById('trackingId').value;
+                
+                // In a real app, this would make an API call to check the status
+                // For demo purposes, we'll just show a success message
+                alert('Report status: Under Investigation. Your report is currently being reviewed by our team.');
+                
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('trackReportModal'));
+                modal.hide();
+            });
+        }
+    });
+</script>
+{% endblock %}

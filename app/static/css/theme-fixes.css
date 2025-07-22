@@ -1,0 +1,252 @@
+/* Theme fixes for dark background */
+
+/* Fix for card text colors */
+.card-title, .card-header h1, .card-header h2, .card-header h3, 
+.card-header h4, .card-header h5, .card-header h6 {
+    color: var(--light-color) !important;
+}
+
+.card-text, .card-body p {
+    color: var(--text-color) !important;
+}
+
+/* Fix for service and scheme cards */
+.service-card .service-title,
+.scheme-card .scheme-title {
+    color: var(--light-color) !important;
+}
+
+.service-card .service-address,
+.service-card .service-contact,
+.scheme-card .scheme-description {
+    color: var(--text-muted) !important;
+}
+
+/* Fix for modal content */
+.modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+.modal-header, .modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    color: var(--light-color);
+}
+
+/* Fix for form controls in dark theme */
+.form-control, .form-select {
+    background-color: var(--medium-dark-color);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--medium-dark-color);
+    color: var(--text-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-label {
+    color: var(--light-color);
+}
+
+/* Fix for service and scheme category cards */
+.service-category-card,
+.scheme-category-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+    cursor: pointer;
+    border: var(--card-border);
+}
+
+.service-category-card:hover,
+.scheme-category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--neon-glow);
+}
+
+.service-category-card h5,
+.scheme-category-card h5 {
+    color: var(--light-color);
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+.service-category-card p,
+.scheme-category-card p {
+    color: var(--text-muted) !important;
+}
+
+/* Fix for badges on dark background */
+.badge.bg-primary-subtle {
+    background-color: rgba(108, 92, 231, 0.2) !important;
+    color: #a29bfe !important;
+}
+
+.badge.bg-success-subtle {
+    background-color: rgba(0, 184, 148, 0.2) !important;
+    color: #55efc4 !important;
+}
+
+.badge.bg-danger-subtle {
+    background-color: rgba(255, 118, 117, 0.2) !important;
+    color: #ff7675 !important;
+}
+
+.badge.bg-warning-subtle {
+    background-color: rgba(253, 203, 110, 0.2) !important;
+    color: #ffeaa7 !important;
+}
+
+.badge.bg-info-subtle {
+    background-color: rgba(0, 206, 201, 0.2) !important;
+    color: #81ecec !important;
+}
+
+/* Fix for table text */
+.table {
+    color: var(--text-color);
+}
+
+.table thead th {
+    color: var(--light-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.table td {
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Fix for list groups */
+.list-group-item {
+    background-color: var(--card-bg);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+}
+
+/* Fix for accordion */
+.accordion-item {
+    background-color: var(--card-bg);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.accordion-button {
+    background-color: var(--medium-dark-color);
+    color: var(--light-color);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(108, 92, 231, 0.2);
+    color: var(--primary-color);
+}
+
+.accordion-button::after {
+    filter: invert(1);
+}
+
+/* Fix for tabs */
+.nav-tabs .nav-link {
+    color: var(--text-muted);
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--card-bg);
+    border-color: rgba(255, 255, 255, 0.1);
+    border-bottom-color: var(--card-bg);
+    color: var(--primary-color);
+}
+
+/* Fix for pagination */
+.page-link {
+    background-color: var(--medium-dark-color);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Fix for dropdown menus */
+.dropdown-menu {
+    background-color: var(--card-bg);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-item {
+    color: var(--text-color);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--medium-dark-color);
+    color: var(--light-color);
+}
+
+/* Fix for alerts */
+.alert {
+    border: none;
+}
+
+.alert-primary {
+    background-color: rgba(108, 92, 231, 0.2);
+    color: #a29bfe;
+}
+
+.alert-success {
+    background-color: rgba(0, 184, 148, 0.2);
+    color: #55efc4;
+}
+
+.alert-danger {
+    background-color: rgba(255, 118, 117, 0.2);
+    color: #ff7675;
+}
+
+.alert-warning {
+    background-color: rgba(253, 203, 110, 0.2);
+    color: #ffeaa7;
+}
+
+.alert-info {
+    background-color: rgba(0, 206, 201, 0.2);
+    color: #81ecec;
+}
+
+/* Fix for tooltips */
+.tooltip .tooltip-inner {
+    background-color: var(--darker-color);
+}
+
+/* Fix for popovers */
+.popover {
+    background-color: var(--card-bg);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.popover-header {
+    background-color: var(--medium-dark-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--light-color);
+}
+
+.popover-body {
+    color: var(--text-color);
+}
+
+/* Fix for close buttons */
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}

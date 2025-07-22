@@ -1,0 +1,657 @@
+{% extends 'base.html' %}
+
+{% block title %}Plant Trees - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    .trees-header {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        padding: 60px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 40px;
+    }
+    
+    .stats-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .stats-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .tree-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .tree-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .tree-card-img {
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .tree-card-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background-color: rgba(46, 204, 113, 0.9);
+        color: white;
+    }
+    
+    .btn-rounded {
+        border-radius: 30px;
+        padding: 10px 25px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-rounded:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .info-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .info-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+    
+    .reward-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .reward-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .reward-points {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2ecc71;
+    }
+    
+    .progress-bar-container {
+        height: 10px;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        border-radius: 5px;
+        background-color: #2ecc71;
+    }
+    
+    .leaderboard-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .leaderboard-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .leaderboard-rank {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #f1f1f1;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin-right: 15px;
+    }
+    
+    .leaderboard-rank.top-1 {
+        background-color: #f1c40f;
+        color: white;
+    }
+    
+    .leaderboard-rank.top-2 {
+        background-color: #bdc3c7;
+        color: white;
+    }
+    
+    .leaderboard-rank.top-3 {
+        background-color: #cd7f32;
+        color: white;
+    }
+    
+    .leaderboard-user {
+        flex-grow: 1;
+    }
+    
+    .leaderboard-points {
+        font-weight: 600;
+        color: #2ecc71;
+    }
+    
+    .leaderboard-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 15px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="trees-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">Plant Trees, Get Rewards</h1>
+        <p class="lead mb-4 animate__animated animate__fadeInUp">Contribute to a greener planet and earn rewards for your efforts</p>
+        <a href="{{ url_for('trees_bp.plant_tree_page') }}" class="btn btn-light btn-lg btn-rounded animate__animated animate__fadeInUp">
+            <i class="fas fa-seedling me-2"></i> Plant a Tree Now
+        </a>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="container mb-5">
+    <div class="row">
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card stats-card bg-success text-white text-center p-4">
+                <div class="stats-icon">
+                    <i class="fas fa-tree"></i>
+                </div>
+                <div class="stats-number">12,547</div>
+                <div class="stats-label">Trees Planted</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card stats-card bg-primary text-white text-center p-4">
+                <div class="stats-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stats-number">3,289</div>
+                <div class="stats-label">Participants</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card stats-card bg-warning text-white text-center p-4">
+                <div class="stats-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="stats-number">45,920</div>
+                <div class="stats-label">Points Earned</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="card stats-card bg-info text-white text-center p-4">
+                <div class="stats-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="stats-number">427</div>
+                <div class="stats-label">Villages Covered</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="container mb-5">
+    <h2 class="text-center mb-4" data-aos="fade-up">How It Works</h2>
+    <div class="row">
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card info-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">1</h3>
+                    </div>
+                    <h4>Plant a Tree</h4>
+                    <p>Plant a tree in your locality - choose from native species that are well-suited to your region.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card info-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">2</h3>
+                    </div>
+                    <h4>Take Photos</h4>
+                    <p>Take clear photos of the tree you planted, showing the sapling and the surrounding area.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card info-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">3</h3>
+                    </div>
+                    <h4>Submit Report</h4>
+                    <p>Upload the photos along with location details through our simple submission form.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="card info-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">4</h3>
+                    </div>
+                    <h4>Earn Rewards</h4>
+                    <p>Get reward points after verification, which can be redeemed for various benefits.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Plantings Section -->
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 data-aos="fade-right">Recent Tree Plantings</h2>
+        <div class="dropdown" data-aos="fade-left">
+            <button class="btn btn-outline-success dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-filter me-2"></i> Filter
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                <li><a class="dropdown-item active" href="#">All Trees</a></li>
+                <li><a class="dropdown-item" href="#">Neem</a></li>
+                <li><a class="dropdown-item" href="#">Peepal</a></li>
+                <li><a class="dropdown-item" href="#">Banyan</a></li>
+                <li><a class="dropdown-item" href="#">Mango</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Most Recent</a></li>
+                <li><a class="dropdown-item" href="#">Verified Only</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card tree-card">
+                <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="card-img-top tree-card-img" alt="Tree">
+                <span class="tree-card-badge">Verified</span>
+                <div class="card-body p-4">
+                    <h5 class="card-title">Neem Tree</h5>
+                    <p class="card-text text-muted mb-3">Planted by Rajesh Kumar in Ranchi, Jharkhand</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-success"><i class="fas fa-calendar-alt me-2"></i> May 20, 2023</span>
+                        <span class="badge bg-success">+10 Points</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card tree-card">
+                <img src="https://images.unsplash.com/photo-1636297461709-0af5a3e96f56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="card-img-top tree-card-img" alt="Tree">
+                <span class="tree-card-badge">Verified</span>
+                <div class="card-body p-4">
+                    <h5 class="card-title">Peepal Tree</h5>
+                    <p class="card-text text-muted mb-3">Planted by Priya Sharma in Patna, Bihar</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-success"><i class="fas fa-calendar-alt me-2"></i> May 18, 2023</span>
+                        <span class="badge bg-success">+10 Points</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card tree-card">
+                <img src="https://images.unsplash.com/photo-1588785392665-f6d4a541417d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="card-img-top tree-card-img" alt="Tree">
+                <div class="card-body p-4">
+                    <h5 class="card-title">Mango Tree</h5>
+                    <p class="card-text text-muted mb-3">Planted by Amit Singh in Jaipur, Rajasthan</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-success"><i class="fas fa-calendar-alt me-2"></i> May 15, 2023</span>
+                        <span class="badge bg-warning">Pending Verification</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4" data-aos="fade-up">
+        <a href="#" class="btn btn-outline-success btn-rounded">
+            <i class="fas fa-list me-2"></i> View All Plantings
+        </a>
+    </div>
+</section>
+
+<!-- Rewards Section -->
+<section class="container mb-5">
+    <h2 class="text-center mb-4" data-aos="fade-up">Redeem Your Rewards</h2>
+    <p class="text-center text-muted mb-5" data-aos="fade-up">Earn points by planting trees and redeem them for various benefits</p>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card reward-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title">School Supplies Kit</h5>
+                    <div class="reward-points mb-2">50 Points</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <p class="card-text mb-4">A kit containing notebooks, pens, pencils, and other essential school supplies.</p>
+                    <button class="btn btn-success btn-rounded w-100">Redeem Now</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card reward-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title">Mobile Recharge</h5>
+                    <div class="reward-points mb-2">100 Points</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <p class="card-text mb-4">Get a mobile recharge voucher worth ₹100 for any network provider.</p>
+                    <button class="btn btn-success btn-rounded w-100">Redeem Now</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card reward-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title">Agricultural Kit</h5>
+                    <div class="reward-points mb-2">200 Points</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 75%;"></div>
+                    </div>
+                    <p class="card-text mb-4">A kit containing seeds, organic fertilizers, and basic gardening tools.</p>
+                    <button class="btn btn-outline-secondary btn-rounded w-100" disabled>Need 50 More Points</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="card reward-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title">Solar Lantern</h5>
+                    <div class="reward-points mb-2">300 Points</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 50%;"></div>
+                    </div>
+                    <p class="card-text mb-4">A portable solar-powered lantern for lighting needs during power outages.</p>
+                    <button class="btn btn-outline-secondary btn-rounded w-100" disabled>Need 150 More Points</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="500">
+            <div class="card reward-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title">Water Filter</h5>
+                    <div class="reward-points mb-2">500 Points</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 30%;"></div>
+                    </div>
+                    <p class="card-text mb-4">A household water filter to provide clean and safe drinking water.</p>
+                    <button class="btn btn-outline-secondary btn-rounded w-100" disabled>Need 350 More Points</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="600">
+            <div class="card reward-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title">Bicycle</h5>
+                    <div class="reward-points mb-2">1000 Points</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 15%;"></div>
+                    </div>
+                    <p class="card-text mb-4">A sturdy bicycle for commuting to school or work, reducing carbon footprint.</p>
+                    <button class="btn btn-outline-secondary btn-rounded w-100" disabled>Need 850 More Points</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Leaderboard Section -->
+<section class="container mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+            <h2 class="mb-4">Leaderboard</h2>
+            <p class="lead mb-4">Top contributors in our tree planting initiative</p>
+            
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank top-1">1</div>
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="leaderboard-avatar">
+                <div class="leaderboard-user">
+                    <h5 class="mb-0">Rajesh Kumar</h5>
+                    <p class="mb-0 text-muted">Ranchi, Jharkhand</p>
+                </div>
+                <div class="leaderboard-points">320 pts</div>
+            </div>
+            
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank top-2">2</div>
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="leaderboard-avatar">
+                <div class="leaderboard-user">
+                    <h5 class="mb-0">Priya Sharma</h5>
+                    <p class="mb-0 text-muted">Patna, Bihar</p>
+                </div>
+                <div class="leaderboard-points">285 pts</div>
+            </div>
+            
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank top-3">3</div>
+                <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="User" class="leaderboard-avatar">
+                <div class="leaderboard-user">
+                    <h5 class="mb-0">Amit Singh</h5>
+                    <p class="mb-0 text-muted">Jaipur, Rajasthan</p>
+                </div>
+                <div class="leaderboard-points">250 pts</div>
+            </div>
+            
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank">4</div>
+                <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="User" class="leaderboard-avatar">
+                <div class="leaderboard-user">
+                    <h5 class="mb-0">Sunita Devi</h5>
+                    <p class="mb-0 text-muted">Bhopal, Madhya Pradesh</p>
+                </div>
+                <div class="leaderboard-points">210 pts</div>
+            </div>
+            
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank">5</div>
+                <img src="https://randomuser.me/api/portraits/men/54.jpg" alt="User" class="leaderboard-avatar">
+                <div class="leaderboard-user">
+                    <h5 class="mb-0">Rahul Verma</h5>
+                    <p class="mb-0 text-muted">Lucknow, Uttar Pradesh</p>
+                </div>
+                <div class="leaderboard-points">185 pts</div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="#" class="btn btn-outline-success btn-rounded">
+                    <i class="fas fa-trophy me-2"></i> View Full Leaderboard
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-left">
+            <img src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Tree Planting" class="img-fluid rounded-4 shadow">
+        </div>
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="container mb-5">
+    <h2 class="text-center mb-4" data-aos="fade-up">Benefits of Tree Planting</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card info-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <h4 class="mb-0">Clean Air</h4>
+                    </div>
+                    <p>Trees absorb carbon dioxide and release oxygen, improving air quality and reducing pollution.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card info-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-cloud-rain"></i>
+                        </div>
+                        <h4 class="mb-0">Water Conservation</h4>
+                    </div>
+                    <p>Trees help in water conservation by preventing soil erosion and increasing groundwater recharge.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card info-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-temperature-low"></i>
+                        </div>
+                        <h4 class="mb-0">Climate Regulation</h4>
+                    </div>
+                    <p>Trees help in regulating local climate by providing shade and reducing the urban heat island effect.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="card info-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-paw"></i>
+                        </div>
+                        <h4 class="mb-0">Biodiversity</h4>
+                    </div>
+                    <p>Trees provide habitat for various species of birds, insects, and animals, promoting biodiversity.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="500">
+            <div class="card info-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-apple-alt"></i>
+                        </div>
+                        <h4 class="mb-0">Food Security</h4>
+                    </div>
+                    <p>Fruit-bearing trees provide nutritious food and can contribute to food security in rural areas.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="600">
+            <div class="card info-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="info-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <h4 class="mb-0">Economic Benefits</h4>
+                    </div>
+                    <p>Trees can provide economic benefits through fruits, timber, and other products, supporting livelihoods.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="container mb-5">
+    <div class="card bg-success text-white" data-aos="fade-up">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="mb-3">Ready to Make a Difference?</h3>
+                    <p class="mb-md-0">Plant a tree today and contribute to a greener, healthier planet for future generations.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="{{ url_for('trees_bp.plant_tree_page') }}" class="btn btn-light btn-rounded">
+                        <i class="fas fa-seedling me-2"></i> Plant a Tree Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

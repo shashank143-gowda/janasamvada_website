@@ -1,0 +1,1422 @@
+{% extends 'base.html' %}
+
+{% block title %}Report a Hazard - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+    /* Hero section with futuristic style */
+    .hazard-hero {
+        position: relative;
+        min-height: 60vh;
+        background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 4rem 0;
+        margin-bottom: 0;
+    }
+    
+    .hazard-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23fd79a8' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+    
+    .hazard-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .hazard-particle {
+        position: absolute;
+        display: block;
+        pointer-events: none;
+        width: 6px;
+        height: 6px;
+        background-color: var(--accent-color);
+        border-radius: 50%;
+        opacity: 0.3;
+        animation: float-particle 15s infinite linear;
+    }
+    
+    @keyframes float-particle {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 0.3;
+        }
+        100% {
+            transform: translateY(-1000px) rotate(720deg);
+            opacity: 0;
+        }
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 10;
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 10px rgba(253, 121, 168, 0.5);
+        position: relative;
+        display: inline-block;
+    }
+    
+    .hero-title::after {
+        content: attr(data-text);
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        opacity: 0.3;
+        z-index: -1;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        color: var(--light-color);
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .hazard-types {
+        position: relative;
+        padding: 2rem;
+        border: 1px solid rgba(253, 121, 168, 0.3);
+        border-radius: var(--border-radius);
+        background-color: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 20px rgba(253, 121, 168, 0.3);
+        overflow: hidden;
+        margin-bottom: 3rem;
+    }
+    
+    .hazard-types::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        width: calc(100% + 4px);
+        height: 5px;
+        background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+        z-index: 1;
+    }
+    
+    .hazard-type-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        background-color: rgba(255, 255, 255, 0.05);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .hazard-type-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(253, 121, 168, 0.2);
+        background-color: rgba(253, 121, 168, 0.1);
+    }
+    
+    .hazard-type-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .hazard-type-text {
+        flex: 1;
+    }
+    
+    .hazard-type-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    /* Map section */
+    .map-section {
+        background-color: var(--darker-color);
+        padding: 4rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .map-container {
+        height: 400px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+        border: var(--card-border);
+    }
+    
+    #hazardMap {
+        height: 100%;
+        width: 100%;
+    }
+    
+    .map-overlay {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: rgba(26, 26, 46, 0.8);
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(253, 121, 168, 0.3);
+        z-index: 1000;
+        max-width: 300px;
+    }
+    
+    .map-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--accent-color);
+    }
+    
+    .map-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .legend-color {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+    
+    /* Form styling */
+    .form-section {
+        background-color: var(--dark-color);
+        padding: 5rem 0;
+        position: relative;
+    }
+    
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-card {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        background-color: var(--card-bg);
+        box-shadow: var(--box-shadow);
+        transition: all var(--transition-speed) ease;
+        border: var(--card-border);
+        position: relative;
+    }
+    
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--accent-color), var(--secondary-color));
+    }
+    
+    .form-step {
+        padding: 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .form-step:last-child {
+        border-bottom: none;
+    }
+    
+    .step-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-right: 1rem;
+    }
+    
+    .step-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        color: var(--accent-color);
+        text-shadow: 0 0 5px rgba(253, 121, 168, 0.5);
+    }
+    
+    .form-floating {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-control, .form-select {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--light-color);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.25rem rgba(253, 121, 168, 0.25);
+        color: var(--light-color);
+    }
+    
+    .form-floating > label {
+        color: var(--text-muted);
+    }
+    
+    .neon-btn {
+        border-radius: 50px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+        border: none;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    .neon-btn:hover {
+        box-shadow: 0 0 20px rgba(253, 121, 168, 0.7);
+        transform: translateY(-3px);
+    }
+    
+    /* File upload */
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .file-upload-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 150px;
+        border: 2px dashed rgba(253, 121, 168, 0.3);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: rgba(253, 121, 168, 0.05);
+        flex-direction: column;
+    }
+    
+    .file-upload-label:hover {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 15px rgba(253, 121, 168, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .file-upload-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-upload-icon {
+        font-size: 3rem;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .file-upload-label:hover .file-upload-icon {
+        transform: scale(1.1);
+        animation: pulse-glow 1.5s infinite;
+    }
+    
+    @keyframes pulse-glow {
+        0% {
+            text-shadow: 0 0 5px rgba(253, 121, 168, 0.5);
+        }
+        50% {
+            text-shadow: 0 0 20px rgba(253, 121, 168, 0.8);
+        }
+        100% {
+            text-shadow: 0 0 5px rgba(253, 121, 168, 0.5);
+        }
+    }
+    
+    .preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .preview-item {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(253, 121, 168, 0.3);
+    }
+    
+    .preview-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(253, 121, 168, 0.5);
+    }
+    
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .preview-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 25px;
+        height: 25px;
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+    
+    .preview-remove:hover {
+        background-color: red;
+        transform: scale(1.1);
+    }
+    
+    /* AI Validation styles */
+    .ai-validation {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        right: 25px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 12px;
+        padding: 4px 8px;
+        font-size: 11px;
+        color: white;
+        z-index: 10;
+        display: none;
+    }
+    
+    .ai-validation.valid {
+        background: rgba(34, 197, 94, 0.9);
+        display: block;
+    }
+    
+    .ai-validation.invalid {
+        background: rgba(239, 68, 68, 0.9);
+        display: block;
+    }
+    
+    .ai-validation.processing {
+        background: rgba(59, 130, 246, 0.9);
+        display: block;
+    }
+    
+    .ai-validation .confidence-bar {
+        height: 2px;
+        background: rgba(255, 255, 255, 0.3);
+        margin-top: 2px;
+        border-radius: 1px;
+        overflow: hidden;
+    }
+    
+    .ai-validation .confidence-fill {
+        height: 100%;
+        background: white;
+        border-radius: 1px;
+        transition: width 0.3s ease;
+    }
+    
+    .upload-error {
+        color: #ef4444;
+        font-size: 14px;
+        margin-top: 10px;
+        padding: 10px;
+        background: rgba(239, 68, 68, 0.1);
+        border-radius: 8px;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        display: none;
+    }
+    
+    .upload-success {
+        color: #22c55e;
+        font-size: 14px;
+        margin-top: 10px;
+        padding: 10px;
+        background: rgba(34, 197, 94, 0.1);
+        border-radius: 8px;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        display: none;
+    }
+    
+    .processing-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+        margin-right: 6px;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Success message */
+    .success-message {
+        text-align: center;
+        padding: 4rem 2rem;
+        background-color: rgba(253, 121, 168, 0.05);
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(253, 121, 168, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .success-message::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23fd79a8' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.1;
+    }
+    
+    .success-icon {
+        font-size: 5rem;
+        color: var(--accent-color);
+        margin-bottom: 2rem;
+        animation: success-pulse 2s infinite;
+    }
+    
+    @keyframes success-pulse {
+        0% {
+            transform: scale(1);
+            text-shadow: 0 0 10px rgba(253, 121, 168, 0.5);
+        }
+        50% {
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(253, 121, 168, 0.8), 0 0 30px rgba(253, 121, 168, 0.6);
+        }
+        100% {
+            transform: scale(1);
+            text-shadow: 0 0 10px rgba(253, 121, 168, 0.5);
+        }
+    }
+    
+    .report-id {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: rgba(253, 121, 168, 0.1);
+        border: 1px solid rgba(253, 121, 168, 0.3);
+        border-radius: var(--border-radius);
+        font-family: monospace;
+        font-size: 1.2rem;
+        color: var(--accent-color);
+        margin: 1rem 0;
+    }
+    
+    /* Location picker */
+    .location-picker {
+        height: 300px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .location-info {
+        background-color: rgba(253, 121, 168, 0.1);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(253, 121, 168, 0.2);
+    }
+    
+    .location-coordinates {
+        font-family: monospace;
+        color: var(--accent-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Futuristic Style -->
+<section class="hazard-hero">
+    <div class="hazard-particles" id="particles"></div>
+    <div class="container hero-content text-center">
+        <h1 class="hero-title" data-text="Report a Hazard">Report a Hazard</h1>
+        <p class="hero-subtitle">Help keep your community safe by reporting hazards. Your reports are crucial for quick response and resolution.</p>
+        
+        <div class="hazard-types mt-5">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="hazard-type-item" data-type="road">
+                        <div class="hazard-type-icon">
+                            <i class="fas fa-road"></i>
+                        </div>
+                        <div class="hazard-type-text">
+                            <h4 class="hazard-type-title">Road Hazards</h4>
+                            <p class="small text-muted mb-0">Potholes, broken signals, debris</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="hazard-type-item" data-type="infrastructure">
+                        <div class="hazard-type-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="hazard-type-text">
+                            <h4 class="hazard-type-title">Infrastructure</h4>
+                            <p class="small text-muted mb-0">Damaged bridges, buildings, utilities</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="hazard-type-item" data-type="environment">
+                        <div class="hazard-type-icon">
+                            <i class="fas fa-tree"></i>
+                        </div>
+                        <div class="hazard-type-text">
+                            <h4 class="hazard-type-title">Environmental</h4>
+                            <p class="small text-muted mb-0">Pollution, fallen trees, flooding</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="hazard-type-item" data-type="public">
+                        <div class="hazard-type-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="hazard-type-text">
+                            <h4 class="hazard-type-title">Public Safety</h4>
+                            <p class="small text-muted mb-0">Unsafe areas, poor lighting</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="hazard-type-item" data-type="health">
+                        <div class="hazard-type-icon">
+                            <i class="fas fa-medkit"></i>
+                        </div>
+                        <div class="hazard-type-text">
+                            <h4 class="hazard-type-title">Health Hazards</h4>
+                            <p class="small text-muted mb-0">Sewage issues, disease risks</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="hazard-type-item" data-type="other">
+                        <div class="hazard-type-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="hazard-type-text">
+                            <h4 class="hazard-type-title">Other Hazards</h4>
+                            <p class="small text-muted mb-0">Any other safety concerns</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-8">
+                <h2 class="mb-4 text-light">Recent Hazard Reports</h2>
+                <div class="map-container position-relative">
+                    <div id="hazardMap"></div>
+                    <div class="map-overlay">
+                        <div class="map-title">Hazard Types</div>
+                        <div class="map-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #e74c3c;"></div>
+                                <span>High Priority</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #f39c12;"></div>
+                                <span>Medium Priority</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #3498db;"></div>
+                                <span>Low Priority</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #2ecc71;"></div>
+                                <span>Resolved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h2 class="mb-4 text-light">Hazard Statistics</h2>
+                <div class="card" style="background-color: var(--card-bg); border: var(--card-border);">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Total Reports</span>
+                            <span class="badge bg-primary rounded-pill">124</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Resolved</span>
+                            <span class="badge bg-success rounded-pill">78</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>In Progress</span>
+                            <span class="badge bg-warning rounded-pill">32</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Pending</span>
+                            <span class="badge bg-danger rounded-pill">14</span>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h6 class="mb-3">Most Reported Areas</h6>
+                        <ol class="list-group list-group-flush" style="background-color: transparent;">
+                            <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: transparent; border-color: rgba(255,255,255,0.1);">
+                                <span>Ranchi Central</span>
+                                <span class="badge bg-primary rounded-pill">24</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: transparent; border-color: rgba(255,255,255,0.1);">
+                                <span>Doranda</span>
+                                <span class="badge bg-primary rounded-pill">18</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: transparent; border-color: rgba(255,255,255,0.1);">
+                                <span>Namkum</span>
+                                <span class="badge bg-primary rounded-pill">12</span>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Form Section -->
+<section class="form-section">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-card" id="reportForm">
+                <!-- Step 1: Hazard Type -->
+                <div class="form-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Hazard Type</h3>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" id="hazardType" required>
+                            <option value="" selected disabled>Select Hazard Type</option>
+                            <option value="road">Road Hazard</option>
+                            <option value="infrastructure">Infrastructure Issue</option>
+                            <option value="environment">Environmental Hazard</option>
+                            <option value="public">Public Safety Concern</option>
+                            <option value="health">Health Hazard</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <label for="hazardType">Type of Hazard</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="hazardTitle" placeholder="Title" required>
+                        <label for="hazardTitle">Hazard Title</label>
+                    </div>
+                    <div id="otherHazardContainer" style="display: none;">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="otherHazard" placeholder="Specify Hazard">
+                            <label for="otherHazard">Specify Hazard Type</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Hazard Details -->
+                <div class="form-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">Hazard Details</h3>
+                    </div>
+                    <div class="form-floating mb-4">
+                        <textarea class="form-control" id="description" placeholder="Description" style="height: 150px;" required></textarea>
+                        <label for="description">Detailed Description of the Hazard</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" id="severity" required>
+                            <option value="" selected disabled>Select Severity Level</option>
+                            <option value="low">Low - Not Urgent</option>
+                            <option value="medium">Medium - Needs Attention</option>
+                            <option value="high">High - Urgent Attention Required</option>
+                            <option value="critical">Critical - Immediate Danger</option>
+                        </select>
+                        <label for="severity">Severity Level</label>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Location -->
+                <div class="form-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Location</h3>
+                    </div>
+                    <p class="text-muted mb-3">Drag the marker to the exact location of the hazard or use your current location.</p>
+                    
+                    <div class="location-picker" id="locationPicker"></div>
+                    
+                    <div class="location-info">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Selected Location:</span>
+                            <span class="location-coordinates" id="selectedCoordinates">Not selected</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="button" class="btn btn-outline-secondary" id="useCurrentLocation">
+                            <i class="fas fa-map-marker-alt me-2"></i> Use My Current Location
+                        </button>
+                    </div>
+                    
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="locationAddress" placeholder="Address" required>
+                        <label for="locationAddress">Address/Landmark</label>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Evidence Upload -->
+                <div class="form-step">
+                    <div class="step-header">
+                        <div class="step-number">4</div>
+                        <h3 class="step-title">Evidence Upload</h3>
+                    </div>
+                    <p class="text-muted mb-4">Upload photos or videos of the hazard to help authorities assess the situation better.</p>
+                    
+                    <div class="file-upload mb-3">
+                        <label for="evidenceFiles" class="file-upload-label">
+                            <div class="file-upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="mb-2">Drag & drop files here or click to browse</div>
+                            <div class="text-muted small">Max 5 files, 10MB each (JPG, PNG, MP4)</div>
+                        </label>
+                        <input type="file" id="evidenceFiles" class="file-upload-input" multiple accept=".jpg,.jpeg,.png,.mp4">
+                    </div>
+                    
+                    <div class="preview-container" id="previewContainer"></div>
+                    
+                    <!-- AI Validation Messages -->
+                    <div class="upload-error" id="uploadError"></div>
+                    <div class="upload-success" id="uploadSuccess"></div>
+                </div>
+                
+                <!-- Step 5: Contact Information -->
+                <div class="form-step">
+                    <div class="step-header">
+                        <div class="step-number">5</div>
+                        <h3 class="step-title">Contact Information (Optional)</h3>
+                    </div>
+                    <p class="text-muted mb-4">Your contact information will help authorities reach out if they need more details.</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="name" placeholder="Name">
+                                <label for="name">Your Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email" placeholder="Email">
+                                <label for="email">Email Address</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="tel" class="form-control" id="phone" placeholder="Phone">
+                                <label for="phone">Phone Number</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select class="form-select" id="preferredContact">
+                                    <option value="" selected disabled>Select Preferred Contact Method</option>
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="none">No Contact</option>
+                                </select>
+                                <label for="preferredContact">Preferred Contact Method</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mt-4">
+                        <input class="form-check-input" type="checkbox" id="followUpCheck">
+                        <label class="form-check-label" for="followUpCheck">
+                            I would like to receive updates on the status of this hazard report
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Submit Section -->
+                <div class="form-step text-center">
+                    <button type="submit" class="neon-btn" id="submitReport">
+                        <i class="fas fa-paper-plane me-2"></i> Submit Hazard Report
+                    </button>
+                    <p class="text-muted mt-3 small">By submitting this form, you agree to our <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create particles for the hero section
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('span');
+            particle.className = 'hazard-particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.width = Math.random() * 10 + 3 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = Math.random() * 10 + 10 + 's';
+            particlesContainer.appendChild(particle);
+        }
+        
+        // Handle hazard type selection
+        const hazardTypeItems = document.querySelectorAll('.hazard-type-item');
+        const hazardTypeSelect = document.getElementById('hazardType');
+        
+        hazardTypeItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const type = this.getAttribute('data-type');
+                hazardTypeSelect.value = type;
+                
+                // Scroll to the form
+                document.querySelector('.form-section').scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                // Trigger the change event to handle the "other" option
+                const event = new Event('change');
+                hazardTypeSelect.dispatchEvent(event);
+            });
+        });
+        
+        // Handle "Other" hazard type selection
+        const otherHazardContainer = document.getElementById('otherHazardContainer');
+        
+        hazardTypeSelect.addEventListener('change', function() {
+            if (this.value === 'other') {
+                otherHazardContainer.style.display = 'block';
+            } else {
+                otherHazardContainer.style.display = 'none';
+            }
+        });
+        
+        // Initialize the map for recent hazards
+        const hazardMap = L.map('hazardMap').setView([23.3441, 85.3096], 12); // Ranchi coordinates
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(hazardMap);
+        
+        // Add some sample hazard markers
+        const hazards = [
+            { lat: 23.3441, lng: 85.3096, title: 'Pothole on Main Road', type: 'road', priority: 'high' },
+            { lat: 23.3541, lng: 85.3196, title: 'Fallen Tree', type: 'environment', priority: 'medium' },
+            { lat: 23.3341, lng: 85.2996, title: 'Broken Street Light', type: 'infrastructure', priority: 'low' },
+            { lat: 23.3641, lng: 85.3296, title: 'Water Leakage', type: 'infrastructure', priority: 'medium' },
+            { lat: 23.3241, lng: 85.3396, title: 'Garbage Dump', type: 'health', priority: 'high' },
+            { lat: 23.3741, lng: 85.2896, title: 'Damaged Bridge', type: 'infrastructure', priority: 'critical' },
+            { lat: 23.3141, lng: 85.3196, title: 'Sewage Overflow', type: 'health', priority: 'high' },
+            { lat: 23.3841, lng: 85.3096, title: 'Unsafe Construction', type: 'public', priority: 'medium' }
+        ];
+        
+        hazards.forEach(hazard => {
+            let markerColor;
+            switch(hazard.priority) {
+                case 'critical':
+                case 'high':
+                    markerColor = '#e74c3c';
+                    break;
+                case 'medium':
+                    markerColor = '#f39c12';
+                    break;
+                case 'low':
+                    markerColor = '#3498db';
+                    break;
+                default:
+                    markerColor = '#2ecc71';
+            }
+            
+            const marker = L.circleMarker([hazard.lat, hazard.lng], {
+                radius: 8,
+                fillColor: markerColor,
+                color: '#fff',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(hazardMap);
+            
+            marker.bindPopup(`
+                <strong>${hazard.title}</strong><br>
+                Type: ${hazard.type}<br>
+                Priority: ${hazard.priority}
+            `);
+        });
+        
+        // Initialize the location picker map
+        const locationPicker = L.map('locationPicker').setView([23.3441, 85.3096], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(locationPicker);
+        
+        // Add a draggable marker
+        const marker = L.marker([23.3441, 85.3096], {
+            draggable: true
+        }).addTo(locationPicker);
+        
+        // Update coordinates when marker is dragged
+        const selectedCoordinates = document.getElementById('selectedCoordinates');
+        
+        function updateCoordinates(lat, lng) {
+            selectedCoordinates.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            // You would typically store these coordinates in hidden form fields
+        }
+        
+        marker.on('dragend', function(e) {
+            const position = marker.getLatLng();
+            updateCoordinates(position.lat, position.lng);
+        });
+        
+        // Initialize with the default position
+        updateCoordinates(23.3441, 85.3096);
+        
+        // Use current location button
+        const useCurrentLocationBtn = document.getElementById('useCurrentLocation');
+        
+        useCurrentLocationBtn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    marker.setLatLng([lat, lng]);
+                    locationPicker.setView([lat, lng], 15);
+                    updateCoordinates(lat, lng);
+                }, function(error) {
+                    alert('Error getting your location: ' + error.message);
+                });
+            } else {
+                alert('Geolocation is not supported by your browser');
+            }
+        });
+        
+        // Handle file uploads and previews with AI validation
+        const fileInput = document.getElementById('evidenceFiles');
+        const previewContainer = document.getElementById('previewContainer');
+        const uploadError = document.getElementById('uploadError');
+        const uploadSuccess = document.getElementById('uploadSuccess');
+        
+        let validatedFiles = [];
+        
+        fileInput.addEventListener('change', function() {
+            previewContainer.innerHTML = '';
+            uploadError.style.display = 'none';
+            uploadSuccess.style.display = 'none';
+            validatedFiles = [];
+            
+            if (this.files.length > 5) {
+                showUploadError('You can only upload a maximum of 5 files.');
+                this.value = '';
+                return;
+            }
+            
+            // Process each file
+            for (let i = 0; i < this.files.length; i++) {
+                const file = this.files[i];
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    showUploadError('File size should not exceed 10MB.');
+                    this.value = '';
+                    previewContainer.innerHTML = '';
+                    return;
+                }
+                
+                processFile(file, i);
+            }
+        });
+        
+        function processFile(file, index) {
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+            previewItem.setAttribute('data-file-index', index);
+            
+            // Create AI validation indicator
+            const aiValidation = document.createElement('div');
+            aiValidation.className = 'ai-validation processing';
+            aiValidation.innerHTML = `
+                <div><span class="processing-indicator"></span>AI Checking...</div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: 0%"></div>
+                </div>
+            `;
+            
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                previewItem.appendChild(img);
+                
+                // Add AI validation overlay
+                previewItem.appendChild(aiValidation);
+                
+                // Validate image with AI
+                validateImageWithAI(file, previewItem, aiValidation);
+                
+            } else if (file.type.startsWith('video/')) {
+                const icon = document.createElement('div');
+                icon.className = 'file-icon';
+                icon.innerHTML = '<i class="fas fa-video" style="color: #9b59b6;"></i>';
+                previewItem.appendChild(icon);
+                
+                const fileName = document.createElement('div');
+                fileName.className = 'file-name';
+                fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
+                previewItem.appendChild(fileName);
+                
+                // Videos are accepted without AI validation
+                validatedFiles.push({
+                    file: file,
+                    valid: true,
+                    type: 'video'
+                });
+            }
+            
+            const removeButton = document.createElement('div');
+            removeButton.className = 'preview-remove';
+            removeButton.innerHTML = '&times;';
+            removeButton.addEventListener('click', function() {
+                previewItem.remove();
+                // Remove from validated files
+                validatedFiles = validatedFiles.filter(f => f.file !== file);
+                updateSubmitButton();
+            });
+            
+            previewItem.appendChild(removeButton);
+            previewContainer.appendChild(previewItem);
+        }
+        
+        function validateImageWithAI(file, previewItem, aiValidation) {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            fetch('/hazards/api/validate-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.is_hazard) {
+                    // Valid hazard image
+                    aiValidation.className = 'ai-validation valid';
+                    aiValidation.innerHTML = `
+                        <div>✓ Valid Hazard (${data.confidence}%)</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${data.confidence}%"></div>
+                        </div>
+                    `;
+                    
+                    validatedFiles.push({
+                        file: file,
+                        valid: true,
+                        type: 'image',
+                        confidence: data.confidence,
+                        hazard_type: data.hazard_type
+                    });
+                    
+                    showUploadSuccess(`Image validated successfully! AI detected ${data.hazard_type} hazard with ${data.confidence}% confidence.`);
+                    
+                } else {
+                    // Invalid image
+                    aiValidation.className = 'ai-validation invalid';
+                    aiValidation.innerHTML = `
+                        <div>✗ ${data.message}</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${data.confidence || 0}%"></div>
+                        </div>
+                    `;
+                    
+                    validatedFiles.push({
+                        file: file,
+                        valid: false,
+                        type: 'image',
+                        confidence: data.confidence || 0
+                    });
+                    
+                    showUploadError(data.message || '👉 Please upload a related picture.');
+                }
+                
+                updateSubmitButton();
+            })
+            .catch(error => {
+                console.error('AI validation error:', error);
+                
+                // On error, mark as valid (fail-safe)
+                aiValidation.className = 'ai-validation valid';
+                aiValidation.innerHTML = `
+                    <div>✓ Upload Ready</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: 50%"></div>
+                    </div>
+                `;
+                
+                validatedFiles.push({
+                    file: file,
+                    valid: true,
+                    type: 'image',
+                    confidence: 50,
+                    error: 'AI validation unavailable'
+                });
+                
+                updateSubmitButton();
+            });
+        }
+        
+        function showUploadError(message) {
+            uploadError.textContent = message;
+            uploadError.style.display = 'block';
+            uploadSuccess.style.display = 'none';
+        }
+        
+        function showUploadSuccess(message) {
+            uploadSuccess.textContent = message;
+            uploadSuccess.style.display = 'block';
+            uploadError.style.display = 'none';
+        }
+        
+        function updateSubmitButton() {
+            const submitButton = document.getElementById('submitReport');
+            const hasInvalidImages = validatedFiles.some(f => f.type === 'image' && !f.valid);
+            
+            if (hasInvalidImages) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Please upload valid hazard images';
+                submitButton.style.opacity = '0.5';
+            } else {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Submit Hazard Report';
+                submitButton.style.opacity = '1';
+            }
+        }
+        
+        // Form submission
+        const form = document.getElementById('reportForm');
+        const submitButton = document.getElementById('submitReport');
+        
+        submitButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Check if all required fields are filled
+            const requiredFields = ['hazardType', 'hazardTitle', 'description', 'severity', 'locationAddress'];
+            let allValid = true;
+            
+            for (const fieldId of requiredFields) {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.focus();
+                    alert(`Please fill in the ${field.previousElementSibling.textContent}`);
+                    allValid = false;
+                    break;
+                }
+            }
+            
+            if (!allValid) return;
+            
+            // Check if location is selected
+            if (!selectedLat || !selectedLng) {
+                alert('Please select a location on the map');
+                return;
+            }
+            
+            // Check for invalid images
+            const hasInvalidImages = validatedFiles.some(f => f.type === 'image' && !f.valid);
+            if (hasInvalidImages) {
+                alert('Please upload valid hazard-related images or remove invalid ones');
+                return;
+            }
+            
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('title', document.getElementById('hazardTitle').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('hazard_type', document.getElementById('hazardType').value);
+            formData.append('latitude', selectedLat);
+            formData.append('longitude', selectedLng);
+            formData.append('location_description', document.getElementById('locationAddress').value);
+            
+            // Add validated files
+            validatedFiles.forEach(fileData => {
+                if (fileData.valid) {
+                    if (fileData.type === 'image') {
+                        formData.append('image', fileData.file);
+                    } else if (fileData.type === 'video') {
+                        formData.append('video', fileData.file);
+                    }
+                }
+            });
+            
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Submitting Report...';
+            
+            // Submit the form
+            fetch('/hazards/api/hazards', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    let validationInfo = '';
+                    if (data.validation_results && data.validation_results.length > 0) {
+                        const imageValidations = data.validation_results.filter(v => v.type === 'image');
+                        if (imageValidations.length > 0) {
+                            validationInfo = `
+                                <div class="mt-3 p-3 bg-success bg-opacity-10 rounded">
+                                    <small class="text-success">
+                                        <i class="fas fa-robot me-1"></i>
+                                        AI Validation: ${imageValidations.length} image(s) validated with average confidence of ${(imageValidations.reduce((sum, v) => sum + v.confidence, 0) / imageValidations.length).toFixed(1)}%
+                                    </small>
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    form.innerHTML = `
+                        <div class="success-message">
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h3 class="mb-4">Hazard Report Submitted Successfully!</h3>
+                            <p class="mb-4">Thank you for your report. Your contribution helps in making our community safer.</p>
+                            <div class="report-id">HAZ-${data.hazard_id}</div>
+                            <p class="mb-4">Please save this report ID for future reference.</p>
+                            ${validationInfo}
+                            <a href="{{ url_for('main.index') }}" class="neon-btn">
+                                <i class="fas fa-home me-2"></i> Back to Home
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    // Show error message
+                    alert(data.message || 'Error submitting report. Please try again.');
+                    
+                    // Reset button
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Submit Hazard Report';
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting report:', error);
+                alert('Error submitting report. Please try again.');
+                
+                // Reset button
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Submit Hazard Report';
+            });
+        });
+    });
+</script>
+{% endblock %}

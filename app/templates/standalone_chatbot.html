@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standalone Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Standalone Chatbot Demo</h1>
+        <p>Click the robot button in the bottom right corner to open the chatbot.</p>
+        <p>This is a completely standalone HTML file with no external dependencies.</p>
+    </div>
+    
+    <!-- DIRECT HTML BUTTON - NO JAVASCRIPT -->
+    <button onclick="document.getElementById('chatbotWidget').style.display = document.getElementById('chatbotWidget').style.display === 'flex' ? 'none' : 'flex';" style="position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, rgb(52, 152, 219), rgb(44, 62, 80)); color: white; border: none; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px; font-size: 24px; cursor: pointer; z-index: 9999;">
+        <i class="fas fa-robot"></i>
+    </button>
+    
+    <!-- Chatbot Widget -->
+    <div id="chatbotWidget" style="display: none; position: fixed; bottom: 100px; right: 30px; width: 450px; height: 600px; background-color: white; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.25); flex-direction: column; z-index: 1000; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #3498db, #2c3e50); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-weight: 600; font-size: 1.1rem;">
+                <i class="fas fa-robot" style="margin-right: 10px;"></i> JanSamvaad Assistant
+            </div>
+            <div>
+                <button onclick="document.getElementById('chatbotWidget').style.display = 'none';" style="background: none; border: none; color: white; margin-left: 10px; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div style="flex: 1; padding: 15px; overflow-y: auto;">
+            <p>Hello! I'm your JanSamvaad Assistant. How can I help you today?</p>
+        </div>
+        <div style="padding: 15px; border-top: 1px solid #eee; display: flex;">
+            <input type="text" placeholder="Type your message..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none;">
+            <button style="margin-left: 10px; border: none; background-color: #3498db; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</body>
+</html>

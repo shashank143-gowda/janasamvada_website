@@ -1,0 +1,1061 @@
+{% extends 'base.html' %}
+
+{% block title %}Anti-Corruption Portal - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero section with cyberpunk style */
+    .cyberpunk-hero {
+        position: relative;
+        min-height: 70vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 4rem 0;
+        margin-bottom: 0;
+    }
+    
+    .cyberpunk-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236c5ce7' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+    
+    .hero-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: linear-gradient(rgba(108, 92, 231, 0.1) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(108, 92, 231, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        perspective: 500px;
+        transform-style: preserve-3d;
+        animation: grid-animation 20s linear infinite;
+    }
+    
+    @keyframes grid-animation {
+        0% {
+            transform: rotateX(75deg) translateY(0);
+        }
+        100% {
+            transform: rotateX(75deg) translateY(20px);
+        }
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 10;
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
+        position: relative;
+        display: inline-block;
+    }
+    
+    .hero-title::after {
+        content: attr(data-text);
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        opacity: 0.3;
+        z-index: -1;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        color: var(--light-color);
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .neon-btn {
+        border-radius: 50px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        border: none;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    .neon-btn:hover {
+        box-shadow: 0 0 20px rgba(108, 92, 231, 0.7);
+        transform: translateY(-3px);
+    }
+    
+    /* Stats section */
+    .stats-section {
+        background-color: var(--darker-color);
+        padding: 5rem 0;
+        position: relative;
+    }
+    
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236c5ce7' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+    }
+    
+    .stat-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        border: var(--card-border);
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 30px rgba(108, 92, 231, 0.3);
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .stat-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--light-color);
+    }
+    
+    .stat-description {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    /* Department categories */
+    .categories-section {
+        background-color: var(--dark-color);
+        padding: 5rem 0;
+        position: relative;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 3rem;
+        max-width: 700px;
+    }
+    
+    .category-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        border: var(--card-border);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+    }
+    
+    .category-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .category-card:hover .category-icon {
+        transform: scale(1.1);
+        color: var(--accent-color);
+    }
+    
+    .category-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--light-color);
+    }
+    
+    .category-content {
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .category-description {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+    
+    /* How it works section */
+    .how-it-works {
+        background-color: var(--darker-color);
+        padding: 5rem 0;
+        position: relative;
+    }
+    
+    .step-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        border: var(--card-border);
+        transition: all 0.3s ease;
+    }
+    
+    .step-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 30px rgba(108, 92, 231, 0.3);
+    }
+    
+    .step-number {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 5rem;
+        font-weight: 800;
+        opacity: 0.1;
+        color: var(--primary-color);
+    }
+    
+    .step-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    
+    .step-card:hover .step-icon {
+        transform: scale(1.1);
+        color: var(--accent-color);
+    }
+    
+    .step-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--light-color);
+    }
+    
+    .step-description {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Recent reports section */
+    .reports-section {
+        background-color: var(--dark-color);
+        padding: 5rem 0;
+        position: relative;
+    }
+    
+    .report-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        border: var(--card-border);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+    }
+    
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+    }
+    
+    .report-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--primary-color), var(--accent-color));
+    }
+    
+    .report-content {
+        padding: 1.5rem;
+    }
+    
+    .report-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .badge-revenue {
+        background-color: rgba(108, 92, 231, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .badge-police {
+        background-color: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+    }
+    
+    .badge-education {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+    
+    .badge-health {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+    
+    .report-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--light-color);
+    }
+    
+    .report-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    .report-description {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .report-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 1rem;
+    }
+    
+    .report-status {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+    
+    .status-icon {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+    
+    .status-pending {
+        background-color: #f39c12;
+    }
+    
+    .status-investigating {
+        background-color: #3498db;
+    }
+    
+    .status-resolved {
+        background-color: #2ecc71;
+    }
+    
+    .report-actions a {
+        color: var(--primary-color);
+        margin-left: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .report-actions a:hover {
+        color: var(--accent-color);
+    }
+    
+    /* FAQ section */
+    .faq-section {
+        background-color: var(--darker-color);
+        padding: 5rem 0;
+        position: relative;
+    }
+    
+    .accordion-item {
+        background-color: var(--card-bg);
+        border: var(--card-border);
+        margin-bottom: 1rem;
+    }
+    
+    .accordion-button {
+        background-color: var(--card-bg);
+        color: var(--light-color);
+        font-weight: 600;
+        padding: 1.25rem;
+        box-shadow: none;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(108, 92, 231, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(108, 92, 231, 0.5);
+    }
+    
+    .accordion-button::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236c5ce7'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    }
+    
+    .accordion-body {
+        padding: 1.25rem;
+        color: var(--text-muted);
+    }
+    
+    /* CTA section */
+    .cta-section {
+        background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+        padding: 5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236c5ce7' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+    }
+    
+    .cta-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+    
+    .cta-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: white;
+    }
+    
+    .cta-description {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 3rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .cta-title {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Cyberpunk Style -->
+<section class="cyberpunk-hero">
+    <div class="hero-grid"></div>
+    <div class="container hero-content text-center">
+        <h1 class="hero-title" data-text="Anti-Corruption Portal">Anti-Corruption Portal</h1>
+        <p class="hero-subtitle">Report corruption and bribery incidents anonymously and securely. Help us build a transparent and corruption-free society.</p>
+        
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a href="{{ url_for('corruption_bp.report_corruption_page') }}" class="neon-btn">
+                <i class="fas fa-gavel me-2"></i> Report Corruption
+            </a>
+            <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#trackReportModal">
+                <i class="fas fa-search me-2"></i> Track a Report
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">2,547</div>
+                    <div class="stat-title">Reports Received</div>
+                    <p class="stat-description">Corruption cases reported by vigilant citizens</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">1,892</div>
+                    <div class="stat-title">Cases Investigated</div>
+                    <p class="stat-description">Reports thoroughly investigated by authorities</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">743</div>
+                    <div class="stat-title">Cases Resolved</div>
+                    <p class="stat-description">Successfully resolved corruption cases</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">₹14.2Cr</div>
+                    <div class="stat-title">Recovered Funds</div>
+                    <p class="stat-description">Public money recovered from corruption</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Department Categories Section -->
+<section class="categories-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Report by Department</h2>
+            <p class="section-subtitle mx-auto">Select the government department where you encountered corruption or bribery. Your report will be directed to the appropriate authorities.</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="category-card" data-category="revenue">
+                    <div class="category-content">
+                        <div class="category-icon">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <h3 class="category-title">Revenue Department</h3>
+                        <p class="category-description">Report corruption related to land records, property registration, tax collection, and other revenue services.</p>
+                        <a href="{{ url_for('corruption_bp.report_corruption_page') }}?department=revenue" class="btn btn-outline-primary">Report Now</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="category-card" data-category="police">
+                    <div class="category-content">
+                        <div class="category-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="category-title">Police Department</h3>
+                        <p class="category-description">Report corruption in law enforcement, including bribery, extortion, or misuse of power by police officials.</p>
+                        <a href="{{ url_for('corruption_bp.report_corruption_page') }}?department=police" class="btn btn-outline-primary">Report Now</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="category-card" data-category="education">
+                    <div class="category-content">
+                        <div class="category-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="category-title">Education Department</h3>
+                        <p class="category-description">Report corruption in schools, colleges, universities, or education administration offices.</p>
+                        <a href="{{ url_for('corruption_bp.report_corruption_page') }}?department=education" class="btn btn-outline-primary">Report Now</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="category-card" data-category="health">
+                    <div class="category-content">
+                        <div class="category-icon">
+                            <i class="fas fa-hospital"></i>
+                        </div>
+                        <h3 class="category-title">Health Department</h3>
+                        <p class="category-description">Report corruption in hospitals, health centers, or medical administration offices.</p>
+                        <a href="{{ url_for('corruption_bp.report_corruption_page') }}?department=health" class="btn btn-outline-primary">Report Now</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="category-card" data-category="pwd">
+                    <div class="category-content">
+                        <div class="category-icon">
+                            <i class="fas fa-road"></i>
+                        </div>
+                        <h3 class="category-title">Public Works Department</h3>
+                        <p class="category-description">Report corruption in construction, maintenance of roads, buildings, and other public infrastructure.</p>
+                        <a href="{{ url_for('corruption_bp.report_corruption_page') }}?department=pwd" class="btn btn-outline-primary">Report Now</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="category-card" data-category="other">
+                    <div class="category-content">
+                        <div class="category-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h3 class="category-title">Other Departments</h3>
+                        <p class="category-description">Report corruption in any other government department or public service not listed above.</p>
+                        <a href="{{ url_for('corruption_bp.report_corruption_page') }}?department=other" class="btn btn-outline-primary">Report Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle mx-auto">Our anti-corruption reporting system is designed to be secure, anonymous, and effective. Follow these steps to report corruption incidents.</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="step-title">Submit Report</h3>
+                    <p class="step-description">Fill out the corruption report form with details about the incident, including department, location, and people involved.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="step-title">Secure Processing</h3>
+                    <p class="step-description">Your report is encrypted and securely processed. Your identity remains protected throughout the process.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="step-title">Investigation</h3>
+                    <p class="step-description">Authorities investigate the report, gathering evidence and taking appropriate action against corrupt practices.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="step-title">Track Progress</h3>
+                    <p class="step-description">Monitor the status of your report using the unique report ID provided after submission.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Reports Section -->
+<section class="reports-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Recent Reports</h2>
+            <p class="section-subtitle mx-auto">These are some of the recently reported corruption cases that are being investigated or have been resolved.</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="report-card">
+                    <div class="report-content">
+                        <div class="report-badge badge-revenue">Revenue Department</div>
+                        <h3 class="report-title">Bribery for Land Registration</h3>
+                        <div class="report-meta">
+                            <span><i class="fas fa-map-marker-alt me-1"></i> Ranchi Central</span>
+                            <span><i class="far fa-clock me-1"></i> 3 days ago</span>
+                        </div>
+                        <p class="report-description">Officials demanding bribes for processing land registration documents at the Revenue Office in Ranchi Central.</p>
+                        <div class="report-footer">
+                            <div class="report-status">
+                                <span class="status-icon status-investigating"></span>
+                                <span>Under Investigation</span>
+                            </div>
+                            <div class="report-actions">
+                                <a href="#" data-bs-toggle="tooltip" title="View Details"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="report-card">
+                    <div class="report-content">
+                        <div class="report-badge badge-police">Police Department</div>
+                        <h3 class="report-title">Extortion by Traffic Police</h3>
+                        <div class="report-meta">
+                            <span><i class="fas fa-map-marker-alt me-1"></i> Doranda</span>
+                            <span><i class="far fa-clock me-1"></i> 5 days ago</span>
+                        </div>
+                        <p class="report-description">Traffic police officers demanding money from drivers without issuing proper receipts or following due process.</p>
+                        <div class="report-footer">
+                            <div class="report-status">
+                                <span class="status-icon status-resolved"></span>
+                                <span>Resolved</span>
+                            </div>
+                            <div class="report-actions">
+                                <a href="#" data-bs-toggle="tooltip" title="View Details"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="report-card">
+                    <div class="report-content">
+                        <div class="report-badge badge-education">Education Department</div>
+                        <h3 class="report-title">Admission Bribery in College</h3>
+                        <div class="report-meta">
+                            <span><i class="fas fa-map-marker-alt me-1"></i> Namkum</span>
+                            <span><i class="far fa-clock me-1"></i> 7 days ago</span>
+                        </div>
+                        <p class="report-description">College administration demanding bribes for admission to courses despite students meeting all eligibility criteria.</p>
+                        <div class="report-footer">
+                            <div class="report-status">
+                                <span class="status-icon status-pending"></span>
+                                <span>Pending</span>
+                            </div>
+                            <div class="report-actions">
+                                <a href="#" data-bs-toggle="tooltip" title="View Details"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="report-card">
+                    <div class="report-content">
+                        <div class="report-badge badge-health">Health Department</div>
+                        <h3 class="report-title">Medicine Procurement Fraud</h3>
+                        <div class="report-meta">
+                            <span><i class="fas fa-map-marker-alt me-1"></i> Kanke</span>
+                            <span><i class="far fa-clock me-1"></i> 10 days ago</span>
+                        </div>
+                        <p class="report-description">Irregularities in medicine procurement process at the district hospital, involving inflated prices and substandard supplies.</p>
+                        <div class="report-footer">
+                            <div class="report-status">
+                                <span class="status-icon status-investigating"></span>
+                                <span>Under Investigation</span>
+                            </div>
+                            <div class="report-actions">
+                                <a href="#" data-bs-toggle="tooltip" title="View Details"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="report-card">
+                    <div class="report-content">
+                        <div class="report-badge badge-revenue">Revenue Department</div>
+                        <h3 class="report-title">Property Tax Evasion</h3>
+                        <div class="report-meta">
+                            <span><i class="fas fa-map-marker-alt me-1"></i> Harmu</span>
+                            <span><i class="far fa-clock me-1"></i> 12 days ago</span>
+                        </div>
+                        <p class="report-description">Officials helping property owners evade taxes by manipulating property value assessments in exchange for bribes.</p>
+                        <div class="report-footer">
+                            <div class="report-status">
+                                <span class="status-icon status-resolved"></span>
+                                <span>Resolved</span>
+                            </div>
+                            <div class="report-actions">
+                                <a href="#" data-bs-toggle="tooltip" title="View Details"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="report-card">
+                    <div class="report-content">
+                        <div class="report-badge badge-police">Police Department</div>
+                        <h3 class="report-title">FIR Registration Bribery</h3>
+                        <div class="report-meta">
+                            <span><i class="fas fa-map-marker-alt me-1"></i> Ratu</span>
+                            <span><i class="far fa-clock me-1"></i> 15 days ago</span>
+                        </div>
+                        <p class="report-description">Police officers demanding money to register FIRs for legitimate complaints at the local police station.</p>
+                        <div class="report-footer">
+                            <div class="report-status">
+                                <span class="status-icon status-pending"></span>
+                                <span>Pending</span>
+                            </div>
+                            <div class="report-actions">
+                                <a href="#" data-bs-toggle="tooltip" title="View Details"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="#" class="neon-btn">
+                <i class="fas fa-list me-2"></i> View All Reports
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle mx-auto">Find answers to common questions about reporting corruption and how the anti-corruption portal works.</p>
+        </div>
+        
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Is my identity protected when I report corruption?
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes, your identity is completely protected. Our system uses end-to-end encryption to secure your information. You can choose to report anonymously without providing any personal details, or you can provide contact information that will be kept confidential and only used if additional information is needed for the investigation.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        What happens after I submit a corruption report?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        After submission, your report is assigned a unique ID and forwarded to the relevant anti-corruption unit. The authorities will review your report, gather additional evidence if needed, and initiate an investigation. You can track the status of your report using the ID provided. Depending on the complexity, investigations may take a few weeks to several months to complete.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        What kind of evidence should I provide with my report?
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Any evidence that supports your corruption claim is valuable. This could include photos, videos, audio recordings, documents, receipts, names of witnesses, dates, times, and detailed descriptions of the incidents. The more specific and detailed your evidence, the easier it will be for investigators to verify and act on your report.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        Can I report corruption that happened in the past?
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes, you can report past incidents of corruption. While recent cases may be easier to investigate, historical cases are still important to report, especially if they involve ongoing patterns of corruption or significant amounts. There may be statutory limitations for certain types of corruption, but the authorities will determine this during their assessment.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        Is there any reward for reporting corruption?
+                    </button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        In some cases, whistleblowers may be eligible for rewards, especially if the report leads to significant recovery of public funds or prevention of major fraud. However, the primary purpose of reporting corruption should be to contribute to a more transparent and honest society. Any potential rewards are determined by the relevant authorities based on applicable laws and the specifics of each case.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Stand Against Corruption</h2>
+            <p class="cta-description">Your voice matters in the fight against corruption. Report incidents, help create a transparent society, and contribute to a better future for all citizens.</p>
+            <a href="{{ url_for('corruption_bp.report_corruption_page') }}" class="neon-btn">
+                <i class="fas fa-gavel me-2"></i> Report Corruption Now
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Track Report Modal -->
+<div class="modal fade" id="trackReportModal" tabindex="-1" aria-labelledby="trackReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="trackReportModalLabel">Track Your Corruption Report</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-4">Enter your report ID to check the status of your corruption report.</p>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control bg-dark text-light border-secondary" id="reportIdInput" placeholder="Report ID">
+                    <label for="reportIdInput">Report ID (e.g., COR-123456)</label>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="trackReportBtn">Track Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Department category cards click event
+        const categoryCards = document.querySelectorAll('.category-card');
+        categoryCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const category = this.dataset.category;
+                window.location.href = "{{ url_for('corruption_bp.report_corruption_page') }}?department=" + category;
+            });
+        });
+        
+        // Track report functionality
+        const trackReportBtn = document.getElementById('trackReportBtn');
+        const reportIdInput = document.getElementById('reportIdInput');
+        
+        trackReportBtn.addEventListener('click', function() {
+            const reportId = reportIdInput.value.trim();
+            
+            if (!reportId) {
+                alert('Please enter a valid report ID');
+                return;
+            }
+            
+            // In a real implementation, you would make an API call to fetch the report status
+            // For this demo, we'll just show a success message
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('trackReportModal'));
+            modal.hide();
+            
+            // Show a success message or redirect to a status page
+            alert(`Report ${reportId} is currently Under Investigation. The authorities have been notified and are working on this case.`);
+        });
+        
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

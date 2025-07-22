@@ -1,0 +1,1395 @@
+{% extends 'base.html' %}
+
+{% block title %}Public Services - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+    /* Leaflet map styles */
+    .leaflet-container {
+        height: 400px;
+        width: 100%;
+        border-radius: 10px;
+    }
+    
+    .user-location-marker {
+        color: #3498db;
+        font-size: 24px;
+        text-shadow: 0 0 3px white;
+    }
+    .services-header {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        padding: 60px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 40px;
+    }
+    
+    .search-box {
+        background-color: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-top: -30px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .search-box .form-control, .search-box .form-select {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    
+    .search-box .form-control:focus, .search-box .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        border-color: #3498db;
+    }
+    
+    .search-btn {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .search-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .category-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        text-align: center;
+        margin-bottom: 30px;
+        border: none;
+        height: 100%;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    
+    .category-icon {
+        font-size: 3rem;
+        margin: 20px 0;
+        color: #3498db;
+    }
+    
+    .category-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .category-card .card-title {
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .category-card .card-text {
+        color: #6c757d;
+    }
+    
+    .service-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        border: none;
+        height: 100%;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    
+    .service-card .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .service-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .service-card .card-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .service-card .card-text {
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+    
+    .service-card .badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .service-card .card-footer {
+        background-color: transparent;
+        border-top: 1px solid #f1f1f1;
+        padding: 1rem 1.5rem;
+    }
+    
+    .service-card .btn-outline-primary {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .service-card .btn-outline-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .map-container {
+        height: 500px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .service-list {
+        max-height: 500px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    .service-list-item {
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+        border: 1px solid #f1f1f1;
+    }
+    
+    .service-list-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .service-list-item .badge {
+        font-size: 0.7rem;
+        padding: 5px 10px;
+        border-radius: 10px;
+    }
+    
+    .service-list-item .btn-sm {
+        border-radius: 20px;
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .service-details-modal .modal-content {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .service-details-modal .modal-header {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        border: none;
+    }
+    
+    .service-details-modal .modal-body {
+        padding: 30px;
+    }
+    
+    .service-details-modal .modal-footer {
+        border: none;
+        padding: 20px 30px;
+    }
+    
+    .service-details-modal .service-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .service-details-modal .service-info {
+        margin-bottom: 20px;
+    }
+    
+    .service-details-modal .service-info h5 {
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #3498db;
+    }
+    
+    .service-details-modal .service-info p {
+        margin-bottom: 5px;
+    }
+    
+    .service-details-modal .service-info i {
+        width: 25px;
+        color: #3498db;
+    }
+    
+    .service-details-modal .service-description {
+        margin-bottom: 20px;
+    }
+    
+    .service-details-modal .service-map {
+        height: 200px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    
+    .service-details-modal .service-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .service-details-modal .btn {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-weight: 600;
+    }
+    
+    .pagination {
+        margin-top: 30px;
+    }
+    
+    .pagination .page-item .page-link {
+        border-radius: 10px;
+        margin: 0 5px;
+        color: #3498db;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+    
+    .pagination .page-item .page-link:hover {
+        background-color: #f8f9fa;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .filter-sidebar {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .filter-sidebar .card-header {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        border: none;
+        padding: 15px 20px;
+    }
+    
+    .filter-sidebar .card-body {
+        padding: 20px;
+    }
+    
+    .filter-sidebar .form-check {
+        margin-bottom: 10px;
+    }
+    
+    .filter-sidebar .form-check-input:checked {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+    
+    .filter-sidebar .form-range::-webkit-slider-thumb {
+        background: #3498db;
+    }
+    
+    .filter-sidebar .btn-filter {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        border: none;
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-sidebar .btn-filter:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .rating {
+        color: #f1c40f;
+        font-size: 0.9rem;
+    }
+    
+    .rating-count {
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+    
+    .service-hours {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .service-hours.open {
+        color: #2ecc71;
+        font-weight: 600;
+    }
+    
+    .service-hours.closed {
+        color: #e74c3c;
+        font-weight: 600;
+    }
+    
+    .category-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        z-index: 10;
+    }
+    
+    .badge-hospital {
+        background-color: #e74c3c;
+        color: white;
+    }
+    
+    .badge-education {
+        background-color: #3498db;
+        color: white;
+    }
+    
+    .badge-government {
+        background-color: #9b59b6;
+        color: white;
+    }
+    
+    .badge-bank {
+        background-color: #f1c40f;
+        color: white;
+    }
+    
+    .badge-post {
+        background-color: #e67e22;
+        color: white;
+    }
+    
+    .badge-transport {
+        background-color: #2ecc71;
+        color: white;
+    }
+    
+    .badge-police {
+        background-color: #34495e;
+        color: white;
+    }
+    
+    .badge-other {
+        background-color: #95a5a6;
+        color: white;
+    }
+    
+    .language-toggle {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 1000;
+        background-color: white;
+        border-radius: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .language-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .language-btn.active {
+        background-color: #3498db;
+        color: white;
+    }
+    
+    .language-btn:not(.active) {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+    
+    .language-btn:hover:not(.active) {
+        background-color: #e0e0e0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Language Toggle -->
+<div class="language-toggle">
+    <button class="language-btn active" data-lang="en" title="English">EN</button>
+    <button class="language-btn" data-lang="kn" title="ಕನ್ನಡ">ಕ</button>
+</div>
+
+<!-- Header Section -->
+<section class="services-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown" data-translate="public-services-title">Public Services in Bangalore</h1>
+        <p class="lead mb-0 animate__animated animate__fadeInUp" data-translate="public-services-subtitle">Find and access essential government and private services near you</p>
+    </div>
+</section>
+
+<!-- Search Box -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="search-box" data-aos="fade-up">
+                <form id="search-form">
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" id="search-keyword" placeholder="Search for services..." data-translate-placeholder="search-placeholder">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="search-category">
+                                <option value="" data-translate="all-categories">All Categories</option>
+                                <option value="hospital" data-translate="hospitals">Hospitals</option>
+                                <option value="education" data-translate="education">Education</option>
+                                <option value="government" data-translate="government-offices">Government Offices</option>
+                                <option value="bank" data-translate="banks">Banks</option>
+                                <option value="post" data-translate="post-offices">Post Offices</option>
+                                <option value="transport" data-translate="transport">Transport</option>
+                                <option value="police" data-translate="police-stations">Police Stations</option>
+                                <option value="other" data-translate="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="search-location">
+                                <option value="" data-translate="all-locations">All Locations</option>
+                                <option value="Indiranagar">Indiranagar</option>
+                                <option value="Koramangala">Koramangala</option>
+                                <option value="Jayanagar">Jayanagar</option>
+                                <option value="Whitefield">Whitefield</option>
+                                <option value="Electronic City">Electronic City</option>
+                                <option value="MG Road">MG Road</option>
+                                <option value="Marathahalli">Marathahalli</option>
+                                <option value="HSR Layout">HSR Layout</option>
+                                <option value="BTM Layout">BTM Layout</option>
+                                <option value="Malleshwaram">Malleshwaram</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn search-btn w-100">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Categories -->
+<section class="container mt-5">
+    <h2 class="text-center mb-4" data-aos="fade-up" data-translate="service-categories">Service Categories</h2>
+    <div class="row">
+        <div class="col-md-3 col-sm-6 mb-4" data-aos="fade-up">
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-hospital"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title" data-translate="hospitals">Hospitals</h5>
+                    <p class="card-text" data-translate="hospitals-desc">Find hospitals, clinics, and healthcare centers</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm" data-category="hospital" data-translate="view-all">View All</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title" data-translate="education">Education</h5>
+                    <p class="card-text" data-translate="education-desc">Schools, colleges, and educational institutions</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm" data-category="education" data-translate="view-all">View All</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title" data-translate="government-offices">Government Offices</h5>
+                    <p class="card-text" data-translate="government-desc">Municipal offices and government departments</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm" data-category="government" data-translate="view-all">View All</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-bus"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title" data-translate="transport">Transport</h5>
+                    <p class="card-text" data-translate="transport-desc">Bus stations, metro stations, and transport hubs</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm" data-category="transport" data-translate="view-all">View All</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map and Services List -->
+<section class="container mt-5">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3">
+            <div class="filter-sidebar" data-aos="fade-right">
+                <div class="card-header">
+                    <h5 class="mb-0" data-translate="filters">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form id="filter-form">
+                        <div class="mb-3">
+                            <h6 data-translate="categories">Categories</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="hospital" id="filter-hospital" checked>
+                                <label class="form-check-label" for="filter-hospital" data-translate="hospitals">
+                                    Hospitals
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="education" id="filter-education" checked>
+                                <label class="form-check-label" for="filter-education" data-translate="education">
+                                    Education
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="government" id="filter-government" checked>
+                                <label class="form-check-label" for="filter-government" data-translate="government-offices">
+                                    Government Offices
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="bank" id="filter-bank" checked>
+                                <label class="form-check-label" for="filter-bank" data-translate="banks">
+                                    Banks
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="post" id="filter-post" checked>
+                                <label class="form-check-label" for="filter-post" data-translate="post-offices">
+                                    Post Offices
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="transport" id="filter-transport" checked>
+                                <label class="form-check-label" for="filter-transport" data-translate="transport">
+                                    Transport
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="police" id="filter-police" checked>
+                                <label class="form-check-label" for="filter-police" data-translate="police-stations">
+                                    Police Stations
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 data-translate="distance">Distance</h6>
+                            <input type="range" class="form-range" min="1" max="20" value="10" id="filter-distance">
+                            <div class="d-flex justify-content-between">
+                                <span>1 km</span>
+                                <span id="distance-value">10 km</span>
+                                <span>20 km</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 data-translate="ratings">Ratings</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="rating" id="rating-all" value="" checked>
+                                <label class="form-check-label" for="rating-all" data-translate="all-ratings">
+                                    All Ratings
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="rating" id="rating-4plus" value="4">
+                                <label class="form-check-label" for="rating-4plus">
+                                    4+ <i class="fas fa-star text-warning"></i>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="rating" id="rating-3plus" value="3">
+                                <label class="form-check-label" for="rating-3plus">
+                                    3+ <i class="fas fa-star text-warning"></i>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 data-translate="open-now">Open Now</h6>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="filter-open">
+                                <label class="form-check-label" for="filter-open" data-translate="show-only-open">
+                                    Show only open services
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-filter" data-translate="apply-filters">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map and Services -->
+        <div class="col-lg-9">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="map-container" id="services-map" data-aos="fade-left"></div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="mb-4" data-aos="fade-up" data-translate="nearby-services">Nearby Services</h3>
+                </div>
+            </div>
+            
+            <div class="row" id="services-container">
+                <!-- Service cards will be dynamically generated here -->
+                
+                <!-- Victoria Hospital -->
+                <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up">
+                    <div class="service-card">
+                        <div class="position-relative">
+                            <span class="category-badge badge-hospital">Hospital</span>
+                            <img src="https://source.unsplash.com/random/300x200/?hospital" class="card-img-top" alt="Victoria Hospital">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Victoria Hospital</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rating me-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="rating-count">(245 reviews)</span>
+                            </div>
+                            <p class="card-text"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Fort Road, Bangalore - 560002</p>
+                            <p class="service-hours open"><i class="fas fa-clock me-2"></i>Open Now (24 hours)</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <a href="tel:+918022670000" class="btn btn-sm btn-outline-primary"><i class="fas fa-phone me-1"></i> Call</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#serviceModal1"><i class="fas fa-info-circle me-1"></i> Details</a>
+                            <a href="https://maps.google.com/?q=Victoria+Hospital+Bangalore" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-directions me-1"></i> Directions</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bangalore Medical College -->
+                <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="service-card">
+                        <div class="position-relative">
+                            <span class="category-badge badge-education">Education</span>
+                            <img src="https://source.unsplash.com/random/300x200/?college" class="card-img-top" alt="Bangalore Medical College">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Bangalore Medical College</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rating me-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="rating-count">(187 reviews)</span>
+                            </div>
+                            <p class="card-text"><i class="fas fa-map-marker-alt me-2 text-primary"></i>K.R. Road, Bangalore - 560002</p>
+                            <p class="service-hours open"><i class="fas fa-clock me-2"></i>Open Now (9:00 AM - 5:00 PM)</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <a href="tel:+918026700810" class="btn btn-sm btn-outline-primary"><i class="fas fa-phone me-1"></i> Call</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#serviceModal2"><i class="fas fa-info-circle me-1"></i> Details</a>
+                            <a href="https://maps.google.com/?q=Bangalore+Medical+College" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-directions me-1"></i> Directions</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bangalore City Railway Station -->
+                <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-card">
+                        <div class="position-relative">
+                            <span class="category-badge badge-transport">Transport</span>
+                            <img src="https://source.unsplash.com/random/300x200/?railway" class="card-img-top" alt="Bangalore City Railway Station">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Bangalore City Railway Station</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rating me-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="rating-count">(312 reviews)</span>
+                            </div>
+                            <p class="card-text"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Majestic, Bangalore - 560023</p>
+                            <p class="service-hours open"><i class="fas fa-clock me-2"></i>Open Now (24 hours)</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <a href="tel:+918022874540" class="btn btn-sm btn-outline-primary"><i class="fas fa-phone me-1"></i> Call</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#serviceModal3"><i class="fas fa-info-circle me-1"></i> Details</a>
+                            <a href="https://maps.google.com/?q=Bangalore+City+Railway+Station" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-directions me-1"></i> Directions</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vidhana Soudha -->
+                <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up">
+                    <div class="service-card">
+                        <div class="position-relative">
+                            <span class="category-badge badge-government">Government</span>
+                            <img src="https://source.unsplash.com/random/300x200/?government" class="card-img-top" alt="Vidhana Soudha">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Vidhana Soudha</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rating me-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="rating-count">(428 reviews)</span>
+                            </div>
+                            <p class="card-text"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Dr. Ambedkar Veedhi, Bangalore - 560001</p>
+                            <p class="service-hours open"><i class="fas fa-clock me-2"></i>Open Now (10:00 AM - 5:30 PM)</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <a href="tel:+918022033000" class="btn btn-sm btn-outline-primary"><i class="fas fa-phone me-1"></i> Call</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#serviceModal4"><i class="fas fa-info-circle me-1"></i> Details</a>
+                            <a href="https://maps.google.com/?q=Vidhana+Soudha+Bangalore" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-directions me-1"></i> Directions</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- State Bank of India - Main Branch -->
+                <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="service-card">
+                        <div class="position-relative">
+                            <span class="category-badge badge-bank">Bank</span>
+                            <img src="https://source.unsplash.com/random/300x200/?bank" class="card-img-top" alt="State Bank of India">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">State Bank of India - Main Branch</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rating me-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="rating-count">(156 reviews)</span>
+                            </div>
+                            <p class="card-text"><i class="fas fa-map-marker-alt me-2 text-primary"></i>St. Mark's Road, Bangalore - 560001</p>
+                            <p class="service-hours open"><i class="fas fa-clock me-2"></i>Open Now (10:00 AM - 4:00 PM)</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <a href="tel:+918022955929" class="btn btn-sm btn-outline-primary"><i class="fas fa-phone me-1"></i> Call</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#serviceModal5"><i class="fas fa-info-circle me-1"></i> Details</a>
+                            <a href="https://maps.google.com/?q=State+Bank+of+India+St+Marks+Road+Bangalore" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-directions me-1"></i> Directions</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bangalore GPO -->
+                <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-card">
+                        <div class="position-relative">
+                            <span class="category-badge badge-post">Post</span>
+                            <img src="https://source.unsplash.com/random/300x200/?post" class="card-img-top" alt="Bangalore GPO">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Bangalore GPO</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rating me-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="rating-count">(98 reviews)</span>
+                            </div>
+                            <p class="card-text"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Raj Bhavan Road, Bangalore - 560001</p>
+                            <p class="service-hours open"><i class="fas fa-clock me-2"></i>Open Now (8:00 AM - 8:00 PM)</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <a href="tel:+918022862856" class="btn btn-sm btn-outline-primary"><i class="fas fa-phone me-1"></i> Call</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#serviceModal6"><i class="fas fa-info-circle me-1"></i> Details</a>
+                            <a href="https://maps.google.com/?q=Bangalore+GPO" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-directions me-1"></i> Directions</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Services pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-chevron-left"></i></a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<!-- Service Details Modals -->
+<!-- Victoria Hospital Modal -->
+<div class="modal fade service-details-modal" id="serviceModal1" tabindex="-1" aria-labelledby="serviceModal1Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceModal1Label">Victoria Hospital</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img src="https://source.unsplash.com/random/800x400/?hospital" class="service-image" alt="Victoria Hospital">
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="service-info">
+                            <h5>Contact Information</h5>
+                            <p><i class="fas fa-phone"></i> +91 80 2267 0000</p>
+                            <p><i class="fas fa-globe"></i> <a href="http://www.bmcri.org" target="_blank">www.bmcri.org</a></p>
+                            <p><i class="fas fa-map-marker-alt"></i> Fort Road, Bangalore - 560002</p>
+                            <p><i class="fas fa-clock"></i> Open 24 hours</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="service-info">
+                            <h5>Facilities</h5>
+                            <p><i class="fas fa-check-circle"></i> Emergency Services</p>
+                            <p><i class="fas fa-check-circle"></i> ICU</p>
+                            <p><i class="fas fa-check-circle"></i> Pharmacy</p>
+                            <p><i class="fas fa-check-circle"></i> Laboratory</p>
+                            <p><i class="fas fa-check-circle"></i> Radiology</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-description">
+                    <h5>About</h5>
+                    <p>Victoria Hospital is a major public teaching hospital affiliated with Bangalore Medical College and Research Institute (BMCRI). Established in 1901, it is one of the oldest and largest hospitals in Bangalore, offering a wide range of medical services and specialties.</p>
+                    <p>The hospital provides comprehensive healthcare services including emergency care, surgical procedures, diagnostic services, and specialized treatments across various departments.</p>
+                </div>
+                
+                <div class="service-map" id="serviceMap1"></div>
+                
+                <div class="service-actions">
+                    <a href="tel:+918022670000" class="btn btn-primary"><i class="fas fa-phone me-2"></i> Call Now</a>
+                    <a href="https://maps.google.com/?q=Victoria+Hospital+Bangalore" target="_blank" class="btn btn-success"><i class="fas fa-directions me-2"></i> Get Directions</a>
+                    <a href="http://www.bmcri.org" target="_blank" class="btn btn-info"><i class="fas fa-globe me-2"></i> Visit Website</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- More service modals would be added here -->
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDf8fmG-LH14KqvPA33y-ZCKqBFhmWzD0s&callback=initMap" async defer></script>
+<script src="{{ url_for('static', filename='js/translator.js') }}"></script>
+<script>
+    // Initialize map
+    let map;
+    let markers = [];
+    let serviceLocations = [
+        { lat: 12.9647, lng: 77.5732, title: "Victoria Hospital", type: "hospital" },
+        { lat: 12.9645, lng: 77.5735, title: "Bangalore Medical College", type: "education" },
+        { lat: 12.9783, lng: 77.5731, title: "Bangalore City Railway Station", type: "transport" },
+        { lat: 12.9796, lng: 77.5907, title: "Vidhana Soudha", type: "government" },
+        { lat: 12.9715, lng: 77.6064, title: "State Bank of India - Main Branch", type: "bank" },
+        { lat: 12.9825, lng: 77.5932, title: "Bangalore GPO", type: "post" },
+        { lat: 12.9716, lng: 77.5946, title: "Bowring & Lady Curzon Hospital", type: "hospital" },
+        { lat: 12.9352, lng: 77.5022, title: "Bangalore University", type: "education" },
+        { lat: 12.9783, lng: 77.5731, title: "Kempegowda Bus Station", type: "transport" },
+        { lat: 12.9783, lng: 77.5950, title: "Bangalore City Civil Court", type: "government" },
+        { lat: 12.9179, lng: 77.5975, title: "Jayadeva Institute of Cardiovascular Sciences", type: "hospital" },
+        { lat: 13.0219, lng: 77.5671, title: "Indian Institute of Science", type: "education" },
+        { lat: 12.9783, lng: 77.5731, title: "Bangalore Metro - Majestic Station", type: "transport" },
+        { lat: 12.9767, lng: 77.5713, title: "BBMP Head Office", type: "government" },
+        { lat: 12.9719, lng: 77.5936, title: "Canara Bank - Head Office", type: "bank" },
+        { lat: 13.1989, lng: 77.7068, title: "Bangalore International Airport", type: "transport" },
+        { lat: 12.9432, lng: 77.5932, title: "Nimhans Hospital", type: "hospital" },
+        { lat: 12.9783, lng: 77.5950, title: "Karnataka High Court", type: "government" },
+        { lat: 12.9254, lng: 77.5013, title: "RV College of Engineering", type: "education" },
+        { lat: 12.9719, lng: 77.6014, title: "Bangalore Central Post Office", type: "post" },
+        { lat: 12.9783, lng: 77.5732, title: "Minto Eye Hospital", type: "hospital" },
+        { lat: 12.9767, lng: 77.5950, title: "Bangalore Electricity Supply Company", type: "government" },
+        { lat: 12.9719, lng: 77.6014, title: "HDFC Bank - Regional Office", type: "bank" },
+        { lat: 12.9767, lng: 77.5713, title: "Bangalore Water Supply and Sewerage Board", type: "government" },
+        { lat: 12.9825, lng: 77.5850, title: "Bangalore Police Commissioner's Office", type: "police" }
+    ];
+    
+    function initMap() {
+        // Initialize main map
+        map = new google.maps.Map(document.getElementById('services-map'), {
+            center: { lat: 12.9716, lng: 77.5946 }, // Bangalore coordinates
+            zoom: 12
+        });
+        
+        // Add markers for services
+        addServiceMarkers();
+        
+        // Initialize individual service maps in modals
+        initServiceMaps();
+    }
+    
+    function addServiceMarkers() {
+        // Clear existing markers
+        clearMarkers();
+        
+        // Add markers for each service
+        serviceLocations.forEach(location => {
+            const marker = new google.maps.Marker({
+                position: { lat: location.lat, lng: location.lng },
+                map: map,
+                title: location.title,
+                icon: getMarkerIcon(location.type)
+            });
+            
+            // Add info window
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="max-width: 200px;">
+                        <h5>${location.title}</h5>
+                        <p><strong>Type:</strong> ${location.type}</p>
+                        <a href="https://maps.google.com/?q=${location.lat},${location.lng}" target="_blank" class="btn btn-sm btn-primary">Directions</a>
+                    </div>
+                `
+            });
+            
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+            
+            markers.push(marker);
+        });
+    }
+    
+    function clearMarkers() {
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+    }
+    
+    function getMarkerIcon(type) {
+        switch (type) {
+            case 'hospital':
+                return 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
+            case 'education':
+                return 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+            case 'government':
+                return 'https://maps.google.com/mapfiles/ms/icons/purple-dot.png';
+            case 'bank':
+                return 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+            case 'post':
+                return 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png';
+            case 'transport':
+                return 'https://maps.google.com/mapfiles/ms/icons/green-dot.png';
+            case 'police':
+                return 'https://maps.google.com/mapfiles/ms/icons/black-dot.png';
+            default:
+                return 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
+        }
+    }
+    
+    function initServiceMaps() {
+        // Victoria Hospital map
+        const serviceMap1 = new google.maps.Map(document.getElementById('serviceMap1'), {
+            center: { lat: 12.9647, lng: 77.5732 },
+            zoom: 15
+        });
+        
+        new google.maps.Marker({
+            position: { lat: 12.9647, lng: 77.5732 },
+            map: serviceMap1,
+            title: "Victoria Hospital"
+        });
+        
+        // Initialize other service maps as needed
+    }
+    
+    // Document ready
+    $(document).ready(function() {
+        // Filter distance slider
+        $('#filter-distance').on('input', function() {
+            $('#distance-value').text($(this).val() + ' km');
+        });
+        
+        // Category buttons
+        $('.category-card .btn').click(function(e) {
+            e.preventDefault();
+            const category = $(this).data('category');
+            $('#search-category').val(category);
+            $('#search-form').submit();
+        });
+        
+        // Search form submission
+        $('#search-form').on('submit', function(e) {
+            e.preventDefault();
+            // In a real application, this would filter the services based on the search criteria
+            alert('Search functionality would be implemented here');
+        });
+        
+        // Services data
+        let allServices = [];
+        let filteredServices = [];
+        let serviceMarkers = [];
+        let map;
+        
+        // Load services data
+        function loadServices() {
+            // Simulate loading data (in a real app, this would be an API call)
+            $.ajax({
+                url: '/api/services',
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        allServices = response.services;
+                        applyFilters();
+                    } else {
+                        console.error('Failed to load services:', response.error);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading services:', error);
+                }
+            });
+        }
+        
+        // Initialize map
+        function initMap() {
+            map = L.map('services-map').setView([20.5937, 78.9629], 5); // Center of India
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Try to get user location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        
+                        // Center map on user location
+                        map.setView([userLat, userLng], 12);
+                        
+                        // Add user marker
+                        L.marker([userLat, userLng], {
+                            icon: L.divIcon({
+                                className: 'user-location-marker',
+                                html: '<i class="fas fa-user-circle"></i>',
+                                iconSize: [30, 30],
+                                iconAnchor: [15, 15]
+                            })
+                        }).addTo(map).bindPopup('Your Location').openPopup();
+                        
+                        // Load nearby services
+                        loadNearbyServices(userLat, userLng);
+                    },
+                    function(error) {
+                        console.error('Error getting location:', error);
+                        loadServices(); // Load all services if location not available
+                    }
+                );
+            } else {
+                loadServices(); // Load all services if geolocation not supported
+            }
+        }
+        
+        // Load nearby services
+        function loadNearbyServices(lat, lng) {
+            const radius = $('#filter-distance').val();
+            
+            $.ajax({
+                url: '/api/services/nearby',
+                method: 'GET',
+                data: {
+                    lat: lat,
+                    lng: lng,
+                    radius: radius
+                },
+                success: function(response) {
+                    if (response.success) {
+                        allServices = response.services;
+                        applyFilters();
+                    } else {
+                        console.error('Failed to load nearby services:', response.error);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading nearby services:', error);
+                }
+            });
+        }
+        
+        // Apply filters to services
+        function applyFilters() {
+            // Get filter values
+            const selectedCategories = [];
+            $('input[type="checkbox"][id^="filter-"]:checked').each(function() {
+                if ($(this).attr('id') !== 'filter-open') {
+                    selectedCategories.push($(this).val());
+                }
+            });
+            
+            const minRating = $('input[name="rating"]:checked').val() || 0;
+            const openOnly = $('#filter-open').is(':checked');
+            
+            // Filter services
+            filteredServices = allServices.filter(function(service) {
+                // Filter by category
+                if (selectedCategories.length > 0 && !selectedCategories.includes(service.type)) {
+                    return false;
+                }
+                
+                // Filter by rating (if we had rating data)
+                // This is a placeholder - in a real app, you'd check the service's rating
+                const serviceRating = service.rating || 3.5; // Placeholder rating
+                if (minRating > 0 && serviceRating < minRating) {
+                    return false;
+                }
+                
+                // Filter by open status (if we had opening hours data)
+                // This is a placeholder - in a real app, you'd check if the service is currently open
+                if (openOnly) {
+                    const now = new Date();
+                    const hour = now.getHours();
+                    // Assume most services are open between 9 AM and 5 PM
+                    const isOpen = (hour >= 9 && hour < 17);
+                    if (!isOpen) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            // Update the map and list
+            updateServicesDisplay();
+        }
+        
+        // Update the map and list with filtered services
+        function updateServicesDisplay() {
+            // Clear existing markers
+            if (serviceMarkers.length > 0) {
+                serviceMarkers.forEach(function(marker) {
+                    map.removeLayer(marker);
+                });
+                serviceMarkers = [];
+            }
+            
+            // Add markers for filtered services
+            filteredServices.forEach(function(service) {
+                const marker = L.marker([service.latitude, service.longitude]).addTo(map);
+                
+                // Add popup with service info
+                marker.bindPopup(`
+                    <div class="service-popup">
+                        <h5>${service.name}</h5>
+                        <p><i class="fas fa-map-marker-alt text-danger"></i> ${service.address}</p>
+                        <p><i class="fas fa-phone text-primary"></i> ${service.contact}</p>
+                        <div class="mt-2">
+                            <a href="${service.map_link}" target="_blank" class="btn btn-sm btn-primary">Directions</a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary view-details" data-id="${service.id}">Details</a>
+                        </div>
+                    </div>
+                `);
+                
+                serviceMarkers.push(marker);
+            });
+            
+            // Update services list
+            updateServicesList();
+            
+            // Update results count
+            $('#results-count').text(filteredServices.length);
+        }
+        
+        // Update the services list
+        function updateServicesList() {
+            const servicesList = $('#services-list');
+            servicesList.empty();
+            
+            if (filteredServices.length === 0) {
+                servicesList.html('<div class="alert alert-info">No services found matching your criteria.</div>');
+                return;
+            }
+            
+            filteredServices.forEach(function(service) {
+                // Create service card
+                const serviceCard = $(`
+                    <div class="service-card mb-4" data-id="${service.id}">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${service.name}</h5>
+                                <div class="service-type badge bg-primary mb-2">${service.type}</div>
+                                <div class="rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="rating-count">(24)</span>
+                                </div>
+                                <p class="card-text"><i class="fas fa-map-marker-alt text-danger"></i> ${service.address}</p>
+                                <p class="card-text"><i class="fas fa-phone text-primary"></i> ${service.contact}</p>
+                                ${service.distance ? `<p class="card-text"><i class="fas fa-route text-success"></i> ${service.distance} km away</p>` : ''}
+                                <div class="d-flex justify-content-between mt-3">
+                                    <a href="${service.map_link}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-directions"></i> Directions</a>
+                                    <button class="btn btn-sm btn-outline-secondary view-details" data-id="${service.id}"><i class="fas fa-info-circle"></i> Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+                
+                servicesList.append(serviceCard);
+            });
+            
+            // Add event listeners for view details buttons
+            $('.view-details').on('click', function(e) {
+                e.preventDefault();
+                const serviceId = $(this).data('id');
+                viewServiceDetails(serviceId);
+            });
+        }
+        
+        // View service details
+        function viewServiceDetails(serviceId) {
+            const service = filteredServices.find(s => s.id === serviceId);
+            if (!service) return;
+            
+            // Show service details modal
+            $('#serviceDetailsModal').modal('show');
+            
+            // Populate modal with service details
+            $('#serviceDetailsTitle').text(service.name);
+            $('#serviceDetailsBody').html(`
+                <div class="service-details-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Type:</strong> ${service.type}</p>
+                            <p><strong>Address:</strong> ${service.address}</p>
+                            <p><strong>District:</strong> ${service.district}</p>
+                            <p><strong>State:</strong> ${service.state}</p>
+                            <p><strong>Contact:</strong> ${service.contact}</p>
+                            ${service.distance ? `<p><strong>Distance:</strong> ${service.distance} km</p>` : ''}
+                        </div>
+                        <div class="col-md-6">
+                            <div id="serviceDetailMap" style="height: 200px;"></div>
+                        </div>
+                    </div>
+                </div>
+            `);
+            
+            // Initialize detail map
+            setTimeout(function() {
+                const detailMap = L.map('serviceDetailMap').setView([service.latitude, service.longitude], 15);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(detailMap);
+                
+                L.marker([service.latitude, service.longitude]).addTo(detailMap);
+            }, 300);
+        }
+        
+        // Filter form submission
+        $('#filter-form').on('submit', function(e) {
+            e.preventDefault();
+            applyFilters();
+        });
+        
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+        
+        // Initialize map and load services
+        initMap();
+        
+        // Initialize service maps when modals are shown
+        $('.service-details-modal').on('shown.bs.modal', function() {
+            // Trigger resize to fix Google Maps display issues in modals
+            google.maps.event.trigger(map, 'resize');
+        });
+        
+        // Language toggle
+        $('.language-btn').click(function() {
+            const lang = $(this).data('lang');
+            $('.language-btn').removeClass('active');
+            $(this).addClass('active');
+            
+            // In a real application, this would trigger the language translation
+            if (lang === 'kn') {
+                alert('Content would be translated to Kannada');
+            } else {
+                alert('Content would be displayed in English');
+            }
+        });
+    });
+</script>
+{% endblock %}

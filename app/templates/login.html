@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-header {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        padding: 40px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 40px;
+    }
+    
+    .login-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .login-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: none;
+    }
+    
+    .login-card-header {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .login-card-body {
+        padding: 30px;
+    }
+    
+    .login-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: white;
+    }
+    
+    .form-floating {
+        margin-bottom: 20px;
+    }
+    
+    .form-floating label {
+        color: #6c757d;
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        border-color: #3498db;
+    }
+    
+    .btn-login {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        border: none;
+        border-radius: 30px;
+        padding: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        background: linear-gradient(135deg, #2980b9, #1e2b37);
+    }
+    
+    .login-footer {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    .login-footer a {
+        color: #3498db;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .login-footer a:hover {
+        color: #2980b9;
+        text-decoration: none;
+    }
+    
+    .social-login {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    .social-login-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .social-login-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .facebook {
+        background-color: #3b5998;
+    }
+    
+    .google {
+        background-color: #db4437;
+    }
+    
+    .twitter {
+        background-color: #1da1f2;
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="login-header">
+    <div class="container text-center">
+        <h1 class="display-5 fw-bold mb-3 animate__animated animate__fadeInDown">Welcome Back!</h1>
+        <p class="lead mb-0 animate__animated animate__fadeInUp">Login to access all features of JanSamvaad</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="login-container" data-aos="fade-up">
+        <div class="login-card">
+            <div class="login-card-header">
+                <div class="login-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h3 class="mb-0">Login to Your Account</h3>
+            </div>
+            <div class="login-card-body">
+                <form id="login-form">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                        <label for="username"><i class="fas fa-user me-2"></i>Username</label>
+                    </div>
+                    <div class="form-floating mb-3 position-relative">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                        <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
+                        <span class="password-toggle" id="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember-me">
+                            <label class="form-check-label" for="remember-me">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="text-decoration-none">Forgot password?</a>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-login btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i> Login
+                        </button>
+                    </div>
+                    <div id="login-message" class="mt-3"></div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="mb-2">Or login with</p>
+                    <div class="social-login">
+                        <a href="#" class="social-login-btn facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-login-btn google">
+                            <i class="fab fa-google"></i>
+                        </a>
+                        <a href="#" class="social-login-btn twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="login-footer">
+                    <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Password visibility toggle
+        $('#password-toggle').click(function() {
+            const passwordInput = $('#password');
+            const icon = $(this).find('i');
+            
+            if (passwordInput.attr('type') === 'password') {
+                passwordInput.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                passwordInput.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+        
+        // Form validation and submission
+        $('#login-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const username = $('#username').val();
+            const password = $('#password').val();
+            
+            // Validate inputs
+            let isValid = true;
+            
+            if (!username.trim()) {
+                $('#username').addClass('is-invalid');
+                isValid = false;
+            } else {
+                $('#username').removeClass('is-invalid');
+            }
+            
+            if (!password.trim()) {
+                $('#password').addClass('is-invalid');
+                isValid = false;
+            } else {
+                $('#password').removeClass('is-invalid');
+            }
+            
+            if (!isValid) {
+                $('#login-message').html('<div class="alert alert-danger">Please fill in all required fields.</div>');
+                return;
+            }
+            
+            // Show loading button
+            const submitBtn = $(this).find('button[type="submit"]');
+            const originalBtnText = submitBtn.html();
+            submitBtn.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Logging in...').prop('disabled', true);
+            
+            // Show loading message
+            $('#login-message').html('<div class="alert alert-info">Logging in...</div>');
+            
+            $.ajax({
+                url: '{{ url_for("auth.login") }}',
+                method: 'POST',
+                data: {
+                    username: username,
+                    password: password
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#login-message').html('<div class="alert alert-success">' + response.message + '</div>');
+                        
+                        // Show success animation
+                        submitBtn.html('<i class="fas fa-check-circle me-2"></i> Success!');
+                        submitBtn.removeClass('btn-login').addClass('btn-success');
+                        
+                        // Redirect to home page after successful login
+                        setTimeout(function() {
+                            window.location.href = '{{ url_for("main.index") }}';
+                        }, 1500);
+                    } else {
+                        $('#login-message').html('<div class="alert alert-danger">' + response.message + '</div>');
+                        submitBtn.html(originalBtnText).prop('disabled', false);
+                    }
+                },
+                error: function(xhr) {
+                    const response = xhr.responseJSON || {};
+                    $('#login-message').html('<div class="alert alert-danger">' + (response.message || 'Login failed. Please try again.') + '</div>');
+                    submitBtn.html(originalBtnText).prop('disabled', false);
+                }
+            });
+        });
+        
+        // Input focus effects
+        $('.form-control').focus(function() {
+            $(this).parent().addClass('focused');
+        }).blur(function() {
+            $(this).parent().removeClass('focused');
+        });
+        
+        // Social login buttons hover effect
+        $('.social-login-btn').hover(
+            function() {
+                $(this).addClass('animate__animated animate__pulse');
+            },
+            function() {
+                $(this).removeClass('animate__animated animate__pulse');
+            }
+        );
+        
+        // Remember me functionality
+        if (localStorage.getItem('remember_username')) {
+            $('#username').val(localStorage.getItem('remember_username'));
+            $('#remember-me').prop('checked', true);
+        }
+        
+        $('#remember-me').change(function() {
+            if ($(this).is(':checked')) {
+                const username = $('#username').val();
+                if (username) {
+                    localStorage.setItem('remember_username', username);
+                }
+            } else {
+                localStorage.removeItem('remember_username');
+            }
+        });
+        
+        // Username input change
+        $('#username').on('input', function() {
+            if ($('#remember-me').is(':checked')) {
+                localStorage.setItem('remember_username', $(this).val());
+            }
+        });
+    });
+</script>
+{% endblock %}

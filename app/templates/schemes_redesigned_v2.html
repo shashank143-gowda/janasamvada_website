@@ -1,0 +1,1320 @@
+{% extends 'base.html' %}
+
+{% block title %}Government Schemes - JanSamvaad{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="schemes-hero position-relative overflow-hidden">
+    <!-- Background with overlay -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary" style="opacity: 0.9; background: linear-gradient(135deg, #6c5ce7, #8e44ad);"></div>
+    
+    <!-- Wave shape divider -->
+    <div class="position-absolute bottom-0 start-0 w-100">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" style="width: 100%; height: 80px;">
+            <path fill="#ffffff" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+    
+    <div class="container position-relative py-5">
+        <div class="row align-items-center py-5">
+            <div class="col-lg-6 text-white mb-5 mb-lg-0">
+                <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInUp">Government Schemes</h1>
+                <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    Discover government schemes and benefits available to you. Get detailed information about eligibility, application process, and more.
+                </p>
+                <div class="d-flex flex-wrap gap-3 animate__animated animate__fadeInUp animate__delay-2s">
+                    <button class="btn btn-light btn-lg px-4 d-flex align-items-center" id="exploreAllBtn">
+                        <i class="fas fa-list-ul me-2"></i> Explore All Schemes
+                    </button>
+                    <button class="btn btn-outline-light btn-lg px-4 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#eligibilityCheckerModal">
+                        <i class="fas fa-check-circle me-2"></i> Check Eligibility
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-6 animate__animated animate__fadeInRight">
+                <div class="position-relative">
+                    <img src="{{ url_for('static', filename='img/schemes-hero.jpg') }}" alt="Government Schemes" class="img-fluid rounded-4 shadow-lg" style="transform: perspective(1000px) rotateY(-15deg) rotateX(5deg); transition: all 0.5s ease;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Schemes Categories Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Browse Schemes by Category</h2>
+            <p class="text-muted">Select a category to find specific schemes</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="agriculture">
+                    <div class="icon-wrapper bg-success-subtle">
+                        <i class="fas fa-tractor text-success"></i>
+                    </div>
+                    <h5>Agriculture</h5>
+                    <p class="small text-muted">Schemes for farmers and agriculture</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="education">
+                    <div class="icon-wrapper bg-primary-subtle">
+                        <i class="fas fa-graduation-cap text-primary"></i>
+                    </div>
+                    <h5>Education</h5>
+                    <p class="small text-muted">Scholarships and educational benefits</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="health">
+                    <div class="icon-wrapper bg-danger-subtle">
+                        <i class="fas fa-heartbeat text-danger"></i>
+                    </div>
+                    <h5>Health</h5>
+                    <p class="small text-muted">Healthcare and medical benefits</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="housing">
+                    <div class="icon-wrapper bg-info-subtle">
+                        <i class="fas fa-home text-info"></i>
+                    </div>
+                    <h5>Housing</h5>
+                    <p class="small text-muted">Housing and shelter schemes</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="employment">
+                    <div class="icon-wrapper bg-warning-subtle">
+                        <i class="fas fa-briefcase text-warning"></i>
+                    </div>
+                    <h5>Employment</h5>
+                    <p class="small text-muted">Jobs and skill development</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="women">
+                    <div class="icon-wrapper" style="background-color: #fce4ec;">
+                        <i class="fas fa-female" style="color: #e91e63;"></i>
+                    </div>
+                    <h5>Women</h5>
+                    <p class="small text-muted">Schemes for women empowerment</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="sc-st">
+                    <div class="icon-wrapper" style="background-color: #ede7f6;">
+                        <i class="fas fa-users" style="color: #673ab7;"></i>
+                    </div>
+                    <h5>SC/ST</h5>
+                    <p class="small text-muted">Schemes for SC/ST communities</p>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="scheme-category-card" data-category="all">
+                    <div class="icon-wrapper bg-secondary-subtle">
+                        <i class="fas fa-th-large text-secondary"></i>
+                    </div>
+                    <h5>All Schemes</h5>
+                    <p class="small text-muted">View all available schemes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Schemes Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Featured Schemes</h2>
+            <a href="#all-schemes" class="btn btn-outline-primary rounded-pill">
+                View All <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+        
+        <div class="row g-4" id="featuredSchemesContainer">
+            <!-- Featured schemes will be loaded dynamically -->
+            <div class="col-12 text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading featured schemes...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // This script will run immediately to load featured schemes
+    document.addEventListener('DOMContentLoaded', function() {
+        const featuredSchemesContainer = document.getElementById('featuredSchemesContainer');
+        
+        // Wait for governmentSchemes to be available
+        setTimeout(() => {
+            if (typeof governmentSchemes !== 'undefined') {
+                // Sort by views and take top 3
+                const featuredSchemes = [...governmentSchemes]
+                    .filter(scheme => !scheme.is_expired)
+                    .sort((a, b) => b.views - a.views)
+                    .slice(0, 3);
+                
+                featuredSchemesContainer.innerHTML = '';
+                
+                featuredSchemes.forEach(scheme => {
+                    const schemeCard = document.createElement('div');
+                    schemeCard.className = 'col-md-6 col-lg-4';
+                    
+                    let badgeClass = 'bg-secondary';
+                    switch(scheme.category.toLowerCase()) {
+                        case 'agriculture': badgeClass = 'bg-success'; break;
+                        case 'education': badgeClass = 'bg-primary'; break;
+                        case 'health': badgeClass = 'bg-danger'; break;
+                        case 'housing': badgeClass = 'bg-info'; break;
+                        case 'employment': badgeClass = 'bg-warning text-dark'; break;
+                        case 'women': badgeClass = 'bg-pink'; break;
+                        case 'sc/st': badgeClass = 'bg-purple'; break;
+                    }
+                    
+                    schemeCard.innerHTML = `
+                        <div class="featured-scheme-card">
+                            <div class="scheme-badge ${badgeClass}">${scheme.category}</div>
+                            ${scheme.image_path ? `<img src="${scheme.image_path}" alt="${scheme.name}" class="img-fluid rounded-3 mb-3" style="height: 150px; width: 100%; object-fit: cover;">` : ''}
+                            <h4>${scheme.name}</h4>
+                            <p>${truncateText(scheme.description, 100)}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="eligibility-badge">
+                                    <i class="fas fa-check-circle me-1"></i> ${truncateText(scheme.eligibility.split(',')[0], 20)}
+                                </span>
+                                <button class="btn btn-sm btn-primary rounded-pill px-3 view-details-btn" data-scheme-id="${scheme.id}">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    featuredSchemesContainer.appendChild(schemeCard);
+                });
+                
+                // Add event listeners to view details buttons
+                featuredSchemesContainer.querySelectorAll('.view-details-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const schemeId = this.dataset.schemeId;
+                        const modal = new bootstrap.Modal(document.getElementById('schemeDetailModal'));
+                        showSchemeDetails(schemeId);
+                    });
+                });
+            }
+        }, 500);
+    });
+</script>
+
+<!-- Main Schemes Section -->
+<section class="py-5" id="all-schemes">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Filters Column -->
+            <div class="col-lg-4">
+                <div class="sticky-top pt-4" style="top: 100px;">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h3 class="card-title mb-0 fw-bold">Filter Schemes</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <label class="form-label fw-medium">Categories</label>
+                                <div class="d-flex flex-wrap gap-2" id="categoryFilter">
+                                    <button class="btn btn-sm btn-primary active" data-category="all">All</button>
+                                    <button class="btn btn-sm btn-outline-primary" data-category="agriculture">
+                                        <i class="fas fa-tractor me-1"></i> Agriculture
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-category="education">
+                                        <i class="fas fa-graduation-cap me-1"></i> Education
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-category="health">
+                                        <i class="fas fa-heartbeat me-1"></i> Health
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-category="housing">
+                                        <i class="fas fa-home me-1"></i> Housing
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-category="employment">
+                                        <i class="fas fa-briefcase me-1"></i> Employment
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-category="women">
+                                        <i class="fas fa-female me-1"></i> Women
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-category="sc-st">
+                                        <i class="fas fa-users me-1"></i> SC/ST
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-medium">Search</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="schemeSearch" placeholder="Search schemes...">
+                                    <button class="btn btn-outline-primary" type="button" id="searchBtn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="onlyActiveSchemes" checked>
+                                <label class="form-check-label" for="onlyActiveSchemes">
+                                    Show only active schemes
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button class="btn btn-primary rounded-pill" id="applyFiltersBtn">
+                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mt-4">
+                        <div class="card-body p-0">
+                            <div class="p-4 bg-primary text-white">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-robot fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1">Need Help?</h5>
+                                        <p class="mb-0 small">Our AI assistant can help you find the right schemes</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <button class="btn btn-outline-primary w-100" id="askAiBtn">
+                                    <i class="fas fa-comment-dots me-2"></i> Ask AI Assistant
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Schemes List Column -->
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-0 fw-bold">Available Schemes</h2>
+                        <p class="text-muted mb-0" id="resultsCount">Showing all schemes</p>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-sort me-1"></i> Sort By
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                            <li><a class="dropdown-item active" href="#" data-sort="name">Name (A-Z)</a></li>
+                            <li><a class="dropdown-item" href="#" data-sort="name-desc">Name (Z-A)</a></li>
+                            <li><a class="dropdown-item" href="#" data-sort="popularity">Popularity</a></li>
+                            <li><a class="dropdown-item" href="#" data-sort="recent">Recently Added</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="schemesListView">
+                    <div class="alert alert-info d-flex align-items-center" id="loadingAlert">
+                        <div class="spinner-border spinner-border-sm me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div>Loading schemes...</div>
+                    </div>
+                    
+                    <div id="schemesContainer" class="row g-4"></div>
+                    
+                    <div class="alert alert-warning d-none" id="noResultsAlert">
+                        <i class="fas fa-exclamation-circle me-2"></i> No schemes found matching your criteria. Try changing your filters.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How to Apply Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">How to Apply for Schemes</h2>
+            <p class="text-muted">Simple steps to apply for government schemes</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="how-to-apply-card">
+                    <div class="step-number">1</div>
+                    <div class="icon-wrapper">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h5>Find Scheme</h5>
+                    <p>Search and find the right scheme based on your eligibility</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="how-to-apply-card">
+                    <div class="step-number">2</div>
+                    <div class="icon-wrapper">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h5>Check Documents</h5>
+                    <p>Prepare all required documents for application</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="how-to-apply-card">
+                    <div class="step-number">3</div>
+                    <div class="icon-wrapper">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h5>Fill Application</h5>
+                    <p>Complete the application form with accurate information</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="how-to-apply-card">
+                    <div class="step-number">4</div>
+                    <div class="icon-wrapper">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h5>Submit & Track</h5>
+                    <p>Submit your application and track its status</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Eligibility Checker Modal -->
+<div class="modal fade" id="eligibilityCheckerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title">Eligibility Checker</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-4">Fill in your details to check which schemes you might be eligible for.</p>
+                
+                <form id="eligibilityForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="age" class="form-label">Age</label>
+                            <input type="number" class="form-control" id="age" min="0" max="120">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-select" id="gender">
+                                <option value="">Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category">
+                                <option value="">Select</option>
+                                <option value="general">General</option>
+                                <option value="obc">OBC</option>
+                                <option value="sc">SC</option>
+                                <option value="st">ST</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="annualIncome" class="form-label">Annual Income (₹)</label>
+                            <input type="number" class="form-control" id="annualIncome">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="occupation" class="form-label">Occupation</label>
+                            <select class="form-select" id="occupation">
+                                <option value="">Select</option>
+                                <option value="farmer">Farmer</option>
+                                <option value="student">Student</option>
+                                <option value="employed">Employed</option>
+                                <option value="self-employed">Self-employed</option>
+                                <option value="unemployed">Unemployed</option>
+                                <option value="retired">Retired</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="state" class="form-label">State</label>
+                            <select class="form-select" id="state">
+                                <option value="">Select</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Telangana">Telangana</option>
+                                <!-- Add more states as needed -->
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="checkEligibilityBtn">Check Eligibility</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scheme Detail Modal -->
+<div class="modal fade" id="schemeDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="schemeDetailTitle">Scheme Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="schemeDetailContent">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-primary" id="schemeApplyBtn" target="_blank">
+                    <i class="fas fa-external-link-alt me-1"></i> Apply Online
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Scheme Category Cards - Overridden by theme-fixes.css */
+    .scheme-category-card {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .scheme-category-card .icon-wrapper {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+    
+    .scheme-category-card i {
+        font-size: 28px;
+    }
+    
+    .scheme-category-card h5 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .scheme-category-card p {
+        margin-bottom: 0;
+    }
+    
+    /* Featured Scheme Cards */
+    .featured-scheme-card {
+        background-color: #fff;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        border-top: 5px solid #6c5ce7;
+    }
+    
+    .featured-scheme-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .featured-scheme-card .scheme-badge {
+        position: absolute;
+        top: -12px;
+        left: 25px;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: white;
+    }
+    
+    .featured-scheme-card h4 {
+        font-weight: 600;
+        margin: 15px 0 10px;
+        color: #2c3e50;
+    }
+    
+    .featured-scheme-card p {
+        color: #7f8c8d;
+        margin-bottom: 0;
+    }
+    
+    .featured-scheme-card .eligibility-badge {
+        background-color: #f8f9fa;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    /* Scheme Cards */
+    .scheme-card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .scheme-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .scheme-card .scheme-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .scheme-card .scheme-body {
+        padding: 20px;
+        flex-grow: 1;
+    }
+    
+    .scheme-card .scheme-footer {
+        padding: 15px 20px;
+        background-color: rgba(255, 255, 255, 0.03);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .scheme-card .scheme-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .scheme-card .scheme-category {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-bottom: 15px;
+    }
+    
+    .scheme-card .scheme-description {
+        color: #7f8c8d;
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+    
+    /* How to Apply Cards */
+    .how-to-apply-card {
+        background-color: #fff;
+        border-radius: 12px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+    }
+    
+    .how-to-apply-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .how-to-apply-card .step-number {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 30px;
+        background-color: #6c5ce7;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+    
+    .how-to-apply-card .icon-wrapper {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+    }
+    
+    .how-to-apply-card .icon-wrapper i {
+        font-size: 28px;
+        color: #6c5ce7;
+    }
+    
+    .how-to-apply-card h5 {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
+    
+    .how-to-apply-card p {
+        color: #7f8c8d;
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/schemes_data.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const categoryFilter = document.getElementById('categoryFilter');
+        const schemeSearch = document.getElementById('schemeSearch');
+        const searchBtn = document.getElementById('searchBtn');
+        const onlyActiveSchemes = document.getElementById('onlyActiveSchemes');
+        const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+        const schemesContainer = document.getElementById('schemesContainer');
+        const loadingAlert = document.getElementById('loadingAlert');
+        const noResultsAlert = document.getElementById('noResultsAlert');
+        const exploreAllBtn = document.getElementById('exploreAllBtn');
+        const checkEligibilityBtn = document.getElementById('checkEligibilityBtn');
+        const askAiBtn = document.getElementById('askAiBtn');
+        const resultsCount = document.getElementById('resultsCount');
+        
+        // State
+        let currentCategory = 'all';
+        let currentSearchTerm = '';
+        let currentSort = 'name';
+        let schemesData = [];
+        
+        // Initialize
+        fetchSchemes();
+        
+        // Event listeners
+        categoryFilter.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON') {
+                // Remove active class from all buttons
+                categoryFilter.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-primary');
+                });
+                
+                // Add active class to clicked button
+                e.target.classList.add('active');
+                e.target.classList.remove('btn-outline-primary');
+                e.target.classList.add('btn-primary');
+                
+                currentCategory = e.target.dataset.category;
+            }
+        });
+        
+        // Scheme category cards
+        document.querySelectorAll('.scheme-category-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const category = this.dataset.category;
+                
+                // Update filter buttons
+                categoryFilter.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-primary');
+                    
+                    if (btn.dataset.category === category) {
+                        btn.classList.add('active');
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-primary');
+                    }
+                });
+                
+                currentCategory = category;
+                
+                // Scroll to schemes section
+                document.getElementById('all-schemes').scrollIntoView({ behavior: 'smooth' });
+                
+                // Apply filters
+                applyFilters();
+            });
+        });
+        
+        searchBtn.addEventListener('click', function() {
+            currentSearchTerm = schemeSearch.value.trim();
+            applyFilters();
+        });
+        
+        schemeSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                currentSearchTerm = schemeSearch.value.trim();
+                applyFilters();
+            }
+        });
+        
+        applyFiltersBtn.addEventListener('click', applyFilters);
+        
+        exploreAllBtn.addEventListener('click', function() {
+            // Reset filters
+            currentCategory = 'all';
+            currentSearchTerm = '';
+            schemeSearch.value = '';
+            
+            // Reset category buttons
+            categoryFilter.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+                
+                if (btn.dataset.category === 'all') {
+                    btn.classList.add('active');
+                    btn.classList.remove('btn-outline-primary');
+                    btn.classList.add('btn-primary');
+                }
+            });
+            
+            // Apply filters
+            applyFilters();
+            
+            // Scroll to schemes section
+            document.getElementById('all-schemes').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        document.querySelectorAll('[data-sort]').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active class
+                document.querySelectorAll('[data-sort]').forEach(el => {
+                    el.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Update dropdown button text
+                document.getElementById('sortDropdown').innerHTML = `<i class="fas fa-sort me-1"></i> ${this.textContent}`;
+                
+                // Update sort and apply
+                currentSort = this.dataset.sort;
+                sortSchemes();
+                renderSchemesList(schemesData);
+            });
+        });
+        
+        checkEligibilityBtn.addEventListener('click', checkEligibility);
+        
+        askAiBtn.addEventListener('click', function() {
+            // Open chatbot
+            const chatbotToggle = document.getElementById('chatbotToggle');
+            if (chatbotToggle) {
+                chatbotToggle.click();
+            }
+        });
+        
+        // Featured schemes view details buttons
+        document.querySelectorAll('.view-details-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const schemeId = this.dataset.schemeId;
+                showSchemeDetails(schemeId);
+            });
+        });
+        
+        // Functions
+        function fetchSchemes() {
+            loadingAlert.classList.remove('d-none');
+            noResultsAlert.classList.add('d-none');
+            schemesContainer.innerHTML = '';
+            
+            // Use local data from schemes_data.js
+            setTimeout(() => {
+                loadingAlert.classList.add('d-none');
+                
+                if (governmentSchemes && governmentSchemes.length > 0) {
+                    schemesData = governmentSchemes;
+                    applyFilters();
+                } else {
+                    // Fallback to API if local data is not available
+                    fetch('/schemes_bp/api/schemes')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.schemes.length > 0) {
+                                schemesData = data.schemes;
+                                applyFilters();
+                            } else {
+                                noResultsAlert.classList.remove('d-none');
+                            }
+                        })
+                        .catch(error => {
+                            showToast('Error fetching schemes: ' + error.message, 'danger');
+                        });
+                }
+            }, 500); // Simulate loading for better UX
+        }
+        
+        function applyFilters() {
+            let filteredSchemes = [...schemesData];
+            
+            // Filter by category
+            if (currentCategory !== 'all') {
+                filteredSchemes = filteredSchemes.filter(scheme => 
+                    scheme.category.toLowerCase() === currentCategory.toLowerCase()
+                );
+            }
+            
+            // Filter by search term
+            if (currentSearchTerm) {
+                const searchLower = currentSearchTerm.toLowerCase();
+                filteredSchemes = filteredSchemes.filter(scheme => 
+                    scheme.name.toLowerCase().includes(searchLower) ||
+                    scheme.description.toLowerCase().includes(searchLower) ||
+                    scheme.eligibility.toLowerCase().includes(searchLower)
+                );
+            }
+            
+            // Filter active schemes
+            if (onlyActiveSchemes.checked) {
+                filteredSchemes = filteredSchemes.filter(scheme => 
+                    !scheme.is_expired
+                );
+            }
+            
+            // Sort schemes
+            schemesData = filteredSchemes;
+            sortSchemes();
+            
+            // Update results count
+            resultsCount.textContent = `Showing ${filteredSchemes.length} schemes`;
+            
+            // Render schemes
+            if (filteredSchemes.length > 0) {
+                noResultsAlert.classList.add('d-none');
+                renderSchemesList(filteredSchemes);
+            } else {
+                schemesContainer.innerHTML = '';
+                noResultsAlert.classList.remove('d-none');
+            }
+        }
+        
+        function sortSchemes() {
+            switch(currentSort) {
+                case 'name':
+                    schemesData.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'name-desc':
+                    schemesData.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+                case 'popularity':
+                    // Assuming there's a popularity or views field
+                    schemesData.sort((a, b) => (b.views || 0) - (a.views || 0));
+                    break;
+                case 'recent':
+                    // Assuming there's a date field
+                    schemesData.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+                    break;
+            }
+        }
+        
+        function renderSchemesList(schemes) {
+            schemesContainer.innerHTML = '';
+            
+            schemes.forEach(scheme => {
+                const schemeCard = document.createElement('div');
+                schemeCard.className = 'col-md-6 col-lg-4 mb-4';
+                schemeCard.innerHTML = `
+                    <div class="scheme-card h-100">
+                        ${scheme.image_path ? `
+                            <div class="position-relative">
+                                <img src="${scheme.image_path}" class="card-img-top" alt="${scheme.name}" style="height: 180px; object-fit: cover;">
+                                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%);"></div>
+                                <span class="scheme-category position-absolute top-0 end-0 m-2 ${getCategoryColorClass(scheme.category)}">${scheme.category}</span>
+                                ${scheme.is_expired ? `<span class="position-absolute top-0 start-0 m-2 badge bg-danger">Expired</span>` : ''}
+                            </div>
+                        ` : ''}
+                        <div class="scheme-header p-3">
+                            <h5 class="scheme-title">${scheme.name}</h5>
+                            ${!scheme.image_path ? `<span class="scheme-category ${getCategoryColorClass(scheme.category)}">${scheme.category}</span>` : ''}
+                        </div>
+                        <div class="scheme-body p-3 pt-0">
+                            <p class="scheme-description">${truncateText(scheme.description, 120)}</p>
+                            <div class="d-flex align-items-center mt-2 small text-muted">
+                                <i class="fas fa-eye me-1"></i> ${scheme.views || 0} views
+                            </div>
+                        </div>
+                        <div class="scheme-footer p-3 bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 view-details-btn" data-scheme-id="${scheme.id}">
+                                    <i class="fas fa-info-circle me-1"></i> View Details
+                                </button>
+                                ${scheme.website ? `
+                                    <a href="${scheme.website}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
+                                        <i class="fas fa-external-link-alt me-1"></i> Apply
+                                    </a>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                schemesContainer.appendChild(schemeCard);
+            });
+            
+            // Add event listeners to view details buttons
+            document.querySelectorAll('.view-details-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const schemeId = this.dataset.schemeId;
+                    showSchemeDetails(schemeId);
+                });
+            });
+        }
+        
+        function getCategoryColorClass(category) {
+            switch(category.toLowerCase()) {
+                case 'agriculture':
+                    return 'bg-success text-white';
+                case 'education':
+                    return 'bg-primary text-white';
+                case 'health':
+                    return 'bg-danger text-white';
+                case 'housing':
+                    return 'bg-info text-white';
+                case 'employment':
+                    return 'bg-warning text-dark';
+                case 'women':
+                    return 'bg-pink text-white';
+                case 'sc-st':
+                    return 'bg-purple text-white';
+                default:
+                    return 'bg-secondary text-white';
+            }
+        }
+        
+        function showSchemeDetails(schemeId) {
+            const modal = new bootstrap.Modal(document.getElementById('schemeDetailModal'));
+            const modalTitle = document.getElementById('schemeDetailTitle');
+            const modalContent = document.getElementById('schemeDetailContent');
+            const applyBtn = document.getElementById('schemeApplyBtn');
+            
+            modalContent.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `;
+            
+            modal.show();
+            
+            // Find scheme in local data
+            const scheme = governmentSchemes.find(s => s.id == schemeId);
+            
+            if (scheme) {
+                // Use local data
+                setTimeout(() => {
+                    modalTitle.textContent = scheme.name;
+                    
+                    if (scheme.website) {
+                        applyBtn.href = scheme.website;
+                        applyBtn.classList.remove('d-none');
+                    } else {
+                        applyBtn.classList.add('d-none');
+                    }
+                    
+                    modalContent.innerHTML = `
+                        <div class="scheme-detail">
+                            <div class="scheme-header mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="me-3 ${getCategoryIconClass(scheme.category)}" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        ${getCategoryIcon(scheme.category)}
+                                    </div>
+                                    <div>
+                                        <span class="badge ${getCategoryColorClass(scheme.category)} mb-2">${scheme.category}</span>
+                                        <h4 class="mb-0">${scheme.name}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ${scheme.image_path ? `
+                                <div class="scheme-image mb-4">
+                                    <img src="${scheme.image_path}" alt="${scheme.name}" class="img-fluid rounded-3 shadow-sm" style="max-height: 250px; width: 100%; object-fit: cover;">
+                                </div>
+                            ` : ''}
+                            
+                            <div class="scheme-section mb-4">
+                                <h5 class="section-title">Description</h5>
+                                <p>${scheme.description}</p>
+                            </div>
+                            
+                            <div class="scheme-section mb-4">
+                                <h5 class="section-title">Eligibility</h5>
+                                <p>${scheme.eligibility}</p>
+                            </div>
+                            
+                            <div class="scheme-section mb-4">
+                                <h5 class="section-title">Application Process</h5>
+                                <p>${scheme.application_process}</p>
+                            </div>
+                            
+                            <div class="scheme-section mb-4">
+                                <h5 class="section-title">Documents Required</h5>
+                                <p>${scheme.documents_required}</p>
+                            </div>
+                            
+                            <div class="scheme-section">
+                                <h5 class="section-title">Contact Information</h5>
+                                <p>${scheme.contact_info}</p>
+                                ${scheme.website ? `<p><a href="${scheme.website}" target="_blank" class="text-primary">Visit Official Website <i class="fas fa-external-link-alt ms-1"></i></a></p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }, 500); // Simulate loading for better UX
+            } else {
+                // Fallback to API if scheme not found in local data
+                fetch(`/schemes_bp/api/schemes/${schemeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.scheme) {
+                            const scheme = data.scheme;
+                            modalTitle.textContent = scheme.name;
+                            
+                            if (scheme.website) {
+                                applyBtn.href = scheme.website;
+                                applyBtn.classList.remove('d-none');
+                            } else {
+                                applyBtn.classList.add('d-none');
+                            }
+                            
+                            modalContent.innerHTML = `
+                                <div class="scheme-detail">
+                                    <div class="scheme-header mb-4">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="me-3 ${getCategoryIconClass(scheme.category)}" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                ${getCategoryIcon(scheme.category)}
+                                            </div>
+                                            <div>
+                                                <span class="badge ${getCategoryColorClass(scheme.category)} mb-2">${scheme.category}</span>
+                                                <h4 class="mb-0">${scheme.name}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="scheme-section mb-4">
+                                        <h5 class="section-title">Description</h5>
+                                        <p>${scheme.description}</p>
+                                    </div>
+                                    
+                                    <div class="scheme-section mb-4">
+                                        <h5 class="section-title">Eligibility</h5>
+                                        <p>${scheme.eligibility}</p>
+                                    </div>
+                                    
+                                    <div class="scheme-section mb-4">
+                                        <h5 class="section-title">Application Process</h5>
+                                        <p>${scheme.application_process}</p>
+                                    </div>
+                                    
+                                    <div class="scheme-section mb-4">
+                                        <h5 class="section-title">Documents Required</h5>
+                                        <p>${scheme.documents_required}</p>
+                                    </div>
+                                    
+                                    <div class="scheme-section">
+                                        <h5 class="section-title">Contact Information</h5>
+                                        <p>${scheme.contact_info}</p>
+                                        ${scheme.website ? `<p><a href="${scheme.website}" target="_blank" class="text-primary">Visit Official Website <i class="fas fa-external-link-alt ms-1"></i></a></p>` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            modalContent.innerHTML = `
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-circle me-2"></i> Failed to load scheme details.
+                                </div>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        modalContent.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i> Error: ${error.message}
+                            </div>
+                        `;
+                    });
+            }
+        }
+        
+        function getCategoryIcon(category) {
+            switch(category.toLowerCase()) {
+                case 'agriculture':
+                    return '<i class="fas fa-tractor text-white fa-lg"></i>';
+                case 'education':
+                    return '<i class="fas fa-graduation-cap text-white fa-lg"></i>';
+                case 'health':
+                    return '<i class="fas fa-heartbeat text-white fa-lg"></i>';
+                case 'housing':
+                    return '<i class="fas fa-home text-white fa-lg"></i>';
+                case 'employment':
+                    return '<i class="fas fa-briefcase text-white fa-lg"></i>';
+                case 'women':
+                    return '<i class="fas fa-female text-white fa-lg"></i>';
+                case 'sc-st':
+                    return '<i class="fas fa-users text-white fa-lg"></i>';
+                default:
+                    return '<i class="fas fa-certificate text-white fa-lg"></i>';
+            }
+        }
+        
+        function getCategoryIconClass(category) {
+            switch(category.toLowerCase()) {
+                case 'agriculture':
+                    return 'bg-success';
+                case 'education':
+                    return 'bg-primary';
+                case 'health':
+                    return 'bg-danger';
+                case 'housing':
+                    return 'bg-info';
+                case 'employment':
+                    return 'bg-warning';
+                case 'women':
+                    return 'bg-pink';
+                case 'sc-st':
+                    return 'bg-purple';
+                default:
+                    return 'bg-secondary';
+            }
+        }
+        
+        function checkEligibility() {
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const category = document.getElementById('category').value;
+            const income = document.getElementById('annualIncome').value;
+            const occupation = document.getElementById('occupation').value;
+            const state = document.getElementById('state').value;
+            
+            if (!age || !gender || !category || !income || !occupation || !state) {
+                showToast('Please fill in all fields to check eligibility', 'warning');
+                return;
+            }
+            
+            // In a real app, this would call an API to check eligibility
+            // For demo purposes, we'll just filter schemes based on some basic criteria
+            let eligibleSchemes = schemesData.filter(scheme => {
+                // Simple eligibility check based on category and occupation
+                if (scheme.category.toLowerCase() === 'agriculture' && occupation !== 'farmer') {
+                    return false;
+                }
+                
+                if (scheme.category.toLowerCase() === 'education' && occupation !== 'student') {
+                    return false;
+                }
+                
+                if (scheme.category.toLowerCase() === 'women' && gender !== 'female') {
+                    return false;
+                }
+                
+                if (scheme.category.toLowerCase() === 'sc-st' && (category !== 'sc' && category !== 'st')) {
+                    return false;
+                }
+                
+                // Check if eligibility text contains income criteria
+                if (scheme.eligibility.toLowerCase().includes('income') && 
+                    scheme.eligibility.toLowerCase().includes('below') && 
+                    parseInt(income) > 300000) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('eligibilityCheckerModal'));
+            modal.hide();
+            
+            // Update filters to show eligible schemes
+            currentCategory = 'all';
+            currentSearchTerm = '';
+            schemeSearch.value = '';
+            
+            // Reset category buttons
+            categoryFilter.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+                
+                if (btn.dataset.category === 'all') {
+                    btn.classList.add('active');
+                    btn.classList.remove('btn-outline-primary');
+                    btn.classList.add('btn-primary');
+                }
+            });
+            
+            // Render eligible schemes
+            if (eligibleSchemes.length > 0) {
+                noResultsAlert.classList.add('d-none');
+                renderSchemesList(eligibleSchemes);
+                resultsCount.textContent = `Found ${eligibleSchemes.length} schemes you may be eligible for!`;
+                
+                showToast(`Found ${eligibleSchemes.length} schemes you may be eligible for!`, 'success');
+            } else {
+                schemesContainer.innerHTML = '';
+                noResultsAlert.classList.remove('d-none');
+                resultsCount.textContent = `No eligible schemes found`;
+                
+                showToast('No eligible schemes found based on your profile', 'info');
+            }
+            
+            // Scroll to schemes section
+            document.getElementById('all-schemes').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+        
+        // Make truncateText available globally for the featured schemes section
+        window.truncateText = truncateText;
+        
+        function showToast(message, type = 'info') {
+            // Check if showToast function exists in global scope
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, type);
+            } else {
+                alert(message);
+            }
+        }
+    });
+</script>
+{% endblock %}

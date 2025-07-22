@@ -1,0 +1,1847 @@
+{% extends 'base.html' %}
+
+{% block title %}Public Services - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Main Styles */
+    .services-hero {
+        background: linear-gradient(135deg, #4b6cb7, #182848);
+        color: white;
+        padding: 80px 0 160px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .services-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.2;
+        z-index: 0;
+    }
+    
+    .services-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .services-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .services-hero p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin-bottom: 2rem;
+    }
+    
+    .search-container {
+        background-color: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        margin-top: -80px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .search-container .form-control,
+    .search-container .form-select {
+        border-radius: 10px;
+        padding: 12px 20px;
+        border: 1px solid #e0e0e0;
+        box-shadow: none;
+        transition: all 0.3s ease;
+    }
+    
+    .search-container .form-control:focus,
+    .search-container .form-select:focus {
+        border-color: #4b6cb7;
+        box-shadow: 0 0 0 0.25rem rgba(75, 108, 183, 0.25);
+    }
+    
+    .search-btn {
+        background: linear-gradient(135deg, #4b6cb7, #182848);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .search-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .location-btn {
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .location-btn:hover {
+        background-color: #e9ecef;
+    }
+    
+    .location-btn.active {
+        background-color: #4b6cb7;
+        color: white;
+        border-color: #4b6cb7;
+    }
+    
+    .location-btn.loading {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+    
+    /* Category Cards */
+    .category-card {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: none;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .category-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: white;
+        background: linear-gradient(135deg, #4b6cb7, #182848);
+    }
+    
+    .category-card.hospital .category-icon {
+        background: linear-gradient(135deg, #FF416C, #FF4B2B);
+    }
+    
+    .category-card.education .category-icon {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+    }
+    
+    .category-card.government .category-icon {
+        background: linear-gradient(135deg, #F2994A, #F2C94C);
+    }
+    
+    .category-card.bank .category-icon {
+        background: linear-gradient(135deg, #4b6cb7, #182848);
+    }
+    
+    .category-card.post .category-icon {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+    }
+    
+    .category-card.transport .category-icon {
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+    }
+    
+    .category-card.police .category-icon {
+        background: linear-gradient(135deg, #396afc, #2948ff);
+    }
+    
+    .category-card h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .category-card p {
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+    
+    .category-card .btn {
+        border-radius: 10px;
+        padding: 8px 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .category-card .btn:hover {
+        transform: translateY(-3px);
+    }
+    
+    /* Map and Services List */
+    .map-container {
+        height: 500px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+    
+    .services-list-container {
+        height: 500px;
+        overflow-y: auto;
+        padding-right: 15px;
+    }
+    
+    .service-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        border: none;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .service-card .card-body {
+        padding: 20px;
+    }
+    
+    .service-card .card-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .service-type {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+    
+    .service-type.hospital {
+        background-color: #FF416C;
+    }
+    
+    .service-type.education {
+        background-color: #11998e;
+    }
+    
+    .service-type.government {
+        background-color: #F2994A;
+    }
+    
+    .service-type.bank {
+        background-color: #4b6cb7;
+    }
+    
+    .service-type.post {
+        background-color: #6a11cb;
+    }
+    
+    .service-type.transport {
+        background-color: #00c6ff;
+    }
+    
+    .service-type.police {
+        background-color: #396afc;
+    }
+    
+    .service-card .rating {
+        color: #F2C94C;
+        font-size: 0.9rem;
+    }
+    
+    .service-card .rating-count {
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+    
+    .service-card .card-text {
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .service-card .btn {
+        border-radius: 10px;
+        padding: 5px 15px;
+        font-size: 0.9rem;
+    }
+    
+    /* Filter Sidebar */
+    .filter-sidebar {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+        border: none;
+    }
+    
+    .filter-sidebar .card-header {
+        background: linear-gradient(135deg, #4b6cb7, #182848);
+        color: white;
+        border: none;
+        padding: 15px 20px;
+        font-weight: 600;
+    }
+    
+    .filter-sidebar .card-body {
+        padding: 20px;
+    }
+    
+    .filter-sidebar h6 {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .filter-sidebar .form-check {
+        margin-bottom: 10px;
+    }
+    
+    .filter-sidebar .form-check-input:checked {
+        background-color: #4b6cb7;
+        border-color: #4b6cb7;
+    }
+    
+    .filter-sidebar .form-range::-webkit-slider-thumb {
+        background: #4b6cb7;
+    }
+    
+    .filter-sidebar .btn-filter {
+        background: linear-gradient(135deg, #4b6cb7, #182848);
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-sidebar .btn-filter:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    /* Service Details Modal */
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #4b6cb7, #182848);
+        color: white;
+        border: none;
+    }
+    
+    .modal-body {
+        padding: 25px;
+    }
+    
+    .service-details-content p {
+        margin-bottom: 10px;
+    }
+    
+    .service-details-content strong {
+        color: #333;
+    }
+    
+    .service-detail-map {
+        height: 250px;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    
+    .service-detail-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .service-detail-actions .btn {
+        flex: 1;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 500;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+        .services-hero h1 {
+            font-size: 2.5rem;
+        }
+        
+        .search-container {
+            margin-top: -60px;
+        }
+        
+        .map-container, .services-list-container {
+            height: 400px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .services-hero {
+            padding: 60px 0 140px;
+        }
+        
+        .services-hero h1 {
+            font-size: 2rem;
+        }
+        
+        .search-container {
+            margin-top: -50px;
+            padding: 20px;
+        }
+        
+        .category-card {
+            margin-bottom: 20px;
+        }
+        
+        .map-container {
+            margin-bottom: 20px;
+        }
+    }
+    
+    /* Google Maps Custom Styles */
+    .gm-style .gm-style-iw-c {
+        border-radius: 15px;
+        padding: 12px;
+    }
+    
+    .service-popup h5 {
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    
+    .service-popup p {
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .service-popup .btn {
+        margin-top: 10px;
+        border-radius: 10px;
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+    
+    /* Custom map markers */
+    .map-marker {
+        background-size: cover;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    /* User location marker */
+    .user-location-marker {
+        background-color: #4b6cb7;
+        border-radius: 50%;
+        border: 2px solid white;
+        width: 20px;
+        height: 20px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    }
+    
+    /* Loading spinner */
+    .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.2em;
+    }
+    
+    /* Service status indicators */
+    .status-open {
+        color: #38ef7d;
+        font-weight: 500;
+    }
+    
+    .status-closed {
+        color: #FF416C;
+        font-weight: 500;
+    }
+    
+    /* Accessibility features */
+    .accessibility-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 10px;
+    }
+    
+    .accessibility-badge {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        border-radius: 20px;
+        background-color: #e9ecef;
+        color: #495057;
+    }
+    
+    /* Service hours table */
+    .hours-table {
+        width: 100%;
+        font-size: 0.9rem;
+        margin-top: 15px;
+    }
+    
+    .hours-table td {
+        padding: 5px 0;
+    }
+    
+    .hours-table td:first-child {
+        font-weight: 500;
+        width: 40%;
+    }
+    
+    /* Feedback section */
+    .feedback-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .feedback-section h6 {
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .feedback-stars {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+    
+    .feedback-star {
+        font-size: 1.5rem;
+        color: #e9ecef;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .feedback-star:hover, .feedback-star.active {
+        color: #F2C94C;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="services-hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1 data-aos="fade-up">Find Public Services Near You</h1>
+                <p data-aos="fade-up" data-aos-delay="100">Discover and access government services, healthcare facilities, educational institutions, and more in your area. Get directions, contact information, and service details.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="container">
+    <div class="search-container" data-aos="fade-up" data-aos-delay="200">
+        <form id="search-form">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" id="search-keyword" placeholder="Search for services...">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <select class="form-select" id="search-category">
+                        <option value="all" selected>All Categories</option>
+                        <option value="hospital">Hospitals & Healthcare</option>
+                        <option value="education">Schools & Education</option>
+                        <option value="government">Government Offices</option>
+                        <option value="bank">Banks & ATMs</option>
+                        <option value="post">Post Offices</option>
+                        <option value="transport">Transport Facilities</option>
+                        <option value="police">Police Stations</option>
+                    </select>
+                </div>
+                <div class="col-lg-3">
+                    <select class="form-select" id="search-district">
+                        <option value="" selected>All Districts</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Pune">Pune</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 d-flex">
+                    <button type="submit" class="btn search-btn flex-grow-1">
+                        <i class="fas fa-search me-2"></i> Search
+                    </button>
+                    <button type="button" class="btn location-btn ms-2" id="location-btn" title="Use my location">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="container mt-5">
+    <h2 class="text-center mb-4" data-aos="fade-up">Service Categories</h2>
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="card category-card hospital">
+                <div class="card-body text-center">
+                    <div class="category-icon mx-auto">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <h3>Healthcare</h3>
+                    <p>Find hospitals, clinics, primary health centers, and other healthcare facilities.</p>
+                    <button class="btn btn-danger w-100" data-category="hospital">
+                        <i class="fas fa-search me-2"></i> Find Healthcare
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card category-card education">
+                <div class="card-body text-center">
+                    <div class="category-icon mx-auto">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <h3>Education</h3>
+                    <p>Locate schools, colleges, universities, and other educational institutions.</p>
+                    <button class="btn btn-success w-100" data-category="education">
+                        <i class="fas fa-search me-2"></i> Find Education
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="card category-card government">
+                <div class="card-body text-center">
+                    <div class="category-icon mx-auto">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <h3>Government</h3>
+                    <p>Locate government offices, panchayat offices, and administrative centers.</p>
+                    <button class="btn btn-warning w-100" data-category="government">
+                        <i class="fas fa-search me-2"></i> Find Offices
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+            <div class="card category-card bank">
+                <div class="card-body text-center">
+                    <div class="category-icon mx-auto">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h3>Banks & ATMs</h3>
+                    <p>Find banks, ATMs, and other financial institutions in your vicinity.</p>
+                    <button class="btn btn-primary w-100" data-category="bank">
+                        <i class="fas fa-search me-2"></i> Find Banks
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map and Services List -->
+<section class="container mt-5">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3">
+            <div class="card filter-sidebar" data-aos="fade-right">
+                <div class="card-header">
+                    <h5 class="mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form id="filter-form">
+                        <div class="mb-3">
+                            <h6>Categories</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="hospital" id="filter-hospital" checked>
+                                <label class="form-check-label" for="filter-hospital">
+                                    Hospitals & Healthcare
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="education" id="filter-education" checked>
+                                <label class="form-check-label" for="filter-education">
+                                    Schools & Education
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="government" id="filter-government" checked>
+                                <label class="form-check-label" for="filter-government">
+                                    Government Offices
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="bank" id="filter-bank" checked>
+                                <label class="form-check-label" for="filter-bank">
+                                    Banks & ATMs
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="post" id="filter-post" checked>
+                                <label class="form-check-label" for="filter-post">
+                                    Post Offices
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="transport" id="filter-transport" checked>
+                                <label class="form-check-label" for="filter-transport">
+                                    Transport Facilities
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="police" id="filter-police" checked>
+                                <label class="form-check-label" for="filter-police">
+                                    Police Stations
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>Distance</h6>
+                            <input type="range" class="form-range" min="1" max="20" value="10" id="filter-distance">
+                            <div class="d-flex justify-content-between">
+                                <span>1 km</span>
+                                <span id="distance-value">10 km</span>
+                                <span>20 km</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>Ratings</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="rating" id="rating-all" value="0" checked>
+                                <label class="form-check-label" for="rating-all">
+                                    All ratings
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="rating" id="rating-4plus" value="4">
+                                <label class="form-check-label" for="rating-4plus">
+                                    4+ <i class="fas fa-star text-warning"></i>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="rating" id="rating-3plus" value="3">
+                                <label class="form-check-label" for="rating-3plus">
+                                    3+ <i class="fas fa-star text-warning"></i>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>Open Now</h6>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="filter-open">
+                                <label class="form-check-label" for="filter-open">
+                                    Show only open services
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>Accessibility</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="wheelchair" id="filter-wheelchair">
+                                <label class="form-check-label" for="filter-wheelchair">
+                                    Wheelchair accessible
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="parking" id="filter-parking">
+                                <label class="form-check-label" for="filter-parking">
+                                    Accessible parking
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-filter">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map and Services -->
+        <div class="col-lg-9">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">Services Near You</h4>
+                        <div class="d-flex align-items-center">
+                            <span class="me-2">Found <span id="results-count">0</span> results</span>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary active" id="view-map">
+                                    <i class="fas fa-map-marked-alt"></i> Map
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" id="view-list">
+                                    <i class="fas fa-list"></i> List
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="map-view">
+                        <div class="map-container" id="services-map" data-aos="fade-left"></div>
+                    </div>
+                    
+                    <div id="list-view" style="display: none;">
+                        <div class="services-list-container" id="services-list" data-aos="fade-left">
+                            <!-- Services will be populated here -->
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-3">Loading services...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Service Details Modal -->
+<div class="modal fade" id="serviceDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceDetailsTitle">Service Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="serviceDetailsBody">
+                <!-- Content will be populated dynamically -->
+                <div class="text-center py-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading service details...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDf8fmG-LH14KqvPA33y-ZCKqBFhmWzD0s&libraries=places"></script>
+<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+<script>
+    // Global variables
+    let map;
+    let userLocation = null;
+    let allServices = [];
+    let filteredServices = [];
+    let markers = [];
+    let markerCluster;
+    let userMarker = null;
+    let autocomplete;
+    
+    // Initialize map
+    function initMap() {
+        // Create map centered on India
+        map = new google.maps.Map(document.getElementById('services-map'), {
+            center: { lat: 20.5937, lng: 78.9629 },
+            zoom: 5,
+            styles: [
+                {
+                    "featureType": "administrative",
+                    "elementType": "labels.text.fill",
+                    "stylers": [{"color": "#444444"}]
+                },
+                {
+                    "featureType": "landscape",
+                    "elementType": "all",
+                    "stylers": [{"color": "#f2f2f2"}]
+                },
+                {
+                    "featureType": "poi",
+                    "elementType": "all",
+                    "stylers": [{"visibility": "off"}]
+                },
+                {
+                    "featureType": "road",
+                    "elementType": "all",
+                    "stylers": [{"saturation": -100}, {"lightness": 45}]
+                },
+                {
+                    "featureType": "road.highway",
+                    "elementType": "all",
+                    "stylers": [{"visibility": "simplified"}]
+                },
+                {
+                    "featureType": "road.arterial",
+                    "elementType": "labels.icon",
+                    "stylers": [{"visibility": "off"}]
+                },
+                {
+                    "featureType": "transit",
+                    "elementType": "all",
+                    "stylers": [{"visibility": "off"}]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "all",
+                    "stylers": [{"color": "#c4e5f9"}, {"visibility": "on"}]
+                }
+            ]
+        });
+        
+        // Initialize Places Autocomplete
+        autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('search-keyword'),
+            { types: ['geocode'] }
+        );
+        
+        // Bias the autocomplete results to the map's viewport
+        autocomplete.bindTo('bounds', map);
+        
+        // Listen for place selection
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            
+            if (!place.geometry) {
+                return;
+            }
+            
+            // If the place has a geometry, then present it on a map
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);
+            }
+            
+            // Set user location based on selected place
+            userLocation = {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+            };
+            
+            // Update user marker
+            updateUserMarker();
+            
+            // Load nearby services
+            loadNearbyServices();
+        });
+        
+        // Try to get user location
+        $('#location-btn').click(getUserLocation);
+    }
+    
+    // Get user location
+    function getUserLocation() {
+        const locationBtn = $('#location-btn');
+        
+        if (locationBtn.hasClass('active')) {
+            // Already tracking location, do nothing
+            return;
+        }
+        
+        locationBtn.addClass('loading');
+        locationBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    // Update button state
+                    locationBtn.removeClass('loading');
+                    locationBtn.addClass('active');
+                    locationBtn.html('<i class="fas fa-map-marker-alt"></i>');
+                    
+                    // Center map on user location
+                    map.setCenter(new google.maps.LatLng(userLocation.lat, userLocation.lng));
+                    map.setZoom(13);
+                    
+                    // Update user marker
+                    updateUserMarker();
+                    
+                    // Load nearby services
+                    loadNearbyServices();
+                },
+                function(error) {
+                    console.error('Error getting location:', error);
+                    
+                    // Update button state
+                    locationBtn.removeClass('loading');
+                    locationBtn.html('<i class="fas fa-map-marker-alt"></i>');
+                    
+                    // Show error message
+                    alert('Could not get your location. Please try again or search manually.');
+                    
+                    // Load all services
+                    loadServices();
+                }
+            );
+        } else {
+            // Geolocation not supported
+            locationBtn.removeClass('loading');
+            locationBtn.html('<i class="fas fa-map-marker-alt"></i>');
+            
+            alert('Geolocation is not supported by your browser. Please search manually.');
+            
+            // Load all services
+            loadServices();
+        }
+    }
+    
+    // Update user marker
+    function updateUserMarker() {
+        // Remove existing user marker
+        if (userMarker) {
+            userMarker.setMap(null);
+        }
+        
+        // Add user marker
+        if (userLocation) {
+            userMarker = new google.maps.Marker({
+                position: new google.maps.LatLng(userLocation.lat, userLocation.lng),
+                map: map,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: '#4b6cb7',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2,
+                    scale: 8
+                },
+                title: 'Your Location',
+                zIndex: 1000
+            });
+            
+            // Add info window
+            const infoWindow = new google.maps.InfoWindow({
+                content: '<div class="p-2">Your Location</div>'
+            });
+            
+            userMarker.addListener('click', function() {
+                infoWindow.open(map, userMarker);
+            });
+        }
+    }
+    
+    // Load all services
+    function loadServices() {
+        // Clear existing markers
+        clearMarkers();
+        
+        // Show loading state
+        $('#services-list').html(`
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Loading services...</p>
+            </div>
+        `);
+        
+        // Get filter values
+        const category = $('#search-category').val();
+        const district = $('#search-district').val();
+        
+        // Build API URL
+        let apiUrl = '/api/services';
+        const params = [];
+        
+        if (category && category !== 'all') {
+            params.push(`type=${category}`);
+        }
+        
+        if (district) {
+            params.push(`district=${district}`);
+        }
+        
+        if (params.length > 0) {
+            apiUrl += '?' + params.join('&');
+        }
+        
+        // Fetch services from API
+        $.ajax({
+            url: apiUrl,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    allServices = response.services;
+                    applyFilters();
+                } else {
+                    console.error('Failed to load services:', response.error);
+                    $('#services-list').html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Failed to load services. Please try again later.
+                        </div>
+                    `);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading services:', error);
+                $('#services-list').html(`
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Failed to load services. Please try again later.
+                    </div>
+                `);
+            }
+        });
+    }
+    
+    // Load nearby services
+    function loadNearbyServices() {
+        if (!userLocation) {
+            loadServices();
+            return;
+        }
+        
+        // Clear existing markers
+        clearMarkers();
+        
+        // Show loading state
+        $('#services-list').html(`
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Loading services near you...</p>
+            </div>
+        `);
+        
+        // Get filter values
+        const category = $('#search-category').val();
+        const radius = $('#filter-distance').val();
+        
+        // Build API URL
+        let apiUrl = `/api/services/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radius=${radius}`;
+        
+        if (category && category !== 'all') {
+            apiUrl += `&type=${category}`;
+        }
+        
+        // Fetch nearby services from API
+        $.ajax({
+            url: apiUrl,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    allServices = response.services;
+                    applyFilters();
+                } else {
+                    console.error('Failed to load nearby services:', response.error);
+                    $('#services-list').html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Failed to load services. Please try again later.
+                        </div>
+                    `);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading nearby services:', error);
+                $('#services-list').html(`
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Failed to load services. Please try again later.
+                    </div>
+                `);
+            }
+        });
+    }
+    
+    // Clear all markers from the map
+    function clearMarkers() {
+        // Remove all markers from the map
+        for (let i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+        }
+        
+        // Clear markers array
+        markers = [];
+        
+        // Clear marker cluster if it exists
+        if (markerCluster) {
+            markerCluster.clearMarkers();
+        }
+    }
+    
+    // Apply filters to services
+    function applyFilters() {
+        // Get filter values
+        const keyword = $('#search-keyword').val().toLowerCase();
+        const selectedCategories = [];
+        $('input[type="checkbox"][id^="filter-"]:checked').each(function() {
+            if ($(this).attr('id') !== 'filter-open' && 
+                $(this).attr('id') !== 'filter-wheelchair' && 
+                $(this).attr('id') !== 'filter-parking') {
+                selectedCategories.push($(this).val());
+            }
+        });
+        
+        const minRating = $('input[name="rating"]:checked').val() || 0;
+        const openOnly = $('#filter-open').is(':checked');
+        const wheelchairAccess = $('#filter-wheelchair').is(':checked');
+        const accessibleParking = $('#filter-parking').is(':checked');
+        
+        // Filter services
+        filteredServices = allServices.filter(function(service) {
+            // Filter by keyword
+            if (keyword && !(
+                service.name.toLowerCase().includes(keyword) ||
+                service.address.toLowerCase().includes(keyword) ||
+                service.district.toLowerCase().includes(keyword) ||
+                service.type.toLowerCase().includes(keyword)
+            )) {
+                return false;
+            }
+            
+            // Filter by category
+            if (selectedCategories.length > 0 && !selectedCategories.includes(service.type)) {
+                return false;
+            }
+            
+            // Filter by rating (if we had rating data)
+            // This is a placeholder - in a real app, you'd check the service's rating
+            const serviceRating = service.rating || Math.floor(Math.random() * 2) + 3; // Random rating between 3-5 for demo
+            if (minRating > 0 && serviceRating < minRating) {
+                return false;
+            }
+            
+            // Filter by open status (if we had opening hours data)
+            // This is a placeholder - in a real app, you'd check if the service is currently open
+            if (openOnly) {
+                const now = new Date();
+                const hour = now.getHours();
+                // Assume most services are open between 9 AM and 5 PM on weekdays
+                const isWeekday = now.getDay() > 0 && now.getDay() < 6;
+                const isOpen = isWeekday && (hour >= 9 && hour < 17);
+                if (!isOpen) {
+                    return false;
+                }
+            }
+            
+            // Filter by accessibility features (if we had accessibility data)
+            // This is a placeholder - in a real app, you'd check the service's accessibility features
+            if (wheelchairAccess && !service.wheelchair_accessible) {
+                return false;
+            }
+            
+            if (accessibleParking && !service.accessible_parking) {
+                return false;
+            }
+            
+            return true;
+        });
+        
+        // Update the map and list
+        updateServicesDisplay();
+    }
+    
+    // Update the map and list with filtered services
+    function updateServicesDisplay() {
+        // Clear existing markers
+        clearMarkers();
+        
+        // Update results count
+        $('#results-count').text(filteredServices.length);
+        
+        if (filteredServices.length === 0) {
+            // No services found
+            $('#services-list').html(`
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No services found matching your criteria. Try adjusting your filters.
+                </div>
+            `);
+            return;
+        }
+        
+        // Create bounds object to fit all markers
+        const bounds = new google.maps.LatLngBounds();
+        
+        // Add markers for filtered services
+        filteredServices.forEach(function(service) {
+            // Get marker color based on service type
+            const markerColor = getMarkerColor(service.type);
+            
+            // Create marker
+            const marker = new google.maps.Marker({
+                position: new google.maps.LatLng(service.latitude, service.longitude),
+                map: map,
+                title: service.name,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: markerColor,
+                    fillOpacity: 0.9,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2,
+                    scale: 10
+                },
+                animation: google.maps.Animation.DROP
+            });
+            
+            // Create info window with service info
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div class="service-popup">
+                        <h5>${service.name}</h5>
+                        <p><i class="fas fa-map-marker-alt text-danger me-1"></i> ${service.address}</p>
+                        <p><i class="fas fa-phone text-primary me-1"></i> ${service.contact || 'N/A'}</p>
+                        ${service.distance ? `<p><i class="fas fa-route text-success me-1"></i> ${service.distance} km away</p>` : ''}
+                        <div class="d-flex justify-content-between mt-2">
+                            <a href="${service.map_link}" target="_blank" class="btn btn-sm btn-primary">Directions</a>
+                            <button class="btn btn-sm btn-outline-secondary view-details-btn" data-id="${service.id}">Details</button>
+                        </div>
+                    </div>
+                `
+            });
+            
+            // Add click event to marker
+            marker.addListener('click', function() {
+                // Close all other info windows
+                for (let i = 0; i < markers.length; i++) {
+                    if (markers[i].infoWindow && markers[i] !== marker) {
+                        markers[i].infoWindow.close();
+                    }
+                }
+                
+                // Open this info window
+                infoWindow.open(map, marker);
+                
+                // Add click event to view details button
+                google.maps.event.addListenerOnce(infoWindow, 'domready', function() {
+                    $('.view-details-btn').click(function() {
+                        const serviceId = $(this).data('id');
+                        viewServiceDetails(serviceId);
+                    });
+                });
+            });
+            
+            // Store info window with marker
+            marker.infoWindow = infoWindow;
+            
+            // Add marker to array
+            markers.push(marker);
+            
+            // Extend bounds to include this marker
+            bounds.extend(marker.getPosition());
+        });
+        
+        // Fit map to bounds if we have markers and user hasn't manually positioned the map
+        if (markers.length > 0 && !userLocation) {
+            map.fitBounds(bounds);
+            
+            // Don't zoom in too far
+            const listener = google.maps.event.addListener(map, 'idle', function() {
+                if (map.getZoom() > 16) {
+                    map.setZoom(16);
+                }
+                google.maps.event.removeListener(listener);
+            });
+        }
+        
+        // Create marker clusterer if we have more than 10 markers
+        if (markers.length > 10) {
+            markerCluster = new MarkerClusterer(map, markers, {
+                imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+            });
+        }
+        
+        // Update services list
+        updateServicesList();
+    }
+    
+    // Get marker color based on service type
+    function getMarkerColor(type) {
+        const colors = {
+            'hospital': '#FF416C',
+            'education': '#11998e',
+            'government': '#F2994A',
+            'bank': '#4b6cb7',
+            'post': '#6a11cb',
+            'transport': '#00c6ff',
+            'police': '#396afc'
+        };
+        
+        return colors[type] || '#4b6cb7';
+    }
+    
+    // Update the services list
+    function updateServicesList() {
+        const servicesList = $('#services-list');
+        servicesList.empty();
+        
+        filteredServices.forEach(function(service) {
+            // Generate random rating for demo
+            const rating = service.rating || Math.floor(Math.random() * 2) + 3; // Random rating between 3-5
+            const ratingStars = generateRatingStars(rating);
+            
+            // Check if service is open (placeholder)
+            const now = new Date();
+            const hour = now.getHours();
+            const isWeekday = now.getDay() > 0 && now.getDay() < 6;
+            const isOpen = isWeekday && (hour >= 9 && hour < 17);
+            
+            // Create service card
+            const serviceCard = $(`
+                <div class="service-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title">${service.name}</h5>
+                                <span class="badge service-type ${service.type}">${capitalizeFirstLetter(service.type)}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="rating">
+                                    ${ratingStars}
+                                    <span class="rating-count">(${Math.floor(Math.random() * 50) + 10})</span>
+                                </div>
+                                <span class="${isOpen ? 'status-open' : 'status-closed'}">
+                                    <i class="fas fa-circle me-1" style="font-size: 0.6rem;"></i>
+                                    ${isOpen ? 'Open Now' : 'Closed'}
+                                </span>
+                            </div>
+                            <p class="card-text"><i class="fas fa-map-marker-alt text-danger me-2"></i> ${service.address}</p>
+                            <p class="card-text"><i class="fas fa-phone text-primary me-2"></i> ${service.contact || 'N/A'}</p>
+                            ${service.distance ? `<p class="card-text"><i class="fas fa-route text-success me-2"></i> ${service.distance} km away</p>` : ''}
+                            
+                            <div class="accessibility-features">
+                                ${Math.random() > 0.5 ? '<span class="accessibility-badge"><i class="fas fa-wheelchair me-1"></i> Wheelchair Access</span>' : ''}
+                                ${Math.random() > 0.5 ? '<span class="accessibility-badge"><i class="fas fa-parking me-1"></i> Accessible Parking</span>' : ''}
+                                ${Math.random() > 0.7 ? '<span class="accessibility-badge"><i class="fas fa-sign-language me-1"></i> Sign Language</span>' : ''}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-3">
+                                <a href="${service.map_link}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-directions me-1"></i> Directions
+                                </a>
+                                <button class="btn btn-sm btn-outline-secondary view-details" data-id="${service.id}">
+                                    <i class="fas fa-info-circle me-1"></i> Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+            
+            servicesList.append(serviceCard);
+        });
+        
+        // Add event listeners for view details buttons
+        $('.view-details').click(function() {
+            const serviceId = $(this).data('id');
+            viewServiceDetails(serviceId);
+        });
+    }
+    
+    // View service details
+    function viewServiceDetails(serviceId) {
+        const service = filteredServices.find(s => s.id === serviceId);
+        if (!service) return;
+        
+        // Show service details modal
+        $('#serviceDetailsModal').modal('show');
+        
+        // Populate modal with service details
+        $('#serviceDetailsTitle').text(service.name);
+        
+        // Generate random rating for demo
+        const rating = service.rating || Math.floor(Math.random() * 2) + 3; // Random rating between 3-5
+        const ratingStars = generateRatingStars(rating);
+        
+        // Check if service is open (placeholder)
+        const now = new Date();
+        const hour = now.getHours();
+        const isWeekday = now.getDay() > 0 && now.getDay() < 6;
+        const isOpen = isWeekday && (hour >= 9 && hour < 17);
+        
+        // Generate random service hours for demo
+        const serviceHours = `
+            <table class="hours-table">
+                <tr><td>Monday - Friday:</td><td>9:00 AM - 5:00 PM</td></tr>
+                <tr><td>Saturday:</td><td>10:00 AM - 2:00 PM</td></tr>
+                <tr><td>Sunday:</td><td>Closed</td></tr>
+            </table>
+        `;
+        
+        // Generate random facilities for demo
+        const facilities = [
+            'Free WiFi', 'Parking Available', 'Drinking Water', 'Waiting Area', 
+            'Restrooms', 'Help Desk', 'Digital Payment Accepted'
+        ];
+        
+        const randomFacilities = [];
+        for (let i = 0; i < 4; i++) {
+            const randomIndex = Math.floor(Math.random() * facilities.length);
+            randomFacilities.push(facilities[randomIndex]);
+            facilities.splice(randomIndex, 1);
+        }
+        
+        const facilitiesList = randomFacilities.map(f => `<li>${f}</li>`).join('');
+        
+        $('#serviceDetailsBody').html(`
+            <div class="service-details-content">
+                <div class="service-detail-map" id="serviceDetailMap"></div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Type:</strong> ${capitalizeFirstLetter(service.type)}</p>
+                        <p><strong>Address:</strong> ${service.address}</p>
+                        <p><strong>District:</strong> ${service.district}</p>
+                        <p><strong>State:</strong> ${service.state || 'N/A'}</p>
+                        <p><strong>Contact:</strong> ${service.contact || 'N/A'}</p>
+                        ${service.distance ? `<p><strong>Distance:</strong> ${service.distance} km</p>` : ''}
+                        <p>
+                            <strong>Status:</strong> 
+                            <span class="${isOpen ? 'status-open' : 'status-closed'}">
+                                <i class="fas fa-circle me-1" style="font-size: 0.6rem;"></i>
+                                ${isOpen ? 'Open Now' : 'Closed'}
+                            </span>
+                        </p>
+                        <p><strong>Rating:</strong> ${ratingStars} <span class="rating-count">(${Math.floor(Math.random() * 50) + 10})</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Service Hours:</strong></p>
+                        ${serviceHours}
+                        
+                        <p class="mt-3"><strong>Facilities:</strong></p>
+                        <ul>
+                            ${facilitiesList}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="service-detail-actions">
+                    <a href="${service.map_link}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-directions me-2"></i> Get Directions
+                    </a>
+                    <button class="btn btn-outline-primary" id="shareService">
+                        <i class="fas fa-share-alt me-2"></i> Share
+                    </button>
+                    <button class="btn btn-outline-secondary" id="reportIssue">
+                        <i class="fas fa-flag me-2"></i> Report Issue
+                    </button>
+                </div>
+                
+                <div class="feedback-section">
+                    <h6>Rate this service</h6>
+                    <div class="feedback-stars">
+                        <span class="feedback-star" data-rating="1"><i class="far fa-star"></i></span>
+                        <span class="feedback-star" data-rating="2"><i class="far fa-star"></i></span>
+                        <span class="feedback-star" data-rating="3"><i class="far fa-star"></i></span>
+                        <span class="feedback-star" data-rating="4"><i class="far fa-star"></i></span>
+                        <span class="feedback-star" data-rating="5"><i class="far fa-star"></i></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" placeholder="Leave a comment" id="feedbackComment" style="height: 100px"></textarea>
+                        <label for="feedbackComment">Your feedback (optional)</label>
+                    </div>
+                    <button class="btn btn-primary" id="submitFeedback">Submit Feedback</button>
+                </div>
+            </div>
+        `);
+        
+        // Initialize detail map
+        setTimeout(function() {
+            const detailMap = new google.maps.Map(document.getElementById('serviceDetailMap'), {
+                center: { lat: service.latitude, lng: service.longitude },
+                zoom: 15,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false
+            });
+            
+            // Add service marker
+            const serviceMarker = new google.maps.Marker({
+                position: new google.maps.LatLng(service.latitude, service.longitude),
+                map: detailMap,
+                title: service.name,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: getMarkerColor(service.type),
+                    fillOpacity: 0.9,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2,
+                    scale: 10
+                }
+            });
+            
+            // Add info window
+            const infoWindow = new google.maps.InfoWindow({
+                content: `<div class="p-2">${service.name}</div>`
+            });
+            
+            serviceMarker.addListener('click', function() {
+                infoWindow.open(detailMap, serviceMarker);
+            });
+            
+            // Add user location marker if available
+            if (userLocation) {
+                const userDetailMarker = new google.maps.Marker({
+                    position: new google.maps.LatLng(userLocation.lat, userLocation.lng),
+                    map: detailMap,
+                    title: 'Your Location',
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillColor: '#4b6cb7',
+                        fillOpacity: 1,
+                        strokeColor: '#ffffff',
+                        strokeWeight: 2,
+                        scale: 8
+                    },
+                    zIndex: 1000
+                });
+                
+                // Add info window
+                const userInfoWindow = new google.maps.InfoWindow({
+                    content: '<div class="p-2">Your Location</div>'
+                });
+                
+                userDetailMarker.addListener('click', function() {
+                    userInfoWindow.open(detailMap, userDetailMarker);
+                });
+                
+                // If we have both user location and service location, show route
+                const directionsService = new google.maps.DirectionsService();
+                const directionsRenderer = new google.maps.DirectionsRenderer({
+                    map: detailMap,
+                    suppressMarkers: true,
+                    polylineOptions: {
+                        strokeColor: '#4b6cb7',
+                        strokeWeight: 5,
+                        strokeOpacity: 0.7
+                    }
+                });
+                
+                directionsService.route({
+                    origin: new google.maps.LatLng(userLocation.lat, userLocation.lng),
+                    destination: new google.maps.LatLng(service.latitude, service.longitude),
+                    travelMode: google.maps.TravelMode.DRIVING
+                }, function(response, status) {
+                    if (status === 'OK') {
+                        directionsRenderer.setDirections(response);
+                        
+                        // Update distance with actual route distance
+                        const route = response.routes[0];
+                        if (route && route.legs.length > 0) {
+                            const leg = route.legs[0];
+                            if (leg.distance) {
+                                $('.service-route-distance').text(leg.distance.text);
+                                $('.service-route-duration').text(leg.duration.text);
+                            }
+                        }
+                    }
+                });
+            }
+        }, 300);
+        
+        // Initialize feedback stars
+        $('.feedback-star').hover(
+            function() {
+                const rating = $(this).data('rating');
+                updateStars(rating);
+            },
+            function() {
+                resetStars();
+            }
+        );
+        
+        $('.feedback-star').click(function() {
+            const rating = $(this).data('rating');
+            $('.feedback-star').removeClass('selected');
+            updateStars(rating, true);
+        });
+        
+        // Share button functionality
+        $('#shareService').click(function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: service.name,
+                    text: `Check out ${service.name} on JanSamvaad`,
+                    url: window.location.href
+                })
+                .catch(error => console.error('Error sharing:', error));
+            } else {
+                alert('Share functionality is not supported in your browser. You can copy the URL manually.');
+            }
+        });
+        
+        // Report issue button functionality
+        $('#reportIssue').click(function() {
+            alert('This feature would allow users to report issues with the service information.');
+        });
+        
+        // Submit feedback button functionality
+        $('#submitFeedback').click(function() {
+            const selectedRating = $('.feedback-star.selected').length;
+            const comment = $('#feedbackComment').val();
+            
+            if (selectedRating === 0) {
+                alert('Please select a rating before submitting.');
+                return;
+            }
+            
+            // In a real app, this would send the feedback to the server
+            alert(`Thank you for your feedback! You rated this service ${selectedRating} stars.`);
+            $('#serviceDetailsModal').modal('hide');
+        });
+    }
+    
+    // Helper function to update stars display
+    function updateStars(rating, selected = false) {
+        $('.feedback-star').each(function() {
+            const starRating = $(this).data('rating');
+            if (starRating <= rating) {
+                $(this).html('<i class="fas fa-star"></i>');
+                if (selected) {
+                    $(this).addClass('selected active');
+                } else {
+                    $(this).addClass('active');
+                }
+            } else {
+                $(this).html('<i class="far fa-star"></i>');
+                $(this).removeClass('active');
+            }
+        });
+    }
+    
+    // Helper function to reset stars display
+    function resetStars() {
+        $('.feedback-star').each(function() {
+            if ($(this).hasClass('selected')) {
+                $(this).html('<i class="fas fa-star"></i>');
+                $(this).addClass('active');
+            } else {
+                $(this).html('<i class="far fa-star"></i>');
+                $(this).removeClass('active');
+            }
+        });
+    }
+    
+    // Helper function to generate rating stars
+    function generateRatingStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= Math.floor(rating)) {
+                stars += '<i class="fas fa-star"></i>';
+            } else if (i - 0.5 <= rating) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            } else {
+                stars += '<i class="far fa-star"></i>';
+            }
+        }
+        return stars;
+    }
+    
+    // Helper function to capitalize first letter
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    
+    // Document ready
+    $(document).ready(function() {
+        // Wait for Google Maps to load
+        google.maps.event.addDomListener(window, 'load', function() {
+            // Initialize map
+            initMap();
+            
+            // Load services
+            loadServices();
+        });
+        
+        // Filter distance slider
+        $('#filter-distance').on('input', function() {
+            $('#distance-value').text($(this).val() + ' km');
+        });
+        
+        // Category buttons
+        $('.category-card button').click(function(e) {
+            e.preventDefault();
+            const category = $(this).data('category');
+            $('#search-category').val(category);
+            $('#search-form').submit();
+        });
+        
+        // Search form submission
+        $('#search-form').on('submit', function(e) {
+            e.preventDefault();
+            if (userLocation) {
+                loadNearbyServices();
+            } else {
+                loadServices();
+            }
+        });
+        
+        // Filter form submission
+        $('#filter-form').on('submit', function(e) {
+            e.preventDefault();
+            applyFilters();
+        });
+        
+        // View toggle buttons
+        $('#view-map').click(function() {
+            $(this).addClass('active');
+            $('#view-list').removeClass('active');
+            $('#map-view').show();
+            $('#list-view').hide();
+            
+            // Trigger resize event to fix Google Maps display issues
+            google.maps.event.trigger(map, 'resize');
+        });
+        
+        $('#view-list').click(function() {
+            $(this).addClass('active');
+            $('#view-map').removeClass('active');
+            $('#list-view').show();
+            $('#map-view').hide();
+        });
+        
+        // Modal events
+        $('#serviceDetailsModal').on('shown.bs.modal', function() {
+            // Trigger resize to fix Google Maps display issues in modals
+            setTimeout(function() {
+                google.maps.event.trigger(map, 'resize');
+            }, 500);
+        });
+        
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    });
+</script>
+{% endblock %}

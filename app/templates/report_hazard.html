@@ -1,0 +1,798 @@
+{% extends 'base.html' %}
+
+{% block title %}Report a Hazard - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+    .report-header {
+        background: var(--header-bg);
+        color: white;
+        padding: 6rem 0;
+        border-radius: 0 0 30px 30px;
+        margin-bottom: 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .report-header::before {
+        content: '';
+        position: absolute;
+        top: -10%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+    
+    .report-header::after {
+        content: '';
+        position: absolute;
+        bottom: -5%;
+        left: -5%;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+    
+    .report-header .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .report-card {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        background-color: var(--card-bg);
+        box-shadow: var(--box-shadow);
+        transition: all var(--transition-speed) ease;
+        border: none;
+    }
+    
+    .report-card:hover {
+        box-shadow: 0 15px 35px rgba(74, 144, 226, 0.15);
+    }
+    
+    .report-card .card-header {
+        background: var(--header-bg);
+        color: white;
+        border: none;
+    }
+    
+    .form-control, .form-select {
+        border-radius: var(--border-radius);
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        transition: all var(--transition-speed) ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(74, 144, 226, 0.25);
+        border-color: var(--primary-color);
+    }
+    
+    .form-floating > label {
+        padding: 12px;
+    }
+    
+    .btn-report {
+        background: var(--header-bg);
+        border: none;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all var(--transition-speed) ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+    
+    .btn-report::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        z-index: -1;
+    }
+    
+    .btn-report:hover::after {
+        height: 100%;
+    }
+    
+    .btn-report:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        color: white;
+    }
+    
+    .btn-report:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        color: white;
+    }
+    
+    .btn-report i {
+        margin-right: 8px;
+    }
+    
+    .map-container {
+        height: 300px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .location-btn {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+    
+    .location-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .file-upload {
+        position: relative;
+        overflow: hidden;
+        margin-top: 10px;
+        text-align: center;
+    }
+    
+    .file-upload input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        background: white;
+        cursor: pointer;
+        display: block;
+    }
+    
+    .file-upload-label {
+        display: block;
+        padding: 30px;
+        border: 2px dashed #e0e0e0;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .file-upload-label:hover {
+        border-color: #e74c3c;
+    }
+    
+    .file-upload-icon {
+        font-size: 2rem;
+        color: #e74c3c;
+        margin-bottom: 10px;
+    }
+    
+    .file-preview {
+        margin-top: 15px;
+        display: none;
+    }
+    
+    .file-preview img, .file-preview video {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .language-toggle {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 1000;
+        background-color: white;
+        border-radius: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .language-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .language-btn.active {
+        background-color: #e74c3c;
+        color: white;
+    }
+    
+    .language-btn:not(.active) {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+    
+    .language-btn:hover:not(.active) {
+        background-color: #e0e0e0;
+    }
+    
+    .voice-input-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #e74c3c;
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 10;
+    }
+    
+    .voice-input-btn:hover {
+        color: #c0392b;
+    }
+    
+    .voice-input-btn.recording {
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Language Toggle -->
+<div class="language-toggle">
+    <button class="language-btn active" data-lang="en" title="English">EN</button>
+    <button class="language-btn" data-lang="kn" title="ಕನ್ನಡ">ಕ</button>
+</div>
+
+<!-- Header Section -->
+<section class="report-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3 hero-title" data-translate="report-hazard-title">Report a Hazard</h1>
+        <p class="lead mb-0 hero-subtitle" data-translate="report-hazard-subtitle">Help your community by reporting hazards for quick resolution</p>
+    </div>
+    <div class="wave-bottom">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+        </svg>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="report-card card-animate card-hover-lift">
+                <div class="card-header">
+                    <h4 class="mb-0" data-translate="hazard-details">Hazard Details</h4>
+                </div>
+                <div class="card-body">
+                    <form id="report-form" enctype="multipart/form-data">
+                        <!-- Basic Information -->
+                        <div class="mb-4">
+                            <h5 class="mb-3" data-translate="basic-information">Basic Information</h5>
+                            
+                            <div class="form-floating mb-3 position-relative">
+                                <input type="text" class="form-control" id="title" name="title" placeholder="Title" required>
+                                <label for="title" data-translate="hazard-title">Hazard Title</label>
+                                <button type="button" class="voice-input-btn" data-target="title">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="form-floating mb-3 position-relative">
+                                <textarea class="form-control" id="description" name="description" placeholder="Description" style="height: 120px" required></textarea>
+                                <label for="description" data-translate="hazard-description">Hazard Description</label>
+                                <button type="button" class="voice-input-btn" data-target="description">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="hazard_type" name="hazard_type" required>
+                                    <option value="" selected disabled data-translate="select-type">Select Type</option>
+                                    <option value="road" data-translate="road">Road</option>
+                                    <option value="water" data-translate="water">Water</option>
+                                    <option value="electricity" data-translate="electricity">Electricity</option>
+                                    <option value="other" data-translate="other">Other</option>
+                                </select>
+                                <label for="hazard_type" data-translate="hazard-type">Hazard Type</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Location Information -->
+                        <div class="mb-4">
+                            <h5 class="mb-3" data-translate="location-information">Location Information</h5>
+                            
+                            <div class="position-relative mb-3">
+                                <div id="map" class="map-container"></div>
+                                <button type="button" id="get-location-btn" class="location-btn" title="Get my location">
+                                    <i class="fas fa-crosshairs"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="latitude" name="latitude" placeholder="Latitude" readonly>
+                                        <label for="latitude" data-translate="latitude">Latitude</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="longitude" name="longitude" placeholder="Longitude" readonly>
+                                        <label for="longitude" data-translate="longitude">Longitude</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-floating mb-3 position-relative">
+                                <input type="text" class="form-control" id="location_description" name="location_description" placeholder="Location Description" required>
+                                <label for="location_description" data-translate="location-description">Location Description</label>
+                                <button type="button" class="voice-input-btn" data-target="location_description">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Media Upload -->
+                        <div class="mb-4">
+                            <h5 class="mb-3" data-translate="media-upload">Media Upload</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label" data-translate="image-upload">Image Upload</label>
+                                    <div class="file-upload">
+                                        <label for="image" class="file-upload-label">
+                                            <div class="file-upload-icon">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                            <span data-translate="drag-drop-image">Drag & drop an image or click to browse</span>
+                                        </label>
+                                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                    </div>
+                                    <div class="file-preview" id="image-preview">
+                                        <img id="image-preview-img" src="#" alt="Image Preview">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label" data-translate="video-upload">Video Upload (Optional)</label>
+                                    <div class="file-upload">
+                                        <label for="video" class="file-upload-label">
+                                            <div class="file-upload-icon">
+                                                <i class="fas fa-video"></i>
+                                            </div>
+                                            <span data-translate="drag-drop-video">Drag & drop a video or click to browse</span>
+                                        </label>
+                                        <input type="file" class="form-control" id="video" name="video" accept="video/*">
+                                    </div>
+                                    <div class="file-preview" id="video-preview">
+                                        <video id="video-preview-player" controls></video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-report btn-lg">
+                                <i class="fas fa-paper-plane"></i> <span data-translate="submit-report">Submit Report</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Voice Input Modal -->
+<div class="modal fade" id="voiceInputModal" tabindex="-1" aria-labelledby="voiceInputModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="voiceInputModalLabel" data-translate="voice-input">Voice Input</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p data-translate="speak-now">Speak now...</p>
+                <div class="my-4">
+                    <i class="fas fa-microphone fa-4x text-danger pulse-animation"></i>
+                </div>
+                <p id="voice-status" class="text-muted" data-translate="listening">Listening...</p>
+                <div class="mt-3">
+                    <textarea id="voice-transcript" class="form-control" rows="3" readonly></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="use-transcript-btn" data-translate="use-text">Use this text</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDf8fmG-LH14KqvPA33y-ZCKqBFhmWzD0s&callback=initMap" async defer></script>
+<script>
+    // Initialize variables
+    let map;
+    let marker;
+    let currentLanguage = 'en';
+    let translations = {
+        'en': {
+            'report-hazard-title': 'Report a Hazard',
+            'report-hazard-subtitle': 'Help your community by reporting hazards for quick resolution',
+            'hazard-details': 'Hazard Details',
+            'basic-information': 'Basic Information',
+            'hazard-title': 'Hazard Title',
+            'hazard-description': 'Hazard Description',
+            'hazard-type': 'Hazard Type',
+            'select-type': 'Select Type',
+            'road': 'Road',
+            'water': 'Water',
+            'electricity': 'Electricity',
+            'other': 'Other',
+            'location-information': 'Location Information',
+            'latitude': 'Latitude',
+            'longitude': 'Longitude',
+            'location-description': 'Location Description',
+            'media-upload': 'Media Upload',
+            'image-upload': 'Image Upload',
+            'drag-drop-image': 'Drag & drop an image or click to browse',
+            'video-upload': 'Video Upload (Optional)',
+            'drag-drop-video': 'Drag & drop a video or click to browse',
+            'submit-report': 'Submit Report',
+            'voice-input': 'Voice Input',
+            'speak-now': 'Speak now...',
+            'listening': 'Listening...',
+            'use-text': 'Use this text',
+            'cancel': 'Cancel',
+            'report-success': 'Hazard reported successfully!',
+            'report-error': 'Error reporting hazard. Please try again.',
+            'location-error': 'Error getting location. Please try again.',
+            'location-not-supported': 'Geolocation is not supported by your browser.',
+            'redirecting': 'Redirecting to hazards page...'
+        },
+        'kn': {
+            'report-hazard-title': 'ಅಪಾಯವನ್ನು ವರದಿ ಮಾಡಿ',
+            'report-hazard-subtitle': 'ತ್ವರಿತ ಪರಿಹಾರಕ್ಕಾಗಿ ಅಪಾಯಗಳನ್ನು ವರದಿ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಸಮುದಾಯಕ್ಕೆ ಸಹಾಯ ಮಾಡಿ',
+            'hazard-details': 'ಅಪಾಯದ ವಿವರಗಳು',
+            'basic-information': 'ಮೂಲ ಮಾಹಿತಿ',
+            'hazard-title': 'ಅಪಾಯದ ಶೀರ್ಷಿಕೆ',
+            'hazard-description': 'ಅಪಾಯದ ವಿವರಣೆ',
+            'hazard-type': 'ಅಪಾಯದ ಪ್ರಕಾರ',
+            'select-type': 'ಪ್ರಕಾರವನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+            'road': 'ರಸ್ತೆ',
+            'water': 'ನೀರು',
+            'electricity': 'ವಿದ್ಯುತ್',
+            'other': 'ಇತರೆ',
+            'location-information': 'ಸ್ಥಳದ ಮಾಹಿತಿ',
+            'latitude': 'ಅಕ್ಷಾಂಶ',
+            'longitude': 'ರೇಖಾಂಶ',
+            'location-description': 'ಸ್ಥಳದ ವಿವರಣೆ',
+            'media-upload': 'ಮೀಡಿಯಾ ಅಪ್‌ಲೋಡ್',
+            'image-upload': 'ಚಿತ್ರ ಅಪ್‌ಲೋಡ್',
+            'drag-drop-image': 'ಚಿತ್ರವನ್ನು ಎಳೆದು ಬಿಡಿ ಅಥವಾ ಬ್ರೌಸ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ',
+            'video-upload': 'ವೀಡಿಯೊ ಅಪ್‌ಲೋಡ್ (ಐಚ್ಛಿಕ)',
+            'drag-drop-video': 'ವೀಡಿಯೊವನ್ನು ಎಳೆದು ಬಿಡಿ ಅಥವಾ ಬ್ರೌಸ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ',
+            'submit-report': 'ವರದಿ ಸಲ್ಲಿಸಿ',
+            'voice-input': 'ಧ್ವನಿ ಇನ್‌ಪುಟ್',
+            'speak-now': 'ಈಗ ಮಾತನಾಡಿ...',
+            'listening': 'ಆಲಿಸುತ್ತಿದೆ...',
+            'use-text': 'ಈ ಪಠ್ಯವನ್ನು ಬಳಸಿ',
+            'cancel': 'ರದ್ದುಮಾಡಿ',
+            'report-success': 'ಅಪಾಯವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ವರದಿ ಮಾಡಲಾಗಿದೆ!',
+            'report-error': 'ಅಪಾಯವನ್ನು ವರದಿ ಮಾಡುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
+            'location-error': 'ಸ್ಥಳವನ್ನು ಪಡೆಯುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
+            'location-not-supported': 'ಜಿಯೋಲೊಕೇಶನ್ ಅನ್ನು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.',
+            'redirecting': 'ಅಪಾಯಗಳ ಪುಟಕ್ಕೆ ಪುನರ್ನಿರ್ದೇಶಿಸಲಾಗುತ್ತಿದೆ...'
+        }
+    };
+    
+    // Initialize map
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 12.9716, lng: 77.5946 }, // Bangalore coordinates
+            zoom: 12
+        });
+        
+        // Add click event to map
+        map.addListener('click', function(event) {
+            placeMarker(event.latLng);
+        });
+    }
+    
+    // Place marker on map
+    function placeMarker(location) {
+        if (marker) {
+            marker.setPosition(location);
+        } else {
+            marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                draggable: true
+            });
+            
+            // Add drag event to marker
+            marker.addListener('dragend', function() {
+                updateCoordinates(marker.getPosition());
+            });
+        }
+        
+        // Update coordinates
+        updateCoordinates(location);
+        
+        // Center map on marker
+        map.panTo(location);
+    }
+    
+    // Update coordinates in form
+    function updateCoordinates(location) {
+        $('#latitude').val(location.lat());
+        $('#longitude').val(location.lng());
+    }
+    
+    // Get current location
+    function getCurrentLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const location = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    placeMarker(location);
+                },
+                function(error) {
+                    alert(getTranslation('location-error'));
+                    console.error('Error getting location:', error);
+                }
+            );
+        } else {
+            alert(getTranslation('location-not-supported'));
+        }
+    }
+    
+    // Voice recognition functionality
+    let recognition;
+    let currentVoiceTarget = null;
+    
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        
+        recognition.onstart = function() {
+            $('#voice-status').text(getTranslation('listening'));
+        };
+        
+        recognition.onresult = function(event) {
+            let interimTranscript = '';
+            let finalTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+            
+            $('#voice-transcript').val(finalTranscript || interimTranscript);
+        };
+        
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            $('#voice-status').text('Error: ' + event.error);
+        };
+        
+        recognition.onend = function() {
+            $('#voice-status').text(getTranslation('speak-now'));
+        };
+    }
+    
+    function startVoiceInput(targetId) {
+        if (recognition) {
+            currentVoiceTarget = targetId;
+            $('#voiceInputModal').modal('show');
+            
+            // Clear previous transcript
+            $('#voice-transcript').val('');
+            
+            // Start recognition after modal is shown
+            $('#voiceInputModal').on('shown.bs.modal', function() {
+                recognition.start();
+            });
+        } else {
+            alert('Speech recognition is not supported in your browser.');
+        }
+    }
+    
+    // Language translation functions
+    function switchLanguage(lang) {
+        currentLanguage = lang;
+        
+        // Update all translatable elements
+        $('[data-translate]').each(function() {
+            const key = $(this).attr('data-translate');
+            $(this).text(getTranslation(key));
+        });
+        
+        // Update placeholders
+        $('[data-translate-placeholder]').each(function() {
+            const key = $(this).attr('data-translate-placeholder');
+            $(this).attr('placeholder', getTranslation(key));
+        });
+        
+        // Update language buttons
+        $('.language-btn').removeClass('active');
+        $(`.language-btn[data-lang="${lang}"]`).addClass('active');
+        
+        // Update select options
+        $('option[data-translate]').each(function() {
+            const key = $(this).attr('data-translate');
+            $(this).text(getTranslation(key));
+        });
+    }
+    
+    function getTranslation(key) {
+        return translations[currentLanguage][key] || key;
+    }
+    
+    // Document ready
+    $(document).ready(function() {
+        // Initialize language
+        switchLanguage('en');
+        
+        // Get location button
+        $('#get-location-btn').click(function() {
+            getCurrentLocation();
+        });
+        
+        // Image preview
+        $('#image').change(function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    $('#image-preview-img').attr('src', e.target.result);
+                    $('#image-preview').show();
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Video preview
+        $('#video').change(function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    $('#video-preview-player').attr('src', e.target.result);
+                    $('#video-preview').show();
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Voice input buttons
+        $('.voice-input-btn').click(function() {
+            const targetId = $(this).data('target');
+            startVoiceInput(targetId);
+        });
+        
+        // Use transcript button
+        $('#use-transcript-btn').click(function() {
+            const transcript = $('#voice-transcript').val();
+            
+            if (currentVoiceTarget && transcript) {
+                $(`#${currentVoiceTarget}`).val(transcript);
+                $('#voiceInputModal').modal('hide');
+            }
+        });
+        
+        // Language toggle
+        $('.language-btn').click(function() {
+            const lang = $(this).data('lang');
+            switchLanguage(lang);
+        });
+        
+        // Form submission
+        $('#report-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Create FormData object
+            const formData = new FormData(this);
+            
+            // Show loading state
+            const submitBtn = $(this).find('button[type="submit"]');
+            const originalBtnText = submitBtn.html();
+            submitBtn.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ' + getTranslation('submit-report'));
+            submitBtn.prop('disabled', true);
+            
+            // Submit form data
+            $.ajax({
+                url: '{{ url_for("hazards_bp.report_hazard") }}',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        // Show success message
+                        alert(getTranslation('report-success'));
+                        
+                        // Redirect to hazards page
+                        setTimeout(function() {
+                            window.location.href = '{{ url_for("hazards_bp.hazards_page") }}';
+                        }, 1500);
+                    } else {
+                        // Show error message
+                        alert(getTranslation('report-error'));
+                        submitBtn.html(originalBtnText);
+                        submitBtn.prop('disabled', false);
+                    }
+                },
+                error: function(xhr) {
+                    // Show error message
+                    alert(getTranslation('report-error'));
+                    submitBtn.html(originalBtnText);
+                    submitBtn.prop('disabled', false);
+                }
+            });
+        });
+        
+        // Initialize map when Google Maps API is loaded
+        window.initMap = initMap;
+    });
+</script>
+{% endblock %}

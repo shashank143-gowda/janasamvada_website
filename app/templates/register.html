@@ -1,0 +1,496 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-header {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        padding: 40px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 40px;
+    }
+    
+    .register-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .register-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: none;
+    }
+    
+    .register-card-header {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .register-card-body {
+        padding: 30px;
+    }
+    
+    .register-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: white;
+    }
+    
+    .form-floating {
+        margin-bottom: 20px;
+    }
+    
+    .form-floating label {
+        color: #6c757d;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        border-color: #3498db;
+    }
+    
+    .btn-register {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        border: none;
+        border-radius: 30px;
+        padding: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-register:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        background: linear-gradient(135deg, #2980b9, #1e2b37);
+    }
+    
+    .register-footer {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    .register-footer a {
+        color: #3498db;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .register-footer a:hover {
+        color: #2980b9;
+        text-decoration: none;
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #6c757d;
+    }
+    
+    .form-section {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+    
+    .form-section-title {
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #3498db;
+    }
+    
+    .password-strength {
+        height: 5px;
+        border-radius: 5px;
+        margin-top: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .password-strength-text {
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    
+    .password-weak {
+        background-color: #e74c3c;
+        width: 30%;
+    }
+    
+    .password-medium {
+        background-color: #f39c12;
+        width: 60%;
+    }
+    
+    .password-strong {
+        background-color: #2ecc71;
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="register-header">
+    <div class="container text-center">
+        <h1 class="display-5 fw-bold mb-3 animate__animated animate__fadeInDown">Join JanSamvaad</h1>
+        <p class="lead mb-0 animate__animated animate__fadeInUp">Create an account to access all features and services</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="register-container" data-aos="fade-up">
+        <div class="register-card">
+            <div class="register-card-header">
+                <div class="register-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h3 class="mb-0">Create Your Account</h3>
+                <p class="mb-0 mt-2">Fill in the form below to register</p>
+            </div>
+            <div class="register-card-body">
+                <form id="register-form">
+                    <!-- Account Information Section -->
+                    <div class="form-section">
+                        <h5 class="form-section-title"><i class="fas fa-user me-2"></i>Account Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                                    <label for="username">Username</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                                    <label for="email">Email Address</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                    <label for="password">Password</label>
+                                    <span class="password-toggle" id="password-toggle">
+                                        <i class="fas fa-eye"></i>
+                                    </span>
+                                </div>
+                                <div class="password-strength" id="password-strength"></div>
+                                <div class="password-strength-text" id="password-strength-text"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+                                    <label for="confirm_password">Confirm Password</label>
+                                    <span class="password-toggle" id="confirm-password-toggle">
+                                        <i class="fas fa-eye"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Personal Information Section -->
+                    <div class="form-section">
+                        <h5 class="form-section-title"><i class="fas fa-address-card me-2"></i>Personal Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone Number" required>
+                                    <label for="phone">Phone Number</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="village" name="village" placeholder="Village/Town" required>
+                                    <label for="village">Village/Town</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="district" name="district" placeholder="District" required>
+                                    <label for="district">District</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="state" name="state" required>
+                                        <option value="" selected disabled>Select State</option>
+                                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                        <option value="Assam">Assam</option>
+                                        <option value="Bihar">Bihar</option>
+                                        <option value="Chhattisgarh">Chhattisgarh</option>
+                                        <option value="Goa">Goa</option>
+                                        <option value="Gujarat">Gujarat</option>
+                                        <option value="Haryana">Haryana</option>
+                                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                        <option value="Jharkhand">Jharkhand</option>
+                                        <option value="Karnataka">Karnataka</option>
+                                        <option value="Kerala">Kerala</option>
+                                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                        <option value="Maharashtra">Maharashtra</option>
+                                        <option value="Manipur">Manipur</option>
+                                        <option value="Meghalaya">Meghalaya</option>
+                                        <option value="Mizoram">Mizoram</option>
+                                        <option value="Nagaland">Nagaland</option>
+                                        <option value="Odisha">Odisha</option>
+                                        <option value="Punjab">Punjab</option>
+                                        <option value="Rajasthan">Rajasthan</option>
+                                        <option value="Sikkim">Sikkim</option>
+                                        <option value="Tamil Nadu">Tamil Nadu</option>
+                                        <option value="Telangana">Telangana</option>
+                                        <option value="Tripura">Tripura</option>
+                                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                        <option value="Uttarakhand">Uttarakhand</option>
+                                        <option value="West Bengal">West Bengal</option>
+                                    </select>
+                                    <label for="state">State</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms and Conditions Section -->
+                    <div class="form-section">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="newsletter">
+                            <label class="form-check-label" for="newsletter">
+                                I want to receive newsletters and updates about new features and services
+                            </label>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-register btn-lg">
+                                <i class="fas fa-user-plus me-2"></i> Create Account
+                            </button>
+                        </div>
+                        <div id="register-message" class="mt-3"></div>
+                    </div>
+                </form>
+                
+                <div class="register-footer">
+                    <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Password visibility toggles
+        $('#password-toggle, #confirm-password-toggle').click(function() {
+            const passwordId = $(this).attr('id') === 'password-toggle' ? '#password' : '#confirm_password';
+            const passwordInput = $(passwordId);
+            const icon = $(this).find('i');
+            
+            if (passwordInput.attr('type') === 'password') {
+                passwordInput.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                passwordInput.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+        
+        // Password strength meter
+        $('#password').on('input', function() {
+            const password = $(this).val();
+            let strength = 0;
+            let strengthText = '';
+            
+            if (password.length >= 8) strength += 1;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 1;
+            if (password.match(/\d/)) strength += 1;
+            if (password.match(/[^a-zA-Z\d]/)) strength += 1;
+            
+            const strengthBar = $('#password-strength');
+            const strengthTextElement = $('#password-strength-text');
+            
+            if (password.length === 0) {
+                strengthBar.css('width', '0%').removeClass('password-weak password-medium password-strong');
+                strengthTextElement.text('');
+            } else if (strength < 2) {
+                strengthBar.css('width', '30%').removeClass('password-medium password-strong').addClass('password-weak');
+                strengthText = 'Weak';
+            } else if (strength < 4) {
+                strengthBar.css('width', '60%').removeClass('password-weak password-strong').addClass('password-medium');
+                strengthText = 'Medium';
+            } else {
+                strengthBar.css('width', '100%').removeClass('password-weak password-medium').addClass('password-strong');
+                strengthText = 'Strong';
+            }
+            
+            strengthTextElement.text(strengthText);
+        });
+        
+        // Form validation and submission
+        $('#register-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate password match
+            const password = $('#password').val();
+            const confirmPassword = $('#confirm_password').val();
+            
+            if (password !== confirmPassword) {
+                $('#register-message').html('<div class="alert alert-danger">Passwords do not match</div>');
+                $('#confirm_password').addClass('is-invalid');
+                return;
+            } else {
+                $('#confirm_password').removeClass('is-invalid');
+            }
+            
+            // Validate terms checkbox
+            if (!$('#terms').is(':checked')) {
+                $('#register-message').html('<div class="alert alert-danger">You must agree to the Terms of Service and Privacy Policy</div>');
+                return;
+            }
+            
+            // Show loading button
+            const submitBtn = $(this).find('button[type="submit"]');
+            const originalBtnText = submitBtn.html();
+            submitBtn.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Creating Account...').prop('disabled', true);
+            
+            // Show loading message
+            $('#register-message').html('<div class="alert alert-info">Registering your account...</div>');
+            
+            // Get form data
+            const formData = {
+                username: $('#username').val(),
+                email: $('#email').val(),
+                password: password,
+                phone: $('#phone').val(),
+                village: $('#village').val(),
+                district: $('#district').val(),
+                state: $('#state').val()
+            };
+            
+            $.ajax({
+                url: '{{ url_for("auth.register") }}',
+                method: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        $('#register-message').html('<div class="alert alert-success">' + response.message + '</div>');
+                        
+                        // Show success animation
+                        submitBtn.html('<i class="fas fa-check-circle me-2"></i> Account Created!');
+                        submitBtn.removeClass('btn-register').addClass('btn-success');
+                        
+                        // Redirect to login page after successful registration
+                        setTimeout(function() {
+                            window.location.href = '{{ url_for("auth.login") }}';
+                        }, 2000);
+                    } else {
+                        $('#register-message').html('<div class="alert alert-danger">' + response.message + '</div>');
+                        submitBtn.html(originalBtnText).prop('disabled', false);
+                    }
+                },
+                error: function(xhr) {
+                    const response = xhr.responseJSON || {};
+                    $('#register-message').html('<div class="alert alert-danger">' + (response.message || 'Registration failed. Please try again.') + '</div>');
+                    submitBtn.html(originalBtnText).prop('disabled', false);
+                }
+            });
+        });
+        
+        // Input focus effects
+        $('.form-control, .form-select').focus(function() {
+            $(this).parent().addClass('focused');
+        }).blur(function() {
+            $(this).parent().removeClass('focused');
+        });
+        
+        // Form section animations
+        $('.form-section').each(function(index) {
+            $(this).css('opacity', '0');
+            setTimeout(() => {
+                $(this).animate({opacity: 1}, 500);
+            }, 300 * index);
+        });
+        
+        // Username availability check
+        let usernameTimer;
+        $('#username').on('input', function() {
+            clearTimeout(usernameTimer);
+            const username = $(this).val();
+            
+            if (username.length >= 3) {
+                usernameTimer = setTimeout(function() {
+                    // This would typically be an AJAX call to check username availability
+                    // For demo purposes, we'll just simulate a response
+                    const isAvailable = Math.random() > 0.3; // 70% chance username is available
+                    
+                    if (isAvailable) {
+                        $('#username').removeClass('is-invalid').addClass('is-valid');
+                    } else {
+                        $('#username').removeClass('is-valid').addClass('is-invalid');
+                        // You would typically show a message here
+                    }
+                }, 500);
+            }
+        });
+        
+        // Email validation
+        $('#email').on('blur', function() {
+            const email = $(this).val();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                $(this).addClass('is-invalid');
+            } else if (email) {
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            }
+        });
+        
+        // Phone number formatting
+        $('#phone').on('input', function() {
+            let phone = $(this).val().replace(/\D/g, '');
+            
+            if (phone.length > 0) {
+                if (phone.length <= 5) {
+                    phone = phone.replace(/(\d{3})(\d{0,2})/, '$1-$2');
+                } else if (phone.length <= 10) {
+                    phone = phone.replace(/(\d{3})(\d{3})(\d{0,4})/, '$1-$2-$3');
+                } else {
+                    phone = phone.replace(/(\d{3})(\d{3})(\d{4})(\d*)/, '$1-$2-$3');
+                }
+                
+                $(this).val(phone);
+            }
+        });
+    });
+</script>
+{% endblock %}

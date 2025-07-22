@@ -1,0 +1,650 @@
+{% extends 'base.html' %}
+
+{% block title %}Plant a Tree - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    .plant-header {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        padding: 60px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 40px;
+    }
+    
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .form-section {
+        padding: 30px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+    }
+    
+    .form-section-title {
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #2ecc71;
+    }
+    
+    .form-floating {
+        margin-bottom: 20px;
+    }
+    
+    .btn-rounded {
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-rounded:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .file-upload-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 120px;
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .file-upload-label:hover {
+        border-color: #2ecc71;
+    }
+    
+    .file-upload-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-upload-text {
+        text-align: center;
+    }
+    
+    .file-upload-icon {
+        font-size: 2rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+    
+    .preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .preview-item {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .preview-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        background-color: rgba(0,0,0,0.5);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+    
+    .tree-type-card {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+    }
+    
+    .tree-type-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .tree-type-card.selected {
+        border: 2px solid #2ecc71;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .tree-type-img {
+        height: 120px;
+        object-fit: cover;
+    }
+    
+    .tree-type-body {
+        padding: 15px;
+    }
+    
+    .tree-type-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .tree-type-text {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+    
+    .success-message {
+        text-align: center;
+        padding: 50px 30px;
+    }
+    
+    .success-icon {
+        font-size: 5rem;
+        color: #2ecc71;
+        margin-bottom: 20px;
+    }
+    
+    #map {
+        height: 300px;
+        border-radius: 10px;
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="plant-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">Plant a Tree</h1>
+        <p class="lead mb-0 animate__animated animate__fadeInUp">Contribute to a greener planet and earn rewards for your efforts</p>
+    </div>
+</section>
+
+<!-- Form Section -->
+<section class="container mb-5">
+    <div class="form-container">
+        <div class="card form-card" data-aos="fade-up">
+            <form id="plantTreeForm">
+                <!-- Tree Type Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Select Tree Type</h3>
+                    <p class="text-muted mb-4">Choose a tree type that is suitable for your region and climate conditions</p>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4 mb-3">
+                            <div class="tree-type-card" data-tree-type="neem">
+                                <img src="https://images.unsplash.com/photo-1610555356070-d0efcf2d8ee9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="tree-type-img w-100" alt="Neem Tree">
+                                <div class="tree-type-body">
+                                    <h5 class="tree-type-title">Neem Tree</h5>
+                                    <p class="tree-type-text">Medicinal properties, drought-resistant</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="tree-type-card" data-tree-type="peepal">
+                                <img src="https://images.unsplash.com/photo-1636297461709-0af5a3e96f56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="tree-type-img w-100" alt="Peepal Tree">
+                                <div class="tree-type-body">
+                                    <h5 class="tree-type-title">Peepal Tree</h5>
+                                    <p class="tree-type-text">Sacred tree, produces oxygen 24/7</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="tree-type-card" data-tree-type="banyan">
+                                <img src="https://images.unsplash.com/photo-1635224304710-f04d6f2bb5e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="tree-type-img w-100" alt="Banyan Tree">
+                                <div class="tree-type-body">
+                                    <h5 class="tree-type-title">Banyan Tree</h5>
+                                    <p class="tree-type-text">Long-lived, provides extensive shade</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="tree-type-card" data-tree-type="mango">
+                                <img src="https://images.unsplash.com/photo-1588785392665-f6d4a541417d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="tree-type-img w-100" alt="Mango Tree">
+                                <div class="tree-type-body">
+                                    <h5 class="tree-type-title">Mango Tree</h5>
+                                    <p class="tree-type-text">Fruit-bearing, provides food security</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="tree-type-card" data-tree-type="jamun">
+                                <img src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="tree-type-img w-100" alt="Jamun Tree">
+                                <div class="tree-type-body">
+                                    <h5 class="tree-type-title">Jamun Tree</h5>
+                                    <p class="tree-type-text">Medicinal fruits, good for diabetes</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="tree-type-card" data-tree-type="other">
+                                <div class="tree-type-img w-100 bg-light d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-plus fa-2x text-muted"></i>
+                                </div>
+                                <div class="tree-type-body">
+                                    <h5 class="tree-type-title">Other Tree</h5>
+                                    <p class="tree-type-text">Specify another tree type</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="otherTreeTypeContainer" class="mt-3" style="display: none;">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="otherTreeType" placeholder="Other Tree Type">
+                            <label for="otherTreeType">Specify Other Tree Type</label>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="selectedTreeType" name="treeType" required>
+                </div>
+                
+                <!-- Photo Upload Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Upload Photos</h3>
+                    <p class="text-muted mb-3">Upload clear photos of the tree you planted. This helps in verification.</p>
+                    
+                    <div class="file-upload mb-3">
+                        <label for="treePhotos" class="file-upload-label">
+                            <div class="file-upload-text">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                                <div>Drag & drop photos here or click to browse</div>
+                                <div class="text-muted small">At least 2 photos required (JPG, PNG)</div>
+                            </div>
+                        </label>
+                        <input type="file" id="treePhotos" class="file-upload-input" multiple accept=".jpg,.jpeg,.png" required>
+                    </div>
+                    
+                    <div class="preview-container" id="previewContainer"></div>
+                </div>
+                
+                <!-- Location Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Location Details</h3>
+                    <p class="text-muted mb-3">Provide the location where you planted the tree</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="useCurrentLocation">
+                            <label class="form-check-label" for="useCurrentLocation">
+                                Use my current location
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="showMapBtn">
+                            <i class="fas fa-map-marker-alt me-2"></i> Show on Map
+                        </button>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="locationDescription" placeholder="Location Description" required>
+                                <label for="locationDescription">Location Description</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="village" placeholder="Village/Town" required>
+                                <label for="village">Village/Town</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="district" placeholder="District" required>
+                                <label for="district">District</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select class="form-select" id="state" required>
+                                    <option value="" selected disabled>Select State</option>
+                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                    <option value="Assam">Assam</option>
+                                    <option value="Bihar">Bihar</option>
+                                    <option value="Chhattisgarh">Chhattisgarh</option>
+                                    <option value="Goa">Goa</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Haryana">Haryana</option>
+                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                    <option value="Jharkhand">Jharkhand</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Kerala">Kerala</option>
+                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Manipur">Manipur</option>
+                                    <option value="Meghalaya">Meghalaya</option>
+                                    <option value="Mizoram">Mizoram</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="Sikkim">Sikkim</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Tripura">Tripura</option>
+                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                    <option value="Uttarakhand">Uttarakhand</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                </select>
+                                <label for="state">State</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    
+                    <div id="map" style="display: none;"></div>
+                </div>
+                
+                <!-- Additional Information Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Additional Information</h3>
+                    
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="additionalInfo" placeholder="Additional Information" style="height: 100px;"></textarea>
+                        <label for="additionalInfo">Additional Information (Optional)</label>
+                    </div>
+                    
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="confirmCheck" required>
+                        <label class="form-check-label" for="confirmCheck">
+                            I confirm that I have planted this tree and the information provided is accurate
+                        </label>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('trees_bp.trees_page') }}" class="btn btn-outline-secondary btn-rounded">
+                            <i class="fas fa-arrow-left me-2"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-success btn-rounded" id="submitBtn">
+                            <i class="fas fa-paper-plane me-2"></i> Submit Report
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Success Message (Initially Hidden) -->
+            <div class="success-message" id="successMessage" style="display: none;">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="mb-4">Tree Planting Reported Successfully!</h2>
+                <p class="lead mb-4">Thank you for your contribution to a greener planet!</p>
+                <div class="alert alert-success mb-4">
+                    <i class="fas fa-award me-2"></i> You have earned <strong>10 points</strong> for this tree planting. Points will be credited to your account after verification.
+                </div>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('trees_bp.trees_page') }}" class="btn btn-outline-primary btn-rounded">
+                        <i class="fas fa-home me-2"></i> Go to Home
+                    </a>
+                    <a href="{{ url_for('trees_bp.plant_tree_page') }}" class="btn btn-outline-success btn-rounded">
+                        <i class="fas fa-plus-circle me-2"></i> Plant Another Tree
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script>
+    $(document).ready(function() {
+        let map;
+        let marker;
+        
+        // Handle tree type selection
+        $('.tree-type-card').click(function() {
+            $('.tree-type-card').removeClass('selected');
+            $(this).addClass('selected');
+            
+            const treeType = $(this).data('tree-type');
+            $('#selectedTreeType').val(treeType);
+            
+            if (treeType === 'other') {
+                $('#otherTreeTypeContainer').slideDown();
+                $('#otherTreeType').prop('required', true);
+            } else {
+                $('#otherTreeTypeContainer').slideUp();
+                $('#otherTreeType').prop('required', false);
+            }
+        });
+        
+        // Handle file uploads
+        $('#treePhotos').change(function(e) {
+            const files = e.target.files;
+            
+            // Check file count
+            if (files.length < 2) {
+                alert('Please upload at least 2 photos.');
+                return;
+            }
+            
+            if (files.length > 5) {
+                alert('You can upload a maximum of 5 photos.');
+                $(this).val('');
+                return;
+            }
+            
+            // Check file type
+            let validFiles = true;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileType = file.type;
+                
+                if (!fileType.match('image.*')) {
+                    alert(`File "${file.name}" is not a supported image type.`);
+                    validFiles = false;
+                    break;
+                }
+            }
+            
+            if (!validFiles) {
+                $(this).val('');
+                return;
+            }
+            
+            // Preview files
+            $('#previewContainer').empty();
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const previewHtml = `
+                        <div class="preview-item">
+                            <img src="${e.target.result}" alt="${file.name}">
+                            <div class="preview-remove" data-index="${i}"><i class="fas fa-times"></i></div>
+                        </div>
+                    `;
+                    
+                    $('#previewContainer').append(previewHtml);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Handle preview item removal
+        $(document).on('click', '.preview-remove', function() {
+            const index = $(this).data('index');
+            
+            // Create a new FileList without the removed file
+            // Note: FileList is immutable, so we need to reset the input
+            $('#treePhotos').val('');
+            $(this).closest('.preview-item').remove();
+        });
+        
+        // Handle "Use Current Location" checkbox
+        $('#useCurrentLocation').change(function() {
+            if ($(this).is(':checked')) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            $('#latitude').val(position.coords.latitude);
+                            $('#longitude').val(position.coords.longitude);
+                            
+                            // Show on map
+                            showMap(position.coords.latitude, position.coords.longitude);
+                        },
+                        function(error) {
+                            console.error('Error getting location:', error);
+                            alert('Unable to get your location. Please enter location details manually.');
+                            $('#useCurrentLocation').prop('checked', false);
+                        }
+                    );
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                    $(this).prop('checked', false);
+                }
+            } else {
+                $('#latitude').val('');
+                $('#longitude').val('');
+                
+                // Hide map
+                $('#map').slideUp();
+            }
+        });
+        
+        // Show map button click
+        $('#showMapBtn').click(function() {
+            const lat = $('#latitude').val() || 20.5937;
+            const lng = $('#longitude').val() || 78.9629;
+            
+            showMap(lat, lng);
+        });
+        
+        // Function to show map
+        function showMap(lat, lng) {
+            $('#map').slideDown();
+            
+            if (!map) {
+                // Initialize map
+                map = L.map('map').setView([lat, lng], 13);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Add marker
+                marker = L.marker([lat, lng], {
+                    draggable: true
+                }).addTo(map);
+                
+                // Update coordinates when marker is dragged
+                marker.on('dragend', function(e) {
+                    const position = marker.getLatLng();
+                    $('#latitude').val(position.lat);
+                    $('#longitude').val(position.lng);
+                });
+                
+                // Click on map to move marker
+                map.on('click', function(e) {
+                    marker.setLatLng(e.latlng);
+                    $('#latitude').val(e.latlng.lat);
+                    $('#longitude').val(e.latlng.lng);
+                });
+            } else {
+                // Update map view and marker position
+                map.setView([lat, lng], 13);
+                marker.setLatLng([lat, lng]);
+            }
+            
+            // Invalidate size to handle container resize
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 100);
+        }
+        
+        // Form submission
+        $('#plantTreeForm').submit(function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            if (!$('#selectedTreeType').val()) {
+                alert('Please select a tree type.');
+                return;
+            }
+            
+            if (!this.checkValidity()) {
+                e.stopPropagation();
+                $(this).addClass('was-validated');
+                return;
+            }
+            
+            // Disable submit button and show loading state
+            $('#submitBtn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...').prop('disabled', true);
+            
+            // Simulate form submission (in a real app, this would be an AJAX call to the server)
+            setTimeout(function() {
+                // Hide form and show success message
+                $('#plantTreeForm').hide();
+                $('#successMessage').fadeIn();
+                
+                // Scroll to top of success message
+                $('html, body').animate({
+                    scrollTop: $('#successMessage').offset().top - 100
+                }, 500);
+            }, 2000);
+        });
+    });
+</script>
+{% endblock %}

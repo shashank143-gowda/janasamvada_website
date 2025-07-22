@@ -1,0 +1,904 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Corruption - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* Hero section with cyberpunk style */
+    .cyberpunk-hero {
+        position: relative;
+        min-height: 60vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 4rem 0;
+        margin-bottom: 0;
+    }
+    
+    .cyberpunk-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236c5ce7' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+    
+    .hero-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: linear-gradient(rgba(108, 92, 231, 0.1) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(108, 92, 231, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        perspective: 500px;
+        transform-style: preserve-3d;
+        animation: grid-animation 20s linear infinite;
+    }
+    
+    @keyframes grid-animation {
+        0% {
+            transform: rotateX(75deg) translateY(0);
+        }
+        100% {
+            transform: rotateX(75deg) translateY(20px);
+        }
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 10;
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
+        position: relative;
+        display: inline-block;
+    }
+    
+    .hero-title::after {
+        content: attr(data-text);
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        opacity: 0.3;
+        z-index: -1;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        color: var(--light-color);
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .glitch-box {
+        position: relative;
+        padding: 2rem;
+        border: 1px solid rgba(108, 92, 231, 0.3);
+        border-radius: var(--border-radius);
+        background-color: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(10px);
+        box-shadow: var(--neon-glow);
+        overflow: hidden;
+        margin-bottom: 3rem;
+    }
+    
+    .glitch-box::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        width: calc(100% + 4px);
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        z-index: 1;
+    }
+    
+    .glitch-line {
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        background-color: rgba(108, 92, 231, 0.3);
+        z-index: 0;
+    }
+    
+    .glitch-line:nth-child(1) {
+        top: 25%;
+        left: 0;
+    }
+    
+    .glitch-line:nth-child(2) {
+        top: 50%;
+        left: 0;
+    }
+    
+    .glitch-line:nth-child(3) {
+        top: 75%;
+        left: 0;
+    }
+    
+    /* Info cards */
+    .info-section {
+        background-color: var(--darker-color);
+        padding: 4rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .info-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        border: var(--card-border);
+        padding: 2rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--neon-glow);
+    }
+    
+    .info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+    
+    .info-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    
+    .info-card:hover .info-icon {
+        transform: scale(1.1);
+        color: var(--accent-color);
+    }
+    
+    .info-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--light-color);
+    }
+    
+    /* Form styling */
+    .form-section {
+        background-color: var(--dark-color);
+        padding: 5rem 0;
+        position: relative;
+    }
+    
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-card {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        background-color: var(--card-bg);
+        box-shadow: var(--box-shadow);
+        transition: all var(--transition-speed) ease;
+        border: var(--card-border);
+        position: relative;
+    }
+    
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--primary-color), var(--accent-color));
+    }
+    
+    .form-step {
+        padding: 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .form-step:last-child {
+        border-bottom: none;
+    }
+    
+    .step-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-right: 1rem;
+    }
+    
+    .step-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        text-shadow: var(--neon-text-shadow);
+    }
+    
+    .form-floating {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-control, .form-select {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--light-color);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
+        color: var(--light-color);
+    }
+    
+    .form-floating > label {
+        color: var(--text-muted);
+    }
+    
+    .neon-btn {
+        border-radius: 50px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        border: none;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    .neon-btn:hover {
+        box-shadow: 0 0 20px rgba(108, 92, 231, 0.7);
+        transform: translateY(-3px);
+    }
+    
+    /* File upload */
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .file-upload-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 150px;
+        border: 2px dashed rgba(108, 92, 231, 0.3);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: rgba(108, 92, 231, 0.05);
+        flex-direction: column;
+    }
+    
+    .file-upload-label:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 15px rgba(108, 92, 231, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .file-upload-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-upload-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .file-upload-label:hover .file-upload-icon {
+        transform: scale(1.1);
+        animation: pulse-glow 1.5s infinite;
+    }
+    
+    @keyframes pulse-glow {
+        0% {
+            text-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
+        }
+        50% {
+            text-shadow: 0 0 20px rgba(108, 92, 231, 0.8);
+        }
+        100% {
+            text-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
+        }
+    }
+    
+    .preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .preview-item {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(108, 92, 231, 0.3);
+    }
+    
+    .preview-item:hover {
+        transform: scale(1.05);
+        box-shadow: var(--neon-glow);
+    }
+    
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .preview-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 25px;
+        height: 25px;
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+    
+    .preview-remove:hover {
+        background-color: red;
+        transform: scale(1.1);
+    }
+    
+    .file-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        font-size: 2.5rem;
+        background-color: rgba(108, 92, 231, 0.1);
+    }
+    
+    .file-name {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 5px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 0.8rem;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Success message */
+    .success-message {
+        text-align: center;
+        padding: 4rem 2rem;
+        background-color: rgba(108, 92, 231, 0.05);
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(108, 92, 231, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .success-message::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236c5ce7' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+    }
+    
+    .success-icon {
+        font-size: 5rem;
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        animation: success-pulse 2s infinite;
+    }
+    
+    @keyframes success-pulse {
+        0% {
+            transform: scale(1);
+            text-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
+        }
+        50% {
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(108, 92, 231, 0.8), 0 0 30px rgba(108, 92, 231, 0.6);
+        }
+        100% {
+            transform: scale(1);
+            text-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
+        }
+    }
+    
+    .report-id {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: rgba(108, 92, 231, 0.1);
+        border: 1px solid rgba(108, 92, 231, 0.3);
+        border-radius: var(--border-radius);
+        font-family: monospace;
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        margin: 1rem 0;
+    }
+    
+    /* Privacy notice */
+    .privacy-notice {
+        background-color: rgba(108, 92, 231, 0.1);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        border: 1px solid rgba(108, 92, 231, 0.2);
+        position: relative;
+    }
+    
+    .privacy-notice::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--primary-color), var(--accent-color));
+    }
+    
+    .privacy-icon {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Cyberpunk Style -->
+<section class="cyberpunk-hero">
+    <div class="hero-grid"></div>
+    <div class="container hero-content text-center">
+        <h1 class="hero-title" data-text="Report Corruption">Report Corruption</h1>
+        <p class="hero-subtitle">Your voice matters in the fight against corruption. Report incidents anonymously and securely through our encrypted platform.</p>
+        <div class="glitch-box mt-4">
+            <div class="glitch-line"></div>
+            <div class="glitch-line"></div>
+            <div class="glitch-line"></div>
+            <div class="row">
+                <div class="col-md-4 text-center mb-4 mb-md-0">
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="mb-3">
+                            <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="h5">100% Anonymous</h4>
+                        <p class="small text-muted">Your identity is protected</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-4 mb-md-0">
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="mb-3">
+                            <i class="fas fa-lock fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="h5">End-to-End Encrypted</h4>
+                        <p class="small text-muted">Your data is secure</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="mb-3">
+                            <i class="fas fa-bolt fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="h5">Fast Action</h4>
+                        <p class="small text-muted">Reports processed within 24h</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Info Section -->
+<section class="info-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-4 mb-4">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="info-title">What to Report</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Bribery and extortion</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Misuse of public funds</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Abuse of power</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Nepotism and favoritism</li>
+                        <li><i class="fas fa-check-circle text-primary me-2"></i> Procurement fraud</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3 class="info-title">How to Report</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Provide specific details</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Include date and location</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Mention involved parties</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Upload evidence if available</li>
+                        <li><i class="fas fa-check-circle text-primary me-2"></i> Verify information accuracy</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="info-title">What Happens Next</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Report verification</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Investigation initiation</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Evidence collection</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Authority notification</li>
+                        <li><i class="fas fa-check-circle text-primary me-2"></i> Action and resolution</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Form Section -->
+<section class="form-section">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-card" id="reportForm">
+                <!-- Step 1: Basic Information -->
+                <div class="form-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Basic Information</h3>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="reportTitle" placeholder="Title" required>
+                        <label for="reportTitle">Title of the Report</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" id="department" required>
+                            <option value="" selected disabled>Select Department</option>
+                            <option value="Revenue">Revenue Department</option>
+                            <option value="Police">Police Department</option>
+                            <option value="Education">Education Department</option>
+                            <option value="Health">Health Department</option>
+                            <option value="PWD">Public Works Department</option>
+                            <option value="Food">Food & Civil Supplies Department</option>
+                            <option value="Agriculture">Agriculture Department</option>
+                            <option value="Other">Other Department</option>
+                        </select>
+                        <label for="department">Department Involved</label>
+                    </div>
+                    <div id="otherDepartmentContainer" style="display: none;">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="otherDepartment" placeholder="Other Department">
+                            <label for="otherDepartment">Specify Other Department</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Incident Details -->
+                <div class="form-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">Incident Details</h3>
+                    </div>
+                    <div class="form-floating mb-4">
+                        <textarea class="form-control" id="description" placeholder="Description" style="height: 150px;" required></textarea>
+                        <label for="description">Detailed Description of the Incident</label>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="location" placeholder="Location" required>
+                                <label for="location">Location of Incident</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="incidentDate" placeholder="Date of Incident" required>
+                                <label for="incidentDate">Date of Incident</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mt-3">
+                        <input type="text" class="form-control" id="peopleInvolved" placeholder="People Involved">
+                        <label for="peopleInvolved">People Involved (Optional)</label>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Evidence Upload -->
+                <div class="form-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Evidence Upload</h3>
+                    </div>
+                    <p class="text-muted mb-4">Upload any evidence you have, such as photos, documents, or audio recordings.</p>
+                    
+                    <div class="file-upload mb-3">
+                        <label for="evidenceFiles" class="file-upload-label">
+                            <div class="file-upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="mb-2">Drag & drop files here or click to browse</div>
+                            <div class="text-muted small">Max 5 files, 10MB each (JPG, PNG, PDF, MP3, MP4)</div>
+                        </label>
+                        <input type="file" id="evidenceFiles" class="file-upload-input" multiple accept=".jpg,.jpeg,.png,.pdf,.mp3,.mp4">
+                    </div>
+                    
+                    <div class="preview-container" id="previewContainer"></div>
+                </div>
+                
+                <!-- Step 4: Contact Information -->
+                <div class="form-step">
+                    <div class="step-header">
+                        <div class="step-number">4</div>
+                        <h3 class="step-title">Contact Information (Optional)</h3>
+                    </div>
+                    <p class="text-muted mb-4">This information is optional and will be kept confidential. It may help in the investigation process.</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="name" placeholder="Name">
+                                <label for="name">Your Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email" placeholder="Email">
+                                <label for="email">Email Address</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="tel" class="form-control" id="phone" placeholder="Phone">
+                                <label for="phone">Phone Number</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select class="form-select" id="preferredContact">
+                                    <option value="" selected disabled>Select Preferred Contact Method</option>
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="none">No Contact</option>
+                                </select>
+                                <label for="preferredContact">Preferred Contact Method</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="privacy-notice mt-4">
+                        <p class="mb-0"><i class="fas fa-shield-alt privacy-icon"></i> Your identity will be kept confidential. We use end-to-end encryption to protect your information.</p>
+                    </div>
+                </div>
+                
+                <!-- Submit Section -->
+                <div class="form-step text-center">
+                    <button type="submit" class="neon-btn" id="submitReport">
+                        <i class="fas fa-paper-plane me-2"></i> Submit Report
+                    </button>
+                    <p class="text-muted mt-3 small">By submitting this form, you agree to our <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date picker
+        flatpickr("#incidentDate", {
+            dateFormat: "Y-m-d",
+            maxDate: "today",
+            theme: "dark"
+        });
+        
+        // Handle "Other" department selection
+        const departmentSelect = document.getElementById('department');
+        const otherDepartmentContainer = document.getElementById('otherDepartmentContainer');
+        
+        departmentSelect.addEventListener('change', function() {
+            if (this.value === 'Other') {
+                otherDepartmentContainer.style.display = 'block';
+            } else {
+                otherDepartmentContainer.style.display = 'none';
+            }
+        });
+        
+        // Handle file uploads and previews
+        const fileInput = document.getElementById('evidenceFiles');
+        const previewContainer = document.getElementById('previewContainer');
+        
+        fileInput.addEventListener('change', function() {
+            previewContainer.innerHTML = '';
+            
+            if (this.files.length > 5) {
+                alert('You can only upload a maximum of 5 files.');
+                this.value = '';
+                return;
+            }
+            
+            for (let i = 0; i < this.files.length; i++) {
+                const file = this.files[i];
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size should not exceed 10MB.');
+                    this.value = '';
+                    previewContainer.innerHTML = '';
+                    return;
+                }
+                
+                const previewItem = document.createElement('div');
+                previewItem.className = 'preview-item';
+                
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    previewItem.appendChild(img);
+                } else {
+                    const icon = document.createElement('div');
+                    icon.className = 'file-icon';
+                    icon.innerHTML = getFileIcon(file.type);
+                    previewItem.appendChild(icon);
+                    
+                    const fileName = document.createElement('div');
+                    fileName.className = 'file-name';
+                    fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
+                    previewItem.appendChild(fileName);
+                }
+                
+                const removeButton = document.createElement('div');
+                removeButton.className = 'preview-remove';
+                removeButton.innerHTML = '&times;';
+                removeButton.addEventListener('click', function() {
+                    previewItem.remove();
+                    // Note: This doesn't actually remove the file from the input
+                    // In a real implementation, you'd need to use a more complex approach
+                });
+                
+                previewItem.appendChild(removeButton);
+                previewContainer.appendChild(previewItem);
+            }
+        });
+        
+        function getFileIcon(fileType) {
+            if (fileType.includes('pdf')) {
+                return '<i class="fas fa-file-pdf" style="color: #e74c3c;"></i>';
+            } else if (fileType.includes('audio')) {
+                return '<i class="fas fa-file-audio" style="color: #3498db;"></i>';
+            } else if (fileType.includes('video')) {
+                return '<i class="fas fa-file-video" style="color: #9b59b6;"></i>';
+            } else {
+                return '<i class="fas fa-file" style="color: #95a5a6;"></i>';
+            }
+        }
+        
+        // Form submission
+        const form = document.getElementById('reportForm');
+        const submitButton = document.getElementById('submitReport');
+        
+        submitButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // In a real implementation, you would send the form data to the server here
+            // For this demo, we'll just show a success message
+            
+            form.innerHTML = `
+                <div class="success-message">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="mb-4">Report Submitted Successfully!</h3>
+                    <p class="mb-4">Thank you for your report. Your contribution helps in fighting corruption.</p>
+                    <div class="report-id">COR-${Math.floor(Math.random() * 1000000)}</div>
+                    <p class="mb-4">Please save this report ID for future reference.</p>
+                    <a href="{{ url_for('main.index') }}" class="neon-btn">
+                        <i class="fas fa-home me-2"></i> Back to Home
+                    </a>
+                </div>
+            `;
+        });
+    });
+</script>
+{% endblock %}

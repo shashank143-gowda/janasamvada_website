@@ -1,0 +1,255 @@
+<div class="translator-component">
+    <div class="translator-container">
+        <div class="translator-header">
+            <h4><i class="fas fa-language"></i> Multilingual Translator</h4>
+            <p class="translator-subtitle">Translate text between multiple Indian languages</p>
+        </div>
+        
+        <div class="translator-body">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="translator-input-container">
+                        <div class="translator-language-selector">
+                            <select id="source-language" class="form-select">
+                                {% for code, lang in languages.items() %}
+                                <option value="{{ code }}" {% if code == 'en' %}selected{% endif %}>{{ lang.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="translator-controls">
+                                <button id="mic-btn" class="translator-control-btn" title="Voice input">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                                <button id="speak-input-btn" class="translator-control-btn" title="Listen">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                                <button id="copy-input-btn" class="translator-control-btn" title="Copy text">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="input-text" class="translator-textarea" placeholder="Enter text to translate..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                    <div class="translator-middle-controls">
+                        <button id="swap-btn" class="translator-middle-btn" title="Swap languages">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        <button id="translate-btn" class="translator-middle-btn" title="Translate">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button id="clear-btn" class="translator-middle-btn" title="Clear text">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="col-md-5">
+                    <div class="translator-output-container">
+                        <div class="translator-language-selector">
+                            <select id="target-language" class="form-select">
+                                {% for code, lang in languages.items() %}
+                                <option value="{{ code }}" {% if code == 'hi' %}selected{% endif %}>{{ lang.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="translator-controls">
+                                <button id="speak-output-btn" class="translator-control-btn" title="Listen">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                                <button id="copy-output-btn" class="translator-control-btn" title="Copy text">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="output-text" class="translator-textarea" placeholder="Translation will appear here..." readonly></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="translator-status-container">
+                <div id="translation-status" class="status"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .translator-component {
+        margin: 20px 0;
+    }
+    
+    .translator-container {
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .translator-header {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .translator-subtitle {
+        margin-bottom: 0;
+        opacity: 0.8;
+    }
+    
+    .translator-body {
+        padding: 20px;
+    }
+    
+    .translator-input-container,
+    .translator-output-container {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .translator-language-selector {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .translator-language-selector .form-select {
+        width: auto;
+        border: none;
+        background-color: transparent;
+        padding: 5px 10px;
+        font-weight: 600;
+    }
+    
+    .translator-controls {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .translator-control-btn {
+        background-color: transparent;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+    
+    .translator-control-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: #3498db;
+    }
+    
+    .translator-textarea {
+        width: 100%;
+        height: 150px;
+        padding: 15px;
+        border: none;
+        resize: none;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .translator-textarea:focus {
+        outline: none;
+    }
+    
+    .translator-middle-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .translator-middle-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+    
+    .translator-middle-btn:hover {
+        background-color: #3498db;
+        color: white;
+        border-color: #3498db;
+        transform: scale(1.1);
+    }
+    
+    #translate-btn {
+        background-color: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+    
+    #translate-btn:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+    }
+    
+    .translator-status-container {
+        margin-top: 15px;
+        text-align: center;
+        min-height: 24px;
+    }
+    
+    .status {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .status-info {
+        background-color: #e3f2fd;
+        color: #0d6efd;
+    }
+    
+    .status-success {
+        background-color: #e8f5e9;
+        color: #198754;
+    }
+    
+    .status-error {
+        background-color: #ffebee;
+        color: #dc3545;
+    }
+    
+    #mic-btn.listening {
+        background-color: #dc3545;
+        color: white;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .translator-middle-controls {
+            flex-direction: row;
+            margin: 15px 0;
+        }
+    }
+</style>

@@ -1,0 +1,572 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    /* Hero section */
+    .hero-section {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        padding: 80px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 50px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .wave-divider {
+        display: block;
+        margin-bottom: -10px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+    
+    /* Feature cards */
+    .feature-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+    }
+    
+    /* Custom button styles */
+    .btn-rounded {
+        border-radius: 30px;
+        padding: 10px 25px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-rounded:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    /* Testimonial cards */
+    .testimonial-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    /* Step circles */
+    .step-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: white;
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-lg-start animate__animated animate__fadeInLeft">
+                <h1 class="display-3 fw-bold mb-4">JanSamvaad</h1>
+                <p class="lead mb-4 fs-4">The People's Voice Assistant - Empowering Rural Communities Through Technology</p>
+                <p class="mb-5">Bridging the digital divide and bringing essential services to every village in India.</p>
+                <div class="d-flex flex-wrap gap-3 justify-content-lg-start justify-content-center">
+                    <a href="{{ url_for('services_bp.services_page') }}" class="btn btn-light btn-lg btn-rounded">
+                        <i class="fas fa-search me-2"></i> Find Services
+                    </a>
+                    <a href="{{ url_for('schemes_bp.schemes_page') }}" class="btn btn-warning btn-lg btn-rounded">
+                        <i class="fas fa-scroll me-2"></i> Explore Schemes
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-5 mt-lg-0 animate__animated animate__fadeInRight">
+                <img src="https://img.freepik.com/free-vector/people-using-online-apps-set_74855-4457.jpg" alt="JanSamvaad Platform" class="img-fluid rounded-4 shadow float-animation">
+            </div>
+        </div>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="wave-divider">
+        <path fill="#ffffff" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,149.3C960,160,1056,160,1152,138.7C1248,117,1344,75,1392,53.3L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    </svg>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-5 fw-bold">Our Services</h2>
+            <p class="lead text-muted">Comprehensive solutions for rural communities</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon pulse-animation">
+                            <i class="fas fa-hospital text-primary"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3">Public Service Locator</h3>
+                        <p class="card-text">Find nearby hospitals, schools, transport, and other public services with contact details and map links.</p>
+                        <a href="{{ url_for('services_bp.services_page') }}" class="btn btn-primary btn-rounded mt-3">
+                            <i class="fas fa-arrow-right me-2"></i> Find Services
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon pulse-animation">
+                            <i class="fas fa-scroll text-success"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3">Government Schemes</h3>
+                        <p class="card-text">Access information about government schemes for health, agriculture, women, and more with eligibility details.</p>
+                        <a href="{{ url_for('schemes_bp.schemes_page') }}" class="btn btn-success btn-rounded mt-3">
+                            <i class="fas fa-arrow-right me-2"></i> Explore Schemes
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon pulse-animation">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3">Hazard Reporting</h3>
+                        <p class="card-text">Report local hazards with images and location. Upvote reports to bring attention to critical issues.</p>
+                        <a href="{{ url_for('hazards_bp.report_hazard_page') }}" class="btn btn-warning btn-rounded mt-3">
+                            <i class="fas fa-arrow-right me-2"></i> Report Hazard
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon pulse-animation">
+                            <i class="fas fa-gavel text-danger"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3">Anti-Corruption</h3>
+                        <p class="card-text">Anonymously report corruption and bribery cases. Your reports are securely stored and processed.</p>
+                        <a href="{{ url_for('corruption_bp.report_corruption_page') }}" class="btn btn-danger btn-rounded mt-3">
+                            <i class="fas fa-arrow-right me-2"></i> Report Corruption
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="500">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon pulse-animation">
+                            <i class="fas fa-cloud-sun-rain text-info"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3">Climate Information</h3>
+                        <p class="card-text">Get daily weather reports and agricultural tips based on current climate conditions.</p>
+                        <a href="{{ url_for('climate_bp.climate_page') }}" class="btn btn-info btn-rounded mt-3 text-white">
+                            <i class="fas fa-arrow-right me-2"></i> Check Weather
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="600">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon pulse-animation">
+                            <i class="fas fa-tree text-success"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3">Plant Trees, Get Rewards</h3>
+                        <p class="card-text">Plant trees, upload photos, and earn reward points that can be redeemed for benefits.</p>
+                        <a href="{{ url_for('trees_bp.plant_tree_page') }}" class="btn btn-success btn-rounded mt-3">
+                            <i class="fas fa-arrow-right me-2"></i> Plant a Tree
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Live Updates Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-5 fw-bold">Live Updates</h2>
+            <p class="lead text-muted">Stay informed with the latest information</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-4" data-aos="fade-right">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Latest Climate Update</h4>
+                    </div>
+                    <div class="card-body" id="climate-update">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading climate data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4" data-aos="fade-left">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">Recent Hazard Reports</h4>
+                    </div>
+                    <div class="card-body" id="recent-hazards">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading hazard reports...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+                <img src="https://img.freepik.com/free-vector/people-using-mobile-payments_52683-8345.jpg" alt="About JanSamvaad" class="img-fluid rounded-4 shadow">
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <h2 class="display-5 fw-bold mb-4">About JanSamvaad</h2>
+                <p class="lead mb-4">Empowering rural communities through digital innovation</p>
+                <p class="mb-4">JanSamvaad (People's Voice) is a comprehensive platform designed to empower rural communities by providing easy access to essential services, government schemes, and tools to report local issues.</p>
+                <p class="mb-4">Our mission is to bridge the digital divide and ensure that every citizen, regardless of their location or technical expertise, can benefit from digital governance and services.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#" class="btn btn-primary btn-rounded">Learn More</a>
+                    <a href="#" class="btn btn-outline-primary btn-rounded">Our Mission</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-5 fw-bold">How It Works</h2>
+            <p class="lead text-muted">Simple steps to access all services</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body text-center">
+                        <div class="step-circle bg-primary">1</div>
+                        <h4>Register</h4>
+                        <p>Create your account with basic details</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body text-center">
+                        <div class="step-circle bg-success">2</div>
+                        <h4>Explore</h4>
+                        <p>Browse services and schemes available in your area</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body text-center">
+                        <div class="step-circle bg-warning">3</div>
+                        <h4>Engage</h4>
+                        <p>Report issues, plant trees, and participate actively</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body text-center">
+                        <div class="step-circle bg-info">4</div>
+                        <h4>Benefit</h4>
+                        <p>Earn rewards and see positive changes in your community</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-5 fw-bold">Success Stories</h2>
+            <p class="lead text-muted">Hear from our community members</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 testimonial-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="User" class="rounded-circle me-3" width="60">
+                            <div>
+                                <h5 class="mb-0">Priya Sharma</h5>
+                                <p class="text-muted mb-0">Farmer, Bihar</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"JanSamvaad helped me access the PM-KISAN scheme benefits. The weather alerts have been invaluable for planning my farming activities."</p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 testimonial-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="User" class="rounded-circle me-3" width="60">
+                            <div>
+                                <h5 class="mb-0">Rajesh Kumar</h5>
+                                <p class="text-muted mb-0">Village Head, Madhya Pradesh</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"Our village reported a broken bridge through JanSamvaad. Within weeks, authorities fixed it. This platform gives us a voice we never had before."</p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 testimonial-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User" class="rounded-circle me-3" width="60">
+                            <div>
+                                <h5 class="mb-0">Lakshmi Devi</h5>
+                                <p class="text-muted mb-0">Homemaker, Tamil Nadu</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"I planted 10 trees through the app and earned rewards that helped my children get school supplies. JanSamvaad is making our village greener and better."</p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="zoom-in">
+                <h2 class="display-5 fw-bold mb-4">Join JanSamvaad Today</h2>
+                <p class="lead mb-4">Be part of the movement to transform rural India through digital empowerment</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg btn-rounded">
+                        <i class="fas fa-user-plus me-2"></i> Register Now
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-lg btn-rounded">
+                        <i class="fas fa-info-circle me-2"></i> Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Fetch climate data
+        $.ajax({
+            url: '/climate/api/climate/current',
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    const climate = response.climate;
+                    let weatherIcon = '';
+                    
+                    switch(climate.weather_condition.toLowerCase()) {
+                        case 'sunny':
+                            weatherIcon = '<i class="fas fa-sun fa-3x text-warning"></i>';
+                            break;
+                        case 'partly cloudy':
+                            weatherIcon = '<i class="fas fa-cloud-sun fa-3x text-secondary"></i>';
+                            break;
+                        case 'cloudy':
+                            weatherIcon = '<i class="fas fa-cloud fa-3x text-secondary"></i>';
+                            break;
+                        case 'light rain':
+                            weatherIcon = '<i class="fas fa-cloud-rain fa-3x text-info"></i>';
+                            break;
+                        case 'heavy rain':
+                            weatherIcon = '<i class="fas fa-cloud-showers-heavy fa-3x text-primary"></i>';
+                            break;
+                        default:
+                            weatherIcon = '<i class="fas fa-cloud-sun fa-3x text-secondary"></i>';
+                    }
+                    
+                    let html = `
+                        <div class="text-center mb-4">
+                            ${weatherIcon}
+                            <h3 class="mt-3">${climate.weather_condition}</h3>
+                            <h2 class="display-4 fw-bold">${climate.temperature}°C</h2>
+                            <p class="text-muted">${climate.date}</p>
+                        </div>
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-tint text-primary me-3"></i>
+                                <div>
+                                    <h5 class="mb-0">Rainfall</h5>
+                                    <p class="mb-0">${climate.rainfall_prediction}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-seedling text-success me-3"></i>
+                                <div>
+                                    <h5 class="mb-0">Farming Tip</h5>
+                                    <p class="mb-0">${climate.farming_tip}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <a href="{{ url_for('climate_bp.climate_page') }}" class="btn btn-primary btn-rounded">
+                                <i class="fas fa-chart-line me-2"></i> View Full Forecast
+                            </a>
+                        </div>
+                    `;
+                    
+                    $('#climate-update').html(html);
+                } else {
+                    $('#climate-update').html('<div class="text-center py-4"><p class="text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><br>Failed to load climate data</p></div>');
+                }
+            },
+            error: function() {
+                $('#climate-update').html('<div class="text-center py-4"><p class="text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><br>Failed to load climate data</p></div>');
+            }
+        });
+        
+        // Fetch recent hazards
+        $.ajax({
+            url: '/hazards/api/hazards?limit=3',
+            method: 'GET',
+            success: function(response) {
+                if (response.success && response.hazards && response.hazards.length > 0) {
+                    let html = '<div class="list-group list-group-flush">';
+                    
+                    response.hazards.slice(0, 3).forEach(function(hazard) {
+                        let statusBadge = '';
+                        let statusClass = '';
+                        
+                        switch(hazard.status) {
+                            case 'pending':
+                                statusBadge = '<span class="badge bg-warning">Pending</span>';
+                                statusClass = 'border-warning';
+                                break;
+                            case 'in-progress':
+                                statusBadge = '<span class="badge bg-info">In Progress</span>';
+                                statusClass = 'border-info';
+                                break;
+                            case 'resolved':
+                                statusBadge = '<span class="badge bg-success">Resolved</span>';
+                                statusClass = 'border-success';
+                                break;
+                            default:
+                                statusBadge = '<span class="badge bg-secondary">Unknown</span>';
+                                statusClass = '';
+                        }
+                        
+                        html += `
+                            <div class="list-group-item list-group-item-action ${statusClass} border-start-0 border-end-0 border-top-0 border-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-1">${hazard.title}</h5>
+                                    ${statusBadge}
+                                </div>
+                                <p class="mb-1">${hazard.description.substring(0, 100)}${hazard.description.length > 100 ? '...' : ''}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">${hazard.location_description || 'Location not specified'}</small>
+                                    <div>
+                                        <span class="badge bg-secondary"><i class="fas fa-thumbs-up"></i> ${hazard.upvotes || 0}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div><div class="text-center mt-4"><a href="{{ url_for("hazards_bp.hazards_page") }}" class="btn btn-success btn-rounded"><i class="fas fa-list me-2"></i> View All Hazards</a></div>';
+                    $('#recent-hazards').html(html);
+                } else {
+                    $('#recent-hazards').html(`
+                        <div class="text-center py-4">
+                            <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                            <p>No hazard reports found</p>
+                            <a href="{{ url_for('hazards_bp.report_hazard_page') }}" class="btn btn-success btn-rounded mt-3">
+                                <i class="fas fa-plus me-2"></i> Report a Hazard
+                            </a>
+                        </div>
+                    `);
+                }
+            },
+            error: function() {
+                $('#recent-hazards').html('<div class="text-center py-4"><p class="text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><br>Failed to load hazard reports</p></div>');
+            }
+        });
+    });
+</script>
+{% endblock %}

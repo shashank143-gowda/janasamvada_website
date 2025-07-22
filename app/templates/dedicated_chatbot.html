@@ -1,0 +1,1205 @@
+{% extends "base.html" %}
+
+{% block title %}JanSamvaad AI Assistant{% endblock %}
+
+{% block extra_css %}
+<!-- Include our custom Kannada audio player -->
+<script src="{{ url_for('static', filename='js/kannada-audio.js') }}"></script>
+<style>
+    /* Global style to ensure all text in chat messages is black */
+    #chatMessages p, 
+    #chatMessages div, 
+    .user-message, 
+    .bot-message, 
+    .welcome-message p {
+        color: #000000 !important;
+    }
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+    }
+    
+    .chat-container {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    #chatMessages {
+        scrollbar-width: thin;
+        scrollbar-color: #ccc #f5f5f5;
+    }
+    
+    #chatMessages::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    #chatMessages::-webkit-scrollbar-track {
+        background: #f5f5f5;
+    }
+    
+    #chatMessages::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 10px;
+    }
+    
+    .suggestion {
+        transition: all 0.3s ease;
+    }
+    
+    .suggestion:hover {
+        background-color: #3498db;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .typing-indicator {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* Animation for suggested questions */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); box-shadow: 0 0 10px rgba(13, 110, 253, 0.5); }
+        100% { transform: scale(1); }
+    }
+    
+    .btn-pulse {
+        animation: pulse 1s infinite;
+        background-color: #e9ecef;
+        border-color: #0d6efd;
+    }
+    
+    /* Animation for speech indicator */
+    @keyframes wave {
+        0% { transform: scale(1); opacity: 0.7; }
+        50% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); opacity: 0.7; }
+    }
+    
+    .speech-indicator {
+        animation: wave 1.5s infinite ease-in-out;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+    }
+    
+    .user-message {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: black !important;
+        border-radius: 18px;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .bot-message {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 18px;
+        border-bottom-left-radius: 5px;
+        color: black !important;
+    }
+    
+    /* Ensure all paragraphs in chat messages have black text */
+    .mb-0 {
+        color: #000000 !important;
+    }
+    
+    /* Force black text on all chat message content */
+    .user-message p, .bot-message p {
+        color: #000000 !important;
+    }
+    
+    /* Only exception is for explicitly muted text */
+    .text-muted.mb-0 {
+        color: #6c757d !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Back to Home / ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg border-0 chat-container">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-robot fa-2x me-3"></i>
+                            <h3 class="mb-0">JanSamvaad AI Assistant</h3>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <a href="{{ url_for('dhvani_bp.train_chatbot_route') }}" class="btn btn-sm btn-light me-2" title="Train the AI assistant / AI ಸಹಾಯಕನನ್ನು ತರಬೇತುಗೊಳಿಸಿ">
+                                <i class="fas fa-brain me-1"></i> Train AI / AI ತರಬೇತಿ
+                            </a>
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-info-circle me-1"></i> Powered by Dhvani AI
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Language selector and voice toggle - Prominent position -->
+                <div class="bg-light p-3 border-bottom d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <label for="languageSelector" class="me-2 fw-bold mb-0">
+                            <i class="fas fa-language me-2 text-primary"></i>
+                            Select Language / ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ:
+                        </label>
+                        <select id="languageSelector" class="form-select" style="min-width: 200px;">
+                            <option value="en" {% if not default_language or default_language == 'en' %}selected{% endif %}>English</option>
+                            <option value="kn" {% if default_language == 'kn' %}selected{% endif %}>ಕನ್ನಡ (Kannada)</option>
+                        </select>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="autoVoiceToggle" checked>
+                        <label class="form-check-label" for="autoVoiceToggle">
+                            <i class="fas fa-volume-up me-1 text-primary"></i>
+                            Auto Voice / ಸ್ವಯಂ ಧ್ವನಿ
+                        </label>
+                    </div>
+                </div>
+                
+                {% if kannada_mode %}
+                <!-- Kannada Voice AI Banner -->
+                <div class="bg-warning p-3 border-bottom d-flex align-items-center justify-content-center">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-microphone-alt fa-2x me-3 text-dark"></i>
+                        <div>
+                            <h5 class="mb-0">ಕನ್ನಡ ಧ್ವನಿ AI ಮೋಡ್</h5>
+                            <p class="mb-0 small">ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ ಮತ್ತು ಉತ್ತರಗಳನ್ನು ಪಡೆಯಿರಿ</p>
+                            <p class="mb-0 small text-dark">Kannada Voice AI Mode - Speak in Kannada and get responses</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="card-body p-0">
+                    <!-- Chat messages container -->
+                    <div id="chatMessages" class="p-3" style="height: 400px; overflow-y: auto;">
+                        <!-- Welcome messages will be added by JavaScript for a better animation effect -->
+                    </div>
+                    
+                    <script>
+                        // Add welcome messages with animation when the page loads
+                        document.addEventListener('DOMContentLoaded', function() {
+                            setTimeout(function() {
+                                // First welcome message
+                                const welcomeDiv1 = document.createElement('div');
+                                welcomeDiv1.className = 'd-flex mb-3 welcome-message';
+                                welcomeDiv1.innerHTML = `
+                                    <div class="bg-light rounded p-3" style="max-width: 80%; animation: fadeIn 0.5s ease-in-out;">
+                                        <p class="mb-0 mt-2" style="font-size: 1.1rem; color: #000000;"><strong>ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ಜನಸಂವಾದ್ ಸಹಾಯಕ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?</strong></p>
+                                        <p class="mb-0 mt-2 text-muted small">Hello! I'm your JanSamvaad Assistant. How can I help you today?</p>
+                                    </div>
+                                `;
+                                document.getElementById('chatMessages').appendChild(welcomeDiv1);
+                                
+                                // Second welcome message after a delay
+                                setTimeout(function() {
+                                    const welcomeDiv2 = document.createElement('div');
+                                    welcomeDiv2.className = 'd-flex mb-3 welcome-message';
+                                    welcomeDiv2.innerHTML = `
+                                        <div class="bg-light rounded p-3" style="max-width: 80%; animation: fadeIn 0.5s ease-in-out;">
+                                            <p class="mb-0 mt-2" style="font-size: 1.1rem; color: #000000;"><strong>ನೀವು ನನ್ನನ್ನು ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು, ಸೇವೆಗಳು ಮತ್ತು ಇತರ ಮಾಹಿತಿಯ ಬಗ್ಗೆ ಕೇಳಬಹುದು. ಆಯುಷ್ಮಾನ್ ಭಾರತ್, ಪಿಎಂ ಕಿಸಾನ್ ಅಥವಾ ಭ್ರಷ್ಟಾಚಾರವನ್ನು ಹೇಗೆ ವರದಿ ಮಾಡುವುದು ಎಂಬುದರ ಬಗ್ಗೆ ಕೇಳಲು ಪ್ರಯತ್ನಿಸಿ.</strong></p>
+                                            <p class="mb-0 mt-2 text-muted small">You can ask me about government schemes, services, and other information. Try asking about Ayushman Bharat, PM Kisan, or how to report corruption.</p>
+                                        </div>
+                                    `;
+                                    document.getElementById('chatMessages').appendChild(welcomeDiv2);
+                                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                                    
+                                    // Third welcome message after another delay
+                                    setTimeout(function() {
+                                        const welcomeDiv3 = document.createElement('div');
+                                        welcomeDiv3.className = 'd-flex mb-3 welcome-message';
+                                        welcomeDiv3.innerHTML = `
+                                            <div class="bg-warning text-dark rounded p-3" style="max-width: 80%; animation: fadeIn 0.5s ease-in-out;">
+                                                <p class="mb-0 mt-2" style="font-size: 1.1rem; color: #000000;">
+                                                    <i class="fas fa-info-circle me-2"></i> 
+                                                    <strong>ಮೇಲಿನ ಡ್ರಾಪ್‌ಡೌನ್‌ನಿಂದ ನಿಮ್ಮ ಆದ್ಯತೆಯ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ. ಕನ್ನಡದಲ್ಲಿ ಪ್ರತಿಕ್ರಿಯೆಗಳನ್ನು ಪಡೆಯಲು "ಕನ್ನಡ" ಆಯ್ಕೆಮಾಡಿ.</strong>
+                                                </p>
+                                                <p class="mb-0 mt-2 text-muted small">
+                                                    <i class="fas fa-info-circle me-2"></i> 
+                                                    Select your preferred language from the dropdown above. Select "ಕನ್ನಡ" to get responses in Kannada.
+                                                </p>
+                                            </div>
+                                        `;
+                                        document.getElementById('chatMessages').appendChild(welcomeDiv3);
+                                        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                                    }, 1000);
+                                }, 1000);
+                            }, 500);
+                        });
+                    </script>
+                    
+
+                    
+                    <!-- Input area -->
+                    <div class="p-3 border-top">
+                        <form id="chatForm" class="d-flex">
+                            <input type="text" id="userInput" class="form-control me-2" placeholder="Type your message here...">
+                            <button type="button" id="kannadaVoiceBtn" class="btn btn-warning me-2" title="ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ (Speak in Kannada)">
+                                <i class="fas fa-microphone"></i> ಕನ್ನಡ
+                            </button>
+                            <button type="button" id="testKannadaVoice" class="btn btn-outline-info me-2" title="Test Kannada Voice">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Suggested questions -->
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Suggested Questions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2" id="suggestedQuestions">
+                        {% for pair in question_pairs %}
+                        <button class="btn btn-outline-secondary btn-sm suggestion" 
+                                data-english="{{ pair.english }}" 
+                                data-kannada="{{ pair.kannada }}">
+                            {{ pair.english }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chatForm');
+    const userInput = document.getElementById('userInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const languageSelector = document.getElementById('languageSelector');
+    const kannadaVoiceBtn = document.getElementById('kannadaVoiceBtn');
+    let suggestionButtons = document.querySelectorAll('.suggestion');
+    
+    // Variables for voice recording
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+    
+    // Function to initialize suggestion buttons
+    function initSuggestionButtons() {
+        // Update reference to suggestion buttons (in case they've changed)
+        suggestionButtons = document.querySelectorAll('.suggestion');
+        
+        // Add click event listeners
+        suggestionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const language = languageSelector.value;
+                
+                // Get the question in the appropriate language
+                const question = language === 'kn' ? 
+                    this.getAttribute('data-kannada') : 
+                    this.getAttribute('data-english');
+                
+                // Add user message to chat
+                addMessage(question, true);
+                
+                // Send to API
+                sendMessage(question);
+            });
+        });
+    }
+    
+    // Function to add a message to the chat
+    function addMessage(message, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'd-flex mb-3 ' + (isUser ? 'justify-content-end' : '');
+        messageDiv.style.animation = 'fadeIn 0.3s ease-in-out';
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = isUser ? 'user-message p-3' : 'bot-message p-3';
+        messageContent.style.maxWidth = '80%';
+        
+        const messagePara = document.createElement('p');
+        messagePara.className = 'mb-0';
+        messagePara.style.color = '#000000'; // Force black text color
+        messagePara.textContent = message;
+        
+        messageContent.appendChild(messagePara);
+        messageDiv.appendChild(messageContent);
+        
+        // Add timestamp
+        const timestamp = document.createElement('div');
+        timestamp.className = 'text-muted small mt-1 ' + (isUser ? 'text-end me-2' : 'ms-2');
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        
+        // Show time in appropriate format based on language
+        const language = languageSelector.value;
+        if (language === 'kn') {
+            timestamp.textContent = hours + ':' + minutes + ' (ಸಮಯ)';
+        } else {
+            timestamp.textContent = hours + ':' + minutes;
+        }
+        
+        // Add a sound button for bot messages
+        if (!isUser) {
+            const soundButton = document.createElement('button');
+            soundButton.className = 'btn btn-sm btn-light mt-1 ms-2';
+            soundButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+            soundButton.title = language === 'kn' ? 'ಧ್ವನಿಯಲ್ಲಿ ಕೇಳಿ' : 'Listen to this message';
+            soundButton.onclick = function() {
+                // For Kannada mode, use Google TTS directly
+                if (language === 'kn') {
+                    speakKannadaWithGoogleTTS(message);
+                } else {
+                    // For English, use the regular speech synthesis
+                    speakResponse(message, language);
+                }
+            };
+            
+            // Add the sound button to the message
+            messageContent.appendChild(document.createElement('br'));
+            messageContent.appendChild(soundButton);
+            
+            // Automatically speak bot messages if auto voice is enabled
+            if (document.getElementById('autoVoiceToggle').checked) {
+                // For Kannada mode, use Google TTS directly
+                if (language === 'kn') {
+                    speakKannadaWithGoogleTTS(message);
+                } else {
+                    // For English, use the regular speech synthesis
+                    speakResponse(message, language);
+                }
+            }
+        }
+        
+        const messageWrapper = document.createElement('div');
+        messageWrapper.className = 'd-flex flex-column ' + (isUser ? 'align-items-end' : 'align-items-start');
+        messageWrapper.appendChild(messageContent);
+        messageWrapper.appendChild(timestamp);
+        
+        messageDiv.appendChild(messageWrapper);
+        chatMessages.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Function to show typing indicator
+    function showTypingIndicator() {
+        const indicatorDiv = document.createElement('div');
+        indicatorDiv.className = 'd-flex mb-3 typing-indicator';
+        indicatorDiv.innerHTML = `
+            <div class="bg-light rounded p-3" style="max-width: 80%;">
+                <div class="d-flex">
+                    <div class="spinner-grow spinner-grow-sm text-secondary me-1" role="status"></div>
+                    <div class="spinner-grow spinner-grow-sm text-secondary me-1" role="status"></div>
+                    <div class="spinner-grow spinner-grow-sm text-secondary" role="status"></div>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(indicatorDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return indicatorDiv;
+    }
+    
+    // Function to send message to API
+    async function sendMessage(message) {
+        const language = languageSelector.value;
+        
+        // Show typing indicator
+        const indicator = showTypingIndicator();
+        
+        try {
+            console.log(`Sending message to API: ${message} (language: ${language})`);
+            
+            // Add a small delay to simulate processing (improves user experience)
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Send the request to the API
+            let response = await fetch('/dhvani/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: message,
+                    language: language
+                })
+            });
+            
+            // Parse the response
+            let data = await response.json();
+            console.log('API response:', data);
+            
+            // Remove typing indicator
+            chatMessages.removeChild(indicator);
+            
+            // Add bot response
+            if (data.success) {
+                addMessage(data.response);
+                
+                // If this was a successful response, add a follow-up prompt
+                const followUpDiv = document.createElement('div');
+                followUpDiv.className = 'd-flex mb-3';
+                
+                // Different follow-up text based on language
+                const followUpText = language === 'kn' 
+                    ? "ನಿಮಗೆ ಬೇರೆ ಯಾವುದಾದರೂ ಪ್ರಶ್ನೆಗಳಿವೆಯೇ? ನಾನು ಸಹಾಯ ಮಾಡಲು ಸಂತೋಷಪಡುತ್ತೇನೆ."
+                    : "Do you have any other questions? I'm happy to help.";
+                
+                followUpDiv.innerHTML = `
+                    <div class="bg-light rounded p-3" style="max-width: 80%;">
+                        <p class="mb-0 fst-italic text-muted">
+                            <i class="fas fa-comment-dots me-2"></i> 
+                            ${followUpText}
+                        </p>
+                    </div>
+                `;
+                
+                // Add the follow-up message after a short delay
+                setTimeout(() => {
+                    chatMessages.appendChild(followUpDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+                
+            } else {
+                console.error('API error:', data.error);
+                
+                // Add a friendly error message
+                const errorText = language === 'kn'
+                    ? "ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ಉತ್ತರಿಸುವಲ್ಲಿ ನನಗೆ ತೊಂದರೆಯಾಗಿದೆ. ದಯವಿಟ್ಟು ಸೂಚಿಸಿದ ಪ್ರಶ್ನೆಗಳಲ್ಲಿ ಒಂದನ್ನು ಪ್ರಯತ್ನಿಸಿ."
+                    : "I'm sorry, I'm having trouble answering your question. Please try one of the suggested questions.";
+                
+                addMessage(errorText);
+                
+                // Highlight the suggested questions to draw attention to them
+                document.querySelectorAll('.suggestion').forEach(btn => {
+                    btn.classList.add('btn-pulse');
+                    // Remove the animation class after a few seconds
+                    setTimeout(() => {
+                        btn.classList.remove('btn-pulse');
+                    }, 3000);
+                });
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            
+            // Remove typing indicator
+            chatMessages.removeChild(indicator);
+            
+            // Add error message based on language
+            const errorText = language === 'kn'
+                ? "ಕ್ಷಮಿಸಿ, ಸೇವೆಗೆ ಸಂಪರ್ಕಿಸುವಲ್ಲಿ ದೋಷವಿದೆ. ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+                : "I'm sorry, there was an error connecting to the service. Please try again later.";
+            
+            addMessage(errorText);
+        }
+    }
+    
+    // Function to update placeholder based on selected language
+    function updatePlaceholder() {
+        const language = languageSelector.value;
+        if (language === 'kn') {
+            userInput.placeholder = "ಇಲ್ಲಿ ನಿಮ್ಮ ಸಂದೇಶವನ್ನು ಟೈಪ್ ಮಾಡಿ...";
+        } else {
+            userInput.placeholder = "Type your message here...";
+        }
+    }
+    
+    // Function to update UI text based on selected language
+    function updateUILanguage() {
+        const language = languageSelector.value;
+        const submitBtn = document.querySelector('#chatForm button[type="submit"]');
+        const suggestionsHeader = document.querySelector('.card-header h5');
+        const suggestionButtons = document.querySelectorAll('.suggestion');
+        
+        if (language === 'kn') {
+            // Update UI elements to Kannada
+            submitBtn.title = "ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಿ";
+            suggestionsHeader.textContent = "ಸೂಚಿಸಿದ ಪ್ರಶ್ನೆಗಳು";
+            
+            // Update all suggestion buttons to show Kannada text
+            suggestionButtons.forEach(button => {
+                const kannadaText = button.getAttribute('data-kannada');
+                if (kannadaText) {
+                    button.textContent = kannadaText;
+                }
+            });
+        } else {
+            // Update UI elements to English
+            submitBtn.title = "Send message";
+            suggestionsHeader.textContent = "Suggested Questions";
+            
+            // Update all suggestion buttons to show English text
+            suggestionButtons.forEach(button => {
+                const englishText = button.getAttribute('data-english');
+                if (englishText) {
+                    button.textContent = englishText;
+                }
+            });
+        }
+    }
+    
+    // Update placeholder and UI when language changes
+    languageSelector.addEventListener('change', function() {
+        updatePlaceholder();
+        updateUILanguage();
+        
+        // Play Kannada voice when switching to Kannada
+        if (this.value === 'kn') {
+            // List available voices for debugging
+            if ('speechSynthesis' in window) {
+                setTimeout(function() {
+                    const voices = window.speechSynthesis.getVoices();
+                    console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`));
+                }, 100);
+            }
+            
+            speakKannadaWithGoogleTTS("ಕನ್ನಡ ಭಾಷೆ ಆಯ್ಕೆಯಾಗಿದೆ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?");
+        }
+    });
+    
+    // Set Kannada as the default language
+    languageSelector.value = 'kn';
+    
+    // Set initial placeholder and UI language
+    updatePlaceholder();
+    updateUILanguage();
+    
+    // Initialize voice toggle
+    const autoVoiceToggle = document.getElementById('autoVoiceToggle');
+    autoVoiceToggle.addEventListener('change', function() {
+        // If turning on, announce it
+        if (this.checked) {
+            const language = languageSelector.value;
+            const message = language === 'kn' 
+                ? "ಧ್ವನಿ ಪ್ರತಿಕ್ರಿಯೆಗಳು ಈಗ ಸಕ್ರಿಯಗೊಂಡಿವೆ" 
+                : "Voice responses are now enabled";
+            speakResponse(message, language);
+        } else {
+            // Cancel any ongoing speech when disabled
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+    });
+    
+    // Initialize suggestion buttons
+    initSuggestionButtons();
+    
+    // Handle form submission
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const message = userInput.value.trim();
+        if (message) {
+            // Add user message to chat
+            addMessage(message, true);
+            
+            // Send to API
+            sendMessage(message);
+            
+            // Clear input
+            userInput.value = '';
+        }
+    });
+    
+    // Kannada Voice Button
+    kannadaVoiceBtn.addEventListener('click', function() {
+        toggleKannadaVoiceRecording();
+    });
+    
+    // Test Kannada Voice Button
+    document.getElementById('testKannadaVoice').addEventListener('click', function() {
+        // Test with a simple Kannada phrase
+        const testText = "ಇದು ಕನ್ನಡ ಧ್ವನಿ ಪರೀಕ್ಷೆ. ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ಸಿದ್ಧನಿದ್ದೇನೆ.";
+        console.log("Testing Kannada voice with:", testText);
+        speakKannadaWithGoogleTTS(testText);
+    });
+    
+    // Function to toggle Kannada voice recording
+    async function toggleKannadaVoiceRecording() {
+        if (isRecording) {
+            // Stop recording
+            stopKannadaVoiceRecording();
+        } else {
+            // First try to use our custom Kannada voice recognition
+            if (typeof startKannadaVoiceRecognition === 'function') {
+                // Update UI to show we're listening
+                kannadaVoiceBtn.classList.add('btn-danger');
+                kannadaVoiceBtn.innerHTML = '<i class="fas fa-stop"></i> ನಿಲ್ಲಿಸಿ';
+                
+                // Add system message
+                addSystemMessage('ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ... (ನಿಲ್ಲಿಸಲು ಮತ್ತೆ ಕ್ಲಿಕ್ ಮಾಡಿ)');
+                
+                // Start recognition
+                const recognition = startKannadaVoiceRecognition(
+                    // onResult callback
+                    function(transcript) {
+                        if (transcript) {
+                            // Add the transcript as user message
+                            addMessage(transcript, true);
+                            
+                            // Send to API
+                            sendMessage(transcript);
+                            
+                            // Reset UI
+                            kannadaVoiceBtn.classList.remove('btn-danger');
+                            kannadaVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i> ಕನ್ನಡ';
+                        }
+                    },
+                    // onError callback
+                    function(error) {
+                        console.error('Kannada voice recognition error:', error);
+                        addSystemMessage('ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆಯಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+                        
+                        // Reset UI
+                        kannadaVoiceBtn.classList.remove('btn-danger');
+                        kannadaVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i> ಕನ್ನಡ';
+                        
+                        // Fall back to recording method
+                        startKannadaVoiceRecording();
+                    }
+                );
+                
+                // Set timeout to stop recognition after 10 seconds if no result
+                setTimeout(function() {
+                    if (recognition) {
+                        recognition.stop();
+                        
+                        // Reset UI if still in recording state
+                        if (kannadaVoiceBtn.classList.contains('btn-danger')) {
+                            kannadaVoiceBtn.classList.remove('btn-danger');
+                            kannadaVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i> ಕನ್ನಡ';
+                        }
+                    }
+                }, 10000);
+            } else {
+                // If the custom recognition is not available, fall back to recording
+                startKannadaVoiceRecording();
+            }
+        }
+    }
+    
+    // Function to start Kannada voice recording
+    async function startKannadaVoiceRecording() {
+        try {
+            // Request microphone access
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            // Create media recorder
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            
+            // Event handlers
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            };
+            
+            mediaRecorder.onstop = () => {
+                processKannadaVoiceRecording();
+            };
+            
+            // Start recording
+            mediaRecorder.start();
+            isRecording = true;
+            
+            // Update UI
+            kannadaVoiceBtn.classList.add('btn-danger');
+            kannadaVoiceBtn.innerHTML = '<i class="fas fa-stop"></i> ನಿಲ್ಲಿಸಿ';
+            
+            // Add system message
+            addSystemMessage('ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ... (ನಿಲ್ಲಿಸಲು ಮತ್ತೆ ಕ್ಲಿಕ್ ಮಾಡಿ)');
+            
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            addSystemMessage('ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶಿಸುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+        }
+    }
+    
+    // Function to stop Kannada voice recording
+    function stopKannadaVoiceRecording() {
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+            
+            // Update UI
+            kannadaVoiceBtn.classList.remove('btn-danger');
+            kannadaVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i> ಕನ್ನಡ';
+        }
+    }
+    
+    // Function to process Kannada voice recording
+    async function processKannadaVoiceRecording() {
+        if (!audioChunks.length) {
+            return;
+        }
+        
+        // Create audio blob
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        
+        // Create form data
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.wav');
+        formData.append('language', 'kn'); // Always use Kannada for this button
+        
+        // Add system message
+        addSystemMessage('ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ಸಂಸ್ಕರಿಸಲಾಗುತ್ತಿದೆ...');
+        
+        try {
+            // Send to voice-chatbot API
+            const response = await fetch('/dhvani/api/voice-chatbot', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Add the transcribed text as user message
+                addMessage(data.transcribed_text, true);
+                
+                // Add the response as bot message
+                addMessage(data.response, false);
+                
+                // Automatically switch to Kannada in the language selector
+                languageSelector.value = 'kn';
+                
+                // Speak the response in Kannada
+                speakResponse(data.response, 'kn');
+            } else {
+                // Even if there's an error, we'll show a friendly message
+                addMessage("ಕ್ಷಮಿಸಿ, ನಾನು ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ", true);
+                addMessage("ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ ಅಥವಾ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.", false);
+            }
+        } catch (error) {
+            console.error('Error processing voice:', error);
+            
+            // Show a friendly error message in Kannada
+            addMessage("ಕ್ಷಮಿಸಿ, ನಾನು ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ", true);
+            addMessage("ಧ್ವನಿ ಸೇವೆ ಪ್ರಸ್ತುತ ಲಭ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ.", false);
+        }
+    }
+    
+    // Function to add a system message
+    function addSystemMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'd-flex mb-3 justify-content-center';
+        messageDiv.style.animation = 'fadeIn 0.3s ease-in-out';
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'bg-warning text-dark rounded p-2';
+        messageContent.style.maxWidth = '80%';
+        
+        const messagePara = document.createElement('p');
+        messagePara.className = 'mb-0 small';
+        messagePara.innerHTML = `<i class="fas fa-info-circle me-1"></i> ${message}`;
+        
+        messageContent.appendChild(messagePara);
+        messageDiv.appendChild(messageContent);
+        chatMessages.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Function to speak Kannada text using direct browser TTS
+    function speakKannadaWithGoogleTTS(text) {
+        // Create a speaking indicator
+        const speechIndicator = document.createElement('div');
+        speechIndicator.className = 'speech-indicator';
+        speechIndicator.innerHTML = '<i class="fas fa-volume-up fa-pulse"></i> ಮಾತನಾಡುತ್ತಿದೆ...';
+        speechIndicator.style.position = 'fixed';
+        speechIndicator.style.bottom = '80px';
+        speechIndicator.style.right = '30px';
+        speechIndicator.style.backgroundColor = 'rgba(52, 152, 219, 0.8)';
+        speechIndicator.style.color = 'white';
+        speechIndicator.style.padding = '8px 15px';
+        speechIndicator.style.borderRadius = '20px';
+        speechIndicator.style.zIndex = '9999';
+        document.body.appendChild(speechIndicator);
+        
+        // Cancel any ongoing speech from browser
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        
+        // Use direct browser TTS for Kannada
+        if ('speechSynthesis' in window) {
+            // Create a new utterance for the text
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'kn-IN'; // Set language to Kannada
+            utterance.rate = 0.9;      // Slightly slower rate for better clarity
+            utterance.pitch = 1.0;     // Normal pitch
+            utterance.volume = 1.0;    // Full volume
+            
+            // Get available voices
+            let voices = window.speechSynthesis.getVoices();
+            
+            // If voices array is empty, wait for voices to load
+            if (voices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = function() {
+                    voices = window.speechSynthesis.getVoices();
+                    setVoiceAndSpeak();
+                };
+            } else {
+                setVoiceAndSpeak();
+            }
+            
+            function setVoiceAndSpeak() {
+                // Try to find a Kannada voice
+                let kannadaVoice = voices.find(v => v.lang === 'kn-IN');
+                
+                // If no Kannada voice, try to find a Hindi voice as fallback
+                if (!kannadaVoice) {
+                    kannadaVoice = voices.find(v => v.lang === 'hi-IN');
+                }
+                
+                // If still no match, use any Indian voice
+                if (!kannadaVoice) {
+                    kannadaVoice = voices.find(v => v.lang.includes('IN'));
+                }
+                
+                // If still no match, use any available voice
+                if (!kannadaVoice && voices.length > 0) {
+                    kannadaVoice = voices[0];
+                }
+                
+                if (kannadaVoice) {
+                    utterance.voice = kannadaVoice;
+                    console.log("Using voice: ", kannadaVoice.name);
+                }
+                
+                // Handle speech end event
+                utterance.onend = function() {
+                    console.log("Speech ended");
+                    if (document.body.contains(speechIndicator)) {
+                        document.body.removeChild(speechIndicator);
+                    }
+                };
+                
+                // Handle speech error event
+                utterance.onerror = function(event) {
+                    console.error("Speech error:", event.error);
+                    if (document.body.contains(speechIndicator)) {
+                        document.body.removeChild(speechIndicator);
+                    }
+                    // Try fallback method
+                    tryFallbackMethod();
+                };
+                
+                // Speak the text
+                console.log("Speaking Kannada text:", text);
+                window.speechSynthesis.speak(utterance);
+                
+                // Set a timeout to check if speech has started
+                setTimeout(function() {
+                    if (window.speechSynthesis.speaking) {
+                        console.log("Speech is in progress");
+                    } else {
+                        console.log("Speech failed to start, trying fallback");
+                        tryFallbackMethod();
+                    }
+                }, 1000);
+            }
+            
+            // Fallback method using Google TTS
+            function tryFallbackMethod() {
+                try {
+                    // If text is too long for Google TTS, use a default message
+                    let textToSpeak = text;
+                    if (text.length > 150) {
+                        textToSpeak = "ನಮಸ್ಕಾರ, ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ಸಿದ್ಧನಿದ್ದೇನೆ.";
+                    }
+                    
+                    // Use Google Translate TTS API
+                    const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(textToSpeak)}&tl=kn&client=tw-ob`;
+                    
+                    // Create an audio element and play it
+                    const audio = new Audio(googleTtsUrl);
+                    
+                    // Remove indicator when audio ends
+                    audio.onended = function() {
+                        if (document.body.contains(speechIndicator)) {
+                            document.body.removeChild(speechIndicator);
+                        }
+                    };
+                    
+                    // Also remove indicator if there's an error
+                    audio.onerror = function() {
+                        console.error('Error playing Kannada Google TTS');
+                        if (document.body.contains(speechIndicator)) {
+                            document.body.removeChild(speechIndicator);
+                        }
+                    };
+                    
+                    // Play the audio
+                    audio.play().catch(error => {
+                        console.error('Error playing Kannada Google TTS:', error);
+                        if (document.body.contains(speechIndicator)) {
+                            document.body.removeChild(speechIndicator);
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error with fallback TTS:', error);
+                    if (document.body.contains(speechIndicator)) {
+                        document.body.removeChild(speechIndicator);
+                    }
+                }
+            }
+        } else {
+            // If speech synthesis is not supported
+            console.error('Speech synthesis not supported');
+            if (document.body.contains(speechIndicator)) {
+                document.body.removeChild(speechIndicator);
+            }
+        }
+    }
+    
+    // Function to speak response
+    async function speakResponse(text, languageCode) {
+        // Show a speaking indicator
+        const speechIndicator = document.createElement('div');
+        speechIndicator.className = 'speech-indicator';
+        speechIndicator.innerHTML = '<i class="fas fa-volume-up fa-pulse"></i> ' + 
+            (languageCode === 'kn' ? 'ಮಾತನಾಡುತ್ತಿದೆ...' : 'Speaking...');
+        speechIndicator.style.position = 'fixed';
+        speechIndicator.style.bottom = '80px';
+        speechIndicator.style.right = '30px';
+        speechIndicator.style.backgroundColor = 'rgba(52, 152, 219, 0.8)';
+        speechIndicator.style.color = 'white';
+        speechIndicator.style.padding = '8px 15px';
+        speechIndicator.style.borderRadius = '20px';
+        speechIndicator.style.zIndex = '9999';
+        document.body.appendChild(speechIndicator);
+        
+        try {
+            // For Kannada, always use the sample audio
+            if (languageCode === 'kn' || isKannadaText(text)) {
+                // Cancel any ongoing speech from browser
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+                
+                // Play the Kannada sample audio directly
+                const audio = new Audio('/static/audio/kannada_sample.mp3');
+                
+                // Remove indicator when audio ends
+                audio.onended = function() {
+                    if (document.body.contains(speechIndicator)) {
+                        document.body.removeChild(speechIndicator);
+                    }
+                };
+                
+                // Also remove indicator if there's an error
+                audio.onerror = function() {
+                    console.error('Error playing Kannada sample audio');
+                    if (document.body.contains(speechIndicator)) {
+                        document.body.removeChild(speechIndicator);
+                    }
+                };
+                
+                // Play the audio
+                audio.play().catch(error => {
+                    console.error('Error playing Kannada sample audio:', error);
+                    if (document.body.contains(speechIndicator)) {
+                        document.body.removeChild(speechIndicator);
+                    }
+                });
+            } else {
+                // For English, use the browser's built-in speech synthesis
+                useBrowserTTS(text, languageCode);
+                
+                // Remove the indicator when done (for English)
+                setTimeout(() => {
+                    if (document.body.contains(speechIndicator)) {
+                        document.body.removeChild(speechIndicator);
+                    }
+                }, 500 + text.length * 50); // Rough estimate of speech duration
+            }
+        } catch (error) {
+            console.error('Speech synthesis error:', error);
+            
+            // Remove the indicator if there's an error
+            if (document.body.contains(speechIndicator)) {
+                document.body.removeChild(speechIndicator);
+            }
+            
+            // Fall back to browser TTS for English only
+            if (languageCode !== 'kn' && !isKannadaText(text)) {
+                useBrowserTTS(text, languageCode);
+            }
+        }
+    }
+    
+    // Function to use browser's built-in speech synthesis
+    function useBrowserTTS(text, languageCode) {
+        if ('speechSynthesis' in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+            
+            // For Kannada, we'll use a special approach to improve compatibility
+            if (languageCode === 'kn') {
+                // Split the text into smaller chunks to improve reliability
+                const chunks = splitTextIntoChunks(text, 100); // Split into 100 character chunks
+                
+                // Speak each chunk sequentially
+                speakChunks(chunks, 0, languageCode);
+            } else {
+                // For English, use the standard approach
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                
+                // Set speech rate and pitch
+                utterance.rate = 0.9; // Slightly slower for better clarity
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                // Get available voices
+                let voices = window.speechSynthesis.getVoices();
+                
+                // If voices array is empty, wait for voices to load
+                if (voices.length === 0) {
+                    window.speechSynthesis.onvoiceschanged = function() {
+                        voices = window.speechSynthesis.getVoices();
+                        setVoiceAndSpeak(utterance, voices, 'en');
+                    };
+                } else {
+                    setVoiceAndSpeak(utterance, voices, 'en');
+                }
+            }
+        } else {
+            console.warn('Speech synthesis not supported in this browser');
+        }
+    }
+    
+    // Function to split text into smaller chunks
+    function splitTextIntoChunks(text, chunkSize) {
+        const chunks = [];
+        let i = 0;
+        
+        // Try to split at sentence boundaries when possible
+        const sentences = text.split(/([।.!?])/);
+        let currentChunk = '';
+        
+        for (let i = 0; i < sentences.length; i++) {
+            if (currentChunk.length + sentences[i].length <= chunkSize) {
+                currentChunk += sentences[i];
+            } else {
+                if (currentChunk) {
+                    chunks.push(currentChunk);
+                }
+                currentChunk = sentences[i];
+            }
+        }
+        
+        if (currentChunk) {
+            chunks.push(currentChunk);
+        }
+        
+        // If no sentence boundaries were found, fall back to character-based splitting
+        if (chunks.length === 0) {
+            for (let i = 0; i < text.length; i += chunkSize) {
+                chunks.push(text.substring(i, i + chunkSize));
+            }
+        }
+        
+        return chunks;
+    }
+    
+    // Function to speak chunks sequentially
+    function speakChunks(chunks, index, languageCode) {
+        if (index >= chunks.length) {
+            return; // All chunks have been spoken
+        }
+        
+        const utterance = new SpeechSynthesisUtterance(chunks[index]);
+        utterance.lang = languageCode === 'kn' ? 'kn-IN' : 'en-US';
+        
+        // Set speech rate and pitch
+        utterance.rate = 0.9; // Slightly slower for better clarity
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        // Get available voices
+        let voices = window.speechSynthesis.getVoices();
+        
+        // If voices array is empty, wait for voices to load
+        if (voices.length === 0) {
+            window.speechSynthesis.onvoiceschanged = function() {
+                voices = window.speechSynthesis.getVoices();
+                setVoiceAndSpeak(utterance, voices, languageCode);
+                
+                // When this chunk ends, speak the next one
+                utterance.onend = function() {
+                    speakChunks(chunks, index + 1, languageCode);
+                };
+                
+                // If there's an error, try the next chunk
+                utterance.onerror = function() {
+                    console.error('Error speaking chunk:', chunks[index]);
+                    speakChunks(chunks, index + 1, languageCode);
+                };
+            };
+        } else {
+            setVoiceAndSpeak(utterance, voices, languageCode);
+            
+            // When this chunk ends, speak the next one
+            utterance.onend = function() {
+                speakChunks(chunks, index + 1, languageCode);
+            };
+            
+            // If there's an error, try the next chunk
+            utterance.onerror = function() {
+                console.error('Error speaking chunk:', chunks[index]);
+                speakChunks(chunks, index + 1, languageCode);
+            };
+        }
+    }
+    
+    // Function to set voice and speak
+    function setVoiceAndSpeak(utterance, voices, languageCode) {
+        // Try to find a voice that matches the language
+        let voice = null;
+        
+        // First try to find an exact match
+        voice = voices.find(v => v.lang === (languageCode === 'kn' ? 'kn-IN' : 'en-US'));
+        
+        // If no exact match, try to find a voice that starts with the language code
+        if (!voice) {
+            voice = voices.find(v => v.lang.startsWith(languageCode === 'kn' ? 'kn' : 'en'));
+        }
+        
+        // If still no match, use any available voice (better than nothing)
+        if (!voice && voices.length > 0) {
+            // Prefer female voices if available
+            voice = voices.find(v => !v.name.includes('Male')) || voices[0];
+        }
+        
+        if (voice) {
+            utterance.voice = voice;
+            console.log(`Using voice: ${voice.name} (${voice.lang})`);
+        } else {
+            console.warn('No suitable voice found for speech synthesis');
+        }
+        
+        // Speak the text
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    // Suggestion click handlers are now managed by initSuggestionButtons()
+});
+</script>
+{% endblock %}

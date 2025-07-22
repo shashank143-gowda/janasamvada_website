@@ -1,0 +1,171 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Edit Hazard - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit Hazard</h1>
+        <a href="{{ url_for('admin.hazards') }}" class="btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50 me-1"></i> Back to Hazards
+        </a>
+    </div>
+
+    <!-- Edit Hazard Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Hazard Details</h6>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ hazard.title }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required>{{ hazard.description }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="hazard_type" class="form-label">Hazard Type</label>
+                            <select class="form-select" id="hazard_type" name="hazard_type" required>
+                                <option value="road" {% if hazard.hazard_type == 'road' %}selected{% endif %}>Road</option>
+                                <option value="water" {% if hazard.hazard_type == 'water' %}selected{% endif %}>Water</option>
+                                <option value="electricity" {% if hazard.hazard_type == 'electricity' %}selected{% endif %}>Electricity</option>
+                                <option value="other" {% if hazard.hazard_type == 'other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="pending" {% if hazard.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="in-progress" {% if hazard.status == 'in-progress' %}selected{% endif %}>In Progress</option>
+                                <option value="resolved" {% if hazard.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="location_description" class="form-label">Location Description</label>
+                            <input type="text" class="form-control" id="location_description" name="location_description" value="{{ hazard.location_description }}">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="latitude" class="form-label">Latitude</label>
+                                    <input type="text" class="form-control" id="latitude" name="latitude" value="{{ hazard.latitude }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="longitude" class="form-label">Longitude</label>
+                                    <input type="text" class="form-control" id="longitude" name="longitude" value="{{ hazard.longitude }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="image" name="image">
+                            {% if hazard.image_path %}
+                            <div class="mt-2">
+                                <p>Current Image:</p>
+                                <img src="{{ url_for('static', filename=hazard.image_path.replace('static/', '')) }}" class="img-fluid rounded" style="max-height: 200px;" alt="Hazard Image">
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="video" class="form-label">Video</label>
+                            <input type="file" class="form-control" id="video" name="video">
+                            {% if hazard.video_path %}
+                            <div class="mt-2">
+                                <p>Current Video:</p>
+                                <video controls class="w-100 rounded" style="max-height: 200px;">
+                                    <source src="{{ url_for('static', filename=hazard.video_path.replace('static/', '')) }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="fas fa-trash me-1"></i> Delete Hazard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Map Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Hazard Location</h6>
+        </div>
+        <div class="card-body">
+            <div id="map" style="height: 400px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the hazard report: <strong>{{ hazard.title }}</strong>?</p>
+                <p class="text-danger"><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{{ url_for('admin.delete_hazard', hazard_id=hazard.id) }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+<script>
+    function initMap() {
+        const lat = {{ hazard.latitude|default(20.5937) }};
+        const lng = {{ hazard.longitude|default(78.9629) }};
+        
+        const map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: lat, lng: lng},
+            zoom: 15
+        });
+        
+        const marker = new google.maps.Marker({
+            position: {lat: lat, lng: lng},
+            map: map,
+            title: '{{ hazard.title }}'
+        });
+    }
+</script>
+{% endblock %}

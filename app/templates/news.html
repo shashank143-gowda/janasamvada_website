@@ -1,0 +1,919 @@
+{% extends 'base.html' %}
+
+{% block title %}News - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    .news-header {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 60px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 40px;
+    }
+    
+    .search-container {
+        background-color: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        margin-top: -30px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .news-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: none;
+    }
+    
+    .news-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .news-card .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .news-card .card-body {
+        padding: 20px;
+    }
+    
+    .news-card .card-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .news-card .card-text {
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+    
+    .news-card .card-footer {
+        background-color: transparent;
+        border-top: 1px solid #f1f1f1;
+        padding: 15px 20px;
+    }
+    
+    .news-category {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .news-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .news-source {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: 600;
+    }
+    
+    .category-local {
+        background-color: #3498db;
+        color: white;
+    }
+    
+    .category-national {
+        background-color: #e74c3c;
+        color: white;
+    }
+    
+    .category-international {
+        background-color: #9b59b6;
+        color: white;
+    }
+    
+    .category-government {
+        background-color: #f39c12;
+        color: white;
+    }
+    
+    .category-technology {
+        background-color: #2ecc71;
+        color: white;
+    }
+    
+    .category-health {
+        background-color: #1abc9c;
+        color: white;
+    }
+    
+    .category-education {
+        background-color: #3498db;
+        color: white;
+    }
+    
+    .category-business {
+        background-color: #e67e22;
+        color: white;
+    }
+    
+    .filter-btn {
+        border-radius: 30px;
+        padding: 8px 20px;
+        margin: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .news-search-input {
+        border-radius: 30px;
+        padding-left: 20px;
+        padding-right: 20px;
+        border: 2px solid #e9ecef;
+        box-shadow: none;
+        transition: all 0.3s ease;
+    }
+    
+    .news-search-input:focus {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
+    }
+    
+    .news-search-btn {
+        border-radius: 30px;
+        padding-left: 25px;
+        padding-right: 25px;
+    }
+    
+    .news-count-badge {
+        background-color: #e74c3c;
+        color: white;
+        font-weight: 600;
+        padding: 5px 15px;
+        border-radius: 30px;
+    }
+    
+    .news-modal-header {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border-radius: 10px 10px 0 0;
+    }
+    
+    .news-modal-content {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    
+    .news-modal-img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .news-modal-source {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background-color: #f8f9fa;
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+    
+    .news-modal-date {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background-color: #f8f9fa;
+        color: #6c757d;
+        margin-bottom: 20px;
+        margin-left: 10px;
+    }
+    
+    .news-modal-content p {
+        line-height: 1.8;
+        margin-bottom: 20px;
+    }
+    
+    .news-modal-content h4 {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+    
+    .news-modal-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #f1f1f1;
+    }
+    
+    .news-modal-footer .btn {
+        border-radius: 30px;
+        padding: 8px 20px;
+    }
+    
+    .news-modal-share {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .news-modal-share a {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .news-modal-share a:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .share-facebook {
+        background-color: #3b5998;
+    }
+    
+    .share-twitter {
+        background-color: #1da1f2;
+    }
+    
+    .share-whatsapp {
+        background-color: #25d366;
+    }
+    
+    .share-telegram {
+        background-color: #0088cc;
+    }
+    
+    .news-sidebar-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+        border: none;
+    }
+    
+    .news-sidebar-card .card-header {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border-bottom: none;
+        padding: 15px 20px;
+    }
+    
+    .news-sidebar-card .card-body {
+        padding: 20px;
+    }
+    
+    .trending-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    
+    .trending-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .trending-img {
+        width: 80px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-right: 15px;
+    }
+    
+    .trending-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    
+    .trending-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .category-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .category-item {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background-color: #f8f9fa;
+        color: #6c757d;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .category-item:hover, .category-item.active {
+        background-color: #e74c3c;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .subscribe-form .form-control {
+        border-radius: 30px;
+        padding-left: 20px;
+        padding-right: 20px;
+        border: 2px solid #e9ecef;
+        box-shadow: none;
+        transition: all 0.3s ease;
+    }
+    
+    .subscribe-form .form-control:focus {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
+    }
+    
+    .subscribe-form .btn {
+        border-radius: 30px;
+        padding-left: 25px;
+        padding-right: 25px;
+    }
+    
+    /* Animation classes */
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="news-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">Latest News</h1>
+        <p class="lead mb-0 animate__animated animate__fadeInUp">Stay updated with local, national, and government news</p>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="container mb-5">
+    <div class="search-container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <div class="input-group">
+                    <input type="text" id="news-search" class="form-control news-search-input" placeholder="Search news...">
+                    <button class="btn btn-danger news-search-btn" type="button" id="search-btn">
+                        <i class="fas fa-search me-2"></i> Search
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <select class="form-select news-search-input" id="news-filter">
+                    <option value="all" selected>All Categories</option>
+                    <option value="local">Local News</option>
+                    <option value="national">National News</option>
+                    <option value="international">International News</option>
+                    <option value="government">Government News</option>
+                    <option value="technology">Technology</option>
+                    <option value="health">Health</option>
+                    <option value="education">Education</option>
+                    <option value="business">Business</option>
+                </select>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="filter-buttons">
+                <button class="btn btn-sm filter-btn active" data-filter="all">All</button>
+                <button class="btn btn-sm filter-btn btn-outline-primary" data-filter="local">Local</button>
+                <button class="btn btn-sm filter-btn btn-outline-danger" data-filter="national">National</button>
+                <button class="btn btn-sm filter-btn btn-outline-purple" data-filter="international">International</button>
+                <button class="btn btn-sm filter-btn btn-outline-warning" data-filter="government">Government</button>
+            </div>
+            <span id="news-count" class="news-count-badge">0 articles</span>
+        </div>
+    </div>
+</section>
+
+<!-- News Section -->
+<section class="container mb-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="row" id="news-list">
+                <!-- News items will be loaded dynamically -->
+                <div class="col-md-6 mb-4 fade-in">
+                    <div class="card news-card">
+                        <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="News Image">
+                        <span class="news-category category-local">Local</span>
+                        <div class="card-body">
+                            <h5 class="card-title">Bangalore Metro Phase 2 to be Completed by End of Year</h5>
+                            <p class="card-text">The Bangalore Metro Rail Corporation Limited (BMRCL) has announced that Phase 2 of the metro project will be completed by the end of this year...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="news-date"><i class="far fa-calendar-alt me-1"></i> June 15, 2023</span>
+                                <span class="news-source">The Hindu</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-outline-danger" onclick="viewNewsDetails(1)">
+                                <i class="fas fa-book-open me-2"></i> Read More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4 fade-in">
+                    <div class="card news-card">
+                        <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="News Image">
+                        <span class="news-category category-national">National</span>
+                        <div class="card-body">
+                            <h5 class="card-title">Government Launches New Digital India Initiative</h5>
+                            <p class="card-text">The central government has launched a new Digital India initiative aimed at improving digital literacy and access to technology across rural areas...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="news-date"><i class="far fa-calendar-alt me-1"></i> June 14, 2023</span>
+                                <span class="news-source">Times of India</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-outline-danger" onclick="viewNewsDetails(2)">
+                                <i class="fas fa-book-open me-2"></i> Read More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4 fade-in">
+                    <div class="card news-card">
+                        <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="News Image">
+                        <span class="news-category category-government">Government</span>
+                        <div class="card-body">
+                            <h5 class="card-title">Karnataka Government Announces New Farmer Support Scheme</h5>
+                            <p class="card-text">The Karnataka state government has announced a new support scheme for farmers affected by drought conditions in several districts...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="news-date"><i class="far fa-calendar-alt me-1"></i> June 12, 2023</span>
+                                <span class="news-source">Deccan Herald</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-outline-danger" onclick="viewNewsDetails(3)">
+                                <i class="fas fa-book-open me-2"></i> Read More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4 fade-in">
+                    <div class="card news-card">
+                        <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="News Image">
+                        <span class="news-category category-health">Health</span>
+                        <div class="card-body">
+                            <h5 class="card-title">New Health Centers to Open in Rural Karnataka</h5>
+                            <p class="card-text">The Health Department has announced plans to open 50 new primary health centers in rural areas of Karnataka to improve healthcare access...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="news-date"><i class="far fa-calendar-alt me-1"></i> June 10, 2023</span>
+                                <span class="news-source">Bangalore Mirror</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-outline-danger" onclick="viewNewsDetails(4)">
+                                <i class="fas fa-book-open me-2"></i> Read More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="News pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Trending News -->
+            <div class="card news-sidebar-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Trending News</h5>
+                </div>
+                <div class="card-body">
+                    <div class="trending-item">
+                        <img src="https://via.placeholder.com/150x100" class="trending-img" alt="Trending News">
+                        <div>
+                            <h6 class="trending-title">Karnataka Assembly Passes New Education Bill</h6>
+                            <span class="trending-date"><i class="far fa-calendar-alt me-1"></i> June 15, 2023</span>
+                        </div>
+                    </div>
+                    <div class="trending-item">
+                        <img src="https://via.placeholder.com/150x100" class="trending-img" alt="Trending News">
+                        <div>
+                            <h6 class="trending-title">Bangalore Hosts International Technology Summit</h6>
+                            <span class="trending-date"><i class="far fa-calendar-alt me-1"></i> June 14, 2023</span>
+                        </div>
+                    </div>
+                    <div class="trending-item">
+                        <img src="https://via.placeholder.com/150x100" class="trending-img" alt="Trending News">
+                        <div>
+                            <h6 class="trending-title">New Water Conservation Project Launched in Karnataka</h6>
+                            <span class="trending-date"><i class="far fa-calendar-alt me-1"></i> June 12, 2023</span>
+                        </div>
+                    </div>
+                    <div class="trending-item">
+                        <img src="https://via.placeholder.com/150x100" class="trending-img" alt="Trending News">
+                        <div>
+                            <h6 class="trending-title">Government Announces New Jobs Initiative for Youth</h6>
+                            <span class="trending-date"><i class="far fa-calendar-alt me-1"></i> June 10, 2023</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Categories -->
+            <div class="card news-sidebar-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="card-body">
+                    <div class="category-list">
+                        <div class="category-item active" data-category="all">All</div>
+                        <div class="category-item" data-category="local">Local</div>
+                        <div class="category-item" data-category="national">National</div>
+                        <div class="category-item" data-category="international">International</div>
+                        <div class="category-item" data-category="government">Government</div>
+                        <div class="category-item" data-category="technology">Technology</div>
+                        <div class="category-item" data-category="health">Health</div>
+                        <div class="category-item" data-category="education">Education</div>
+                        <div class="category-item" data-category="business">Business</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Subscribe -->
+            <div class="card news-sidebar-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Subscribe to Newsletter</h5>
+                </div>
+                <div class="card-body">
+                    <p>Get the latest news and updates delivered to your inbox.</p>
+                    <form class="subscribe-form">
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="Your Email Address">
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="fas fa-envelope me-2"></i> Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- News Details Modal -->
+<div class="modal fade" id="newsModal" tabindex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content news-modal-content">
+            <div class="modal-header news-modal-header">
+                <h5 class="modal-title" id="newsModalLabel">News Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="news-details">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-danger" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading news details...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let allNews = [];
+    let currentCategory = 'all';
+    let newsModal;
+    
+    $(document).ready(function() {
+        // Initialize modal
+        newsModal = new bootstrap.Modal(document.getElementById('newsModal'));
+        
+        // Load all news
+        loadNews();
+        
+        // Filter buttons click
+        $('.filter-btn').click(function() {
+            $('.filter-btn').removeClass('active');
+            $(this).addClass('active');
+            currentCategory = $(this).data('filter');
+            
+            // Update sidebar category selection
+            $('.category-item').removeClass('active');
+            $(`.category-item[data-category="${currentCategory}"]`).addClass('active');
+            
+            filterNews(currentCategory);
+        });
+        
+        // Sidebar category items click
+        $('.category-item').click(function() {
+            $('.category-item').removeClass('active');
+            $(this).addClass('active');
+            currentCategory = $(this).data('category');
+            
+            // Update filter buttons
+            $('.filter-btn').removeClass('active');
+            $(`.filter-btn[data-filter="${currentCategory}"]`).addClass('active');
+            
+            filterNews(currentCategory);
+        });
+        
+        // News filter dropdown change
+        $('#news-filter').change(function() {
+            currentCategory = $(this).val();
+            
+            // Update filter buttons
+            $('.filter-btn').removeClass('active');
+            $(`.filter-btn[data-filter="${currentCategory}"]`).addClass('active');
+            
+            // Update sidebar category selection
+            $('.category-item').removeClass('active');
+            $(`.category-item[data-category="${currentCategory}"]`).addClass('active');
+            
+            filterNews(currentCategory);
+        });
+        
+        // Search button click
+        $('#search-btn').click(function() {
+            const searchTerm = $('#news-search').val().toLowerCase();
+            searchNews(searchTerm);
+        });
+        
+        // Search input enter key
+        $('#news-search').on('keyup', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = $(this).val().toLowerCase();
+                searchNews(searchTerm);
+            }
+        });
+    });
+    
+    // Load news data
+    function loadNews() {
+        // In a real application, this would be an API call
+        // For demo purposes, we'll use sample data
+        
+        allNews = [
+            {
+                id: 1,
+                title: 'Bangalore Metro Phase 2 to be Completed by End of Year',
+                content: 'The Bangalore Metro Rail Corporation Limited (BMRCL) has announced that Phase 2 of the metro project will be completed by the end of this year. This expansion will add 72 kilometers to the existing network, connecting key areas of the city.\n\nThe new lines will include extensions to Whitefield, Electronics City, and the airport, significantly improving public transportation options for residents and reducing traffic congestion.\n\n"We are working round the clock to ensure timely completion of the project," said the BMRCL Managing Director. "Over 90% of the civil work has been completed, and we are now focusing on the electrical and signaling systems."\n\nThe Phase 2 project, which began in 2016, has faced several delays due to land acquisition issues and the COVID-19 pandemic. However, officials are confident that the remaining work will be completed as per the revised schedule.\n\nOnce operational, the expanded metro network is expected to serve an additional 500,000 passengers daily, bringing the total ridership to over 1 million per day.',
+                image: 'https://via.placeholder.com/800x500',
+                category: 'local',
+                date: 'June 15, 2023',
+                source: 'The Hindu',
+                author: 'Ramesh Kumar'
+            },
+            {
+                id: 2,
+                title: 'Government Launches New Digital India Initiative',
+                content: 'The central government has launched a new Digital India initiative aimed at improving digital literacy and access to technology across rural areas. The program, with a budget allocation of ₹15,000 crore, will focus on providing digital skills training and infrastructure development in underserved communities.\n\n"Digital inclusion is essential for equitable growth in the 21st century," said the Union Minister for Electronics and Information Technology during the launch event. "This initiative will bridge the digital divide and empower citizens with the tools they need to participate in the digital economy."\n\nThe program includes the establishment of 100,000 new Common Service Centers (CSCs) in rural areas, distribution of subsidized smartphones to economically disadvantaged families, and comprehensive digital literacy training programs.\n\nAdditionally, the initiative will support the development of local language digital content and applications to ensure accessibility for non-English speakers. Special emphasis will be placed on creating digital solutions for agriculture, healthcare, and education sectors.\n\nThe government expects the program to create over 200,000 direct and indirect jobs in the technology and training sectors, while also improving service delivery and governance through digital means.',
+                image: 'https://via.placeholder.com/800x500',
+                category: 'national',
+                date: 'June 14, 2023',
+                source: 'Times of India',
+                author: 'Priya Sharma'
+            },
+            {
+                id: 3,
+                title: 'Karnataka Government Announces New Farmer Support Scheme',
+                content: 'The Karnataka state government has announced a new support scheme for farmers affected by drought conditions in several districts. The ₹2,500 crore package includes direct financial assistance, subsidized seeds and fertilizers, and interest waivers on agricultural loans.\n\n"Our farmers are facing unprecedented challenges due to climate change and erratic rainfall patterns," said the Chief Minister during the announcement. "This comprehensive package aims to provide immediate relief and long-term resilience."\n\nUnder the scheme, eligible farmers will receive ₹10,000 per hectare as direct financial assistance, with a cap of ₹25,000 per farmer. Additionally, the government will provide a 75% subsidy on drought-resistant seed varieties and establish 500 new farm ponds across affected districts.\n\nThe package also includes provisions for expanding irrigation infrastructure, with ₹800 crore allocated for completing pending minor irrigation projects. Farmers with outstanding agricultural loans will benefit from a one-year interest waiver.\n\nFarmer organizations have welcomed the announcement but urged the government to ensure timely disbursement of benefits. "The package looks promising, but implementation is key," said the president of a state farmers\' association. "We hope the assistance reaches farmers without bureaucratic delays."',
+                image: 'https://via.placeholder.com/800x500',
+                category: 'government',
+                date: 'June 12, 2023',
+                source: 'Deccan Herald',
+                author: 'Suresh Gowda'
+            },
+            {
+                id: 4,
+                title: 'New Health Centers to Open in Rural Karnataka',
+                content: 'The Health Department has announced plans to open 50 new primary health centers in rural areas of Karnataka to improve healthcare access. The initiative, with a budget of ₹500 crore, aims to ensure that every citizen has a health center within 5 kilometers of their residence.\n\n"Healthcare is a fundamental right, and geographic accessibility is crucial for timely medical attention," said the Health Minister. "These new centers will significantly improve health outcomes in rural communities."\n\nEach center will be equipped with essential diagnostic facilities, telemedicine capabilities, and a pharmacy. The department plans to recruit 200 doctors and 500 nursing staff to operate these facilities. Mobile medical units will also be deployed to reach remote villages.\n\nThe initiative includes special provisions for maternal and child health services, with dedicated sections for prenatal care and immunizations. Mental health services will also be integrated into the primary care framework.\n\n"This expansion will help reduce the burden on district hospitals and provide timely primary care interventions," said a senior health official. "We expect to see improvements in key health indicators within the first year of operation."\n\nConstruction of the first batch of 20 centers will begin next month, with all 50 centers expected to be operational by the end of next year.',
+                image: 'https://via.placeholder.com/800x500',
+                category: 'health',
+                date: 'June 10, 2023',
+                source: 'Bangalore Mirror',
+                author: 'Dr. Lakshmi Rao'
+            },
+            {
+                id: 5,
+                title: 'International Tech Companies Expanding Operations in Bangalore',
+                content: 'Several major international technology companies have announced plans to expand their operations in Bangalore, reinforcing the city\'s status as India\'s Silicon Valley. These expansions are expected to create over 25,000 new jobs in the next two years.\n\n"Bangalore continues to be our top choice for innovation and R&D activities," said the CEO of a leading global tech firm during a press conference. "The talent pool here is exceptional, and the ecosystem supports cutting-edge development."\n\nThe expansions include new research and development centers, innovation labs, and global capability centers. Companies are particularly focusing on artificial intelligence, cloud computing, and cybersecurity operations.\n\nThe Karnataka government has facilitated these investments by offering streamlined approvals and infrastructure support. "We are committed to maintaining Bangalore\'s competitive edge in the global tech landscape," said the state\'s IT Minister.\n\nReal estate experts note that these expansions have already triggered increased demand for commercial office space in the city\'s tech corridors. "We\'re seeing record leasing activity in areas like Whitefield, Electronic City, and the Outer Ring Road," said a property consultant.\n\nEducational institutions in the region are also responding by enhancing their technical curricula and industry collaboration programs to ensure graduates are prepared for these new opportunities.',
+                image: 'https://via.placeholder.com/800x500',
+                category: 'business',
+                date: 'June 9, 2023',
+                source: 'Economic Times',
+                author: 'Vikram Menon'
+            },
+            {
+                id: 6,
+                title: 'Karnataka Schools to Introduce Coding Curriculum from Class 6',
+                content: 'The Karnataka Education Department has announced plans to introduce coding and computational thinking as part of the regular curriculum for students from Class 6 onwards. The initiative aims to prepare students for future technological challenges and opportunities.\n\n"In today\'s digital world, coding literacy is as important as language literacy," said the Education Minister. "We want our students to be creators of technology, not just consumers."\n\nThe new curriculum, developed in collaboration with industry experts and academic institutions, will include age-appropriate coding concepts, problem-solving techniques, and project-based learning. The program will use both online and offline teaching methods to ensure accessibility for all students.\n\nTeacher training programs have already begun, with over 5,000 teachers expected to complete specialized training before the curriculum is rolled out. The department is also partnering with tech companies to provide necessary infrastructure and mentorship support.\n\n"This is a forward-thinking move that will give Karnataka students a competitive edge," said an education expert. "Early exposure to coding develops logical thinking and creativity, skills that are valuable across all disciplines."\n\nThe curriculum will be implemented in phases, starting with 1,000 government schools in the upcoming academic year, with plans to cover all schools within three years.',
+                image: 'https://via.placeholder.com/800x500',
+                category: 'education',
+                date: 'June 8, 2023',
+                source: 'Indian Express',
+                author: 'Anita Desai'
+            },
+            {
+                id: 7,
+                title: 'Global Climate Summit to be Held in Bangalore Next Year',
+                content: 'Bangalore has been selected to host next year\'s International Climate Action Summit, bringing together world leaders, scientists, and activists to discuss climate change mitigation and adaptation strategies. The event, scheduled for March 2024, will be the first major international climate conference to be held in South India.\n\n"This is a recognition of India\'s growing leadership in climate action and Bangalore\'s emergence as a hub for sustainability innovation," said the Union Environment Minister. "The summit will showcase our achievements and commitments in addressing the climate crisis."\n\nThe three-day conference will focus on renewable energy transitions, climate finance for developing nations, and nature-based solutions for carbon sequestration. Over 5,000 delegates from 120 countries are expected to attend.\n\nThe city administration has announced plans for extensive infrastructure upgrades to prepare for the event, including improvements to public transportation and the implementation of green protocols at the venue.\n\n"Hosting this summit aligns with our city\'s vision to become carbon neutral by 2050," said the Mayor of Bangalore. "It will accelerate our own sustainability initiatives and inspire citizens to participate in climate action."\n\nLocal environmental organizations have welcomed the announcement and are planning parallel events to engage the public and highlight grassroots climate solutions.',
+                image: 'https://via.placeholder.com/800x500',
+                category: 'international',
+                date: 'June 7, 2023',
+                source: 'Reuters',
+                author: 'James Wilson'
+            },
+            {
+                id: 8,
+                title: 'New AI Research Center Launched in Bangalore',
+                content: 'A state-of-the-art Artificial Intelligence Research Center has been inaugurated in Bangalore, with a focus on developing AI solutions for healthcare, agriculture, and education. The center, established through a public-private partnership, represents an investment of ₹750 crore.\n\n"This center will be at the forefront of AI innovation with a distinctly Indian perspective," said the center\'s director during the launch event. "Our goal is to develop technologies that address our unique challenges while creating global impact."\n\nThe facility includes high-performance computing infrastructure, specialized laboratories for machine learning research, and collaborative spaces for industry-academia partnerships. It will host 150 researchers, including 50 returning scientists from abroad.\n\nInitial research projects include AI systems for early disease detection using minimal medical infrastructure, precision agriculture solutions for small-scale farmers, and personalized learning platforms for diverse linguistic contexts.\n\n"What makes this center unique is its focus on responsible AI development," explained a senior researcher. "Ethical considerations and societal impact are integrated into our research methodology from the beginning."\n\nThe center will also offer fellowship programs for young researchers and conduct regular workshops to disseminate AI knowledge across educational institutions and startups in the region.',
+                image: 'https://via.placeholder.com/800x500',
+                category: 'technology',
+                date: 'June 5, 2023',
+                source: 'Tech Chronicle',
+                author: 'Arun Mehta'
+            }
+        ];
+        
+        // Update news count
+        $('#news-count').text(`${allNews.length} articles`);
+        
+        // Display all news
+        displayNews(allNews);
+    }
+    
+    // Display news
+    function displayNews(news) {
+        let html = '';
+        
+        if (news.length === 0) {
+            html = '<div class="col-12 text-center py-5"><h4>No news articles found matching your criteria.</h4></div>';
+        } else {
+            news.forEach(article => {
+                html += `
+                    <div class="col-md-6 mb-4 fade-in">
+                        <div class="card news-card">
+                            <img src="${article.image}" class="card-img-top" alt="${article.title}">
+                            <span class="news-category category-${article.category}">${capitalizeFirstLetter(article.category)}</span>
+                            <div class="card-body">
+                                <h5 class="card-title">${article.title}</h5>
+                                <p class="card-text">${truncateText(article.content, 120)}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="news-date"><i class="far fa-calendar-alt me-1"></i> ${article.date}</span>
+                                    <span class="news-source">${article.source}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-outline-danger" onclick="viewNewsDetails(${article.id})">
+                                    <i class="fas fa-book-open me-2"></i> Read More
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        $('#news-list').html(html);
+    }
+    
+    // Filter news by category
+    function filterNews(category) {
+        if (category === 'all') {
+            displayNews(allNews);
+            $('#news-count').text(`${allNews.length} articles`);
+        } else {
+            const filteredNews = allNews.filter(article => article.category === category);
+            displayNews(filteredNews);
+            $('#news-count').text(`${filteredNews.length} articles`);
+        }
+    }
+    
+    // Search news
+    function searchNews(searchTerm) {
+        if (!searchTerm) {
+            filterNews(currentCategory);
+            return;
+        }
+        
+        let newsToSearch = currentCategory === 'all' ? allNews : allNews.filter(article => article.category === currentCategory);
+        
+        const searchResults = newsToSearch.filter(article => 
+            article.title.toLowerCase().includes(searchTerm) || 
+            article.content.toLowerCase().includes(searchTerm) ||
+            article.source.toLowerCase().includes(searchTerm) ||
+            article.author.toLowerCase().includes(searchTerm)
+        );
+        
+        displayNews(searchResults);
+        $('#news-count').text(`${searchResults.length} articles`);
+    }
+    
+    // View news details
+    function viewNewsDetails(newsId) {
+        const article = allNews.find(item => item.id === newsId);
+        
+        if (!article) {
+            alert('News article not found');
+            return;
+        }
+        
+        // Update modal title
+        $('#newsModalLabel').text(article.title);
+        
+        // Format content with paragraphs
+        const formattedContent = article.content.split('\n\n').map(paragraph => `<p>${paragraph}</p>`).join('');
+        
+        // Display news details
+        const detailsHtml = `
+            <img src="${article.image}" class="news-modal-img" alt="${article.title}">
+            <div class="d-flex mb-4">
+                <span class="news-modal-source">${article.source}</span>
+                <span class="news-modal-date"><i class="far fa-calendar-alt me-1"></i> ${article.date}</span>
+            </div>
+            <h4 class="mb-4">${article.title}</h4>
+            <div class="news-content">
+                ${formattedContent}
+            </div>
+            <div class="news-modal-footer">
+                <div class="news-modal-author">
+                    <strong>By:</strong> ${article.author}
+                </div>
+                <div class="news-modal-share">
+                    <a href="#" class="share-facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="share-twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="share-whatsapp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="share-telegram"><i class="fab fa-telegram-plane"></i></a>
+                </div>
+            </div>
+        `;
+        
+        $('#news-details').html(detailsHtml);
+        
+        // Show modal
+        newsModal.show();
+    }
+    
+    // Helper function to truncate text
+    function truncateText(text, maxLength) {
+        if (text.length <= maxLength) {
+            return text;
+        }
+        return text.substring(0, maxLength) + '...';
+    }
+    
+    // Helper function to capitalize first letter
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+</script>
+{% endblock %}

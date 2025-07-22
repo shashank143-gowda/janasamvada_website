@@ -1,0 +1,636 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Corruption - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .report-header {
+        background: var(--header-bg);
+        color: white;
+        padding: 6rem 0;
+        border-radius: 0 0 30px 30px;
+        margin-bottom: 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .report-header::before {
+        content: '';
+        position: absolute;
+        top: -10%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+    
+    .report-header::after {
+        content: '';
+        position: absolute;
+        bottom: -5%;
+        left: -5%;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+    
+    .report-header .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-card {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        background-color: var(--card-bg);
+        box-shadow: var(--box-shadow);
+        transition: all var(--transition-speed) ease;
+        border: var(--card-border);
+    }
+    
+    .form-card:hover {
+        box-shadow: var(--neon-glow);
+    }
+    
+    .form-section {
+        padding: 30px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+    }
+    
+    .form-section-title {
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        text-shadow: var(--neon-text-shadow);
+    }
+    
+    .form-floating {
+        margin-bottom: 20px;
+    }
+    
+    .form-control, .form-select {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--light-color);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
+        color: var(--light-color);
+    }
+    
+    .form-floating > label {
+        color: var(--text-muted);
+    }
+    
+    .btn-rounded {
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 500;
+        text-transform: uppercase;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        border: none;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+    
+    .btn-rounded::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        background-color: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        z-index: -1;
+    }
+    
+    .btn-rounded:hover::after {
+        height: 100%;
+    }
+    
+    .btn-rounded:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--neon-glow);
+        letter-spacing: 1px;
+    }
+    
+    .privacy-notice {
+        background-color: rgba(108, 92, 231, 0.1);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-top: 20px;
+        border: 1px solid rgba(108, 92, 231, 0.2);
+    }
+    
+    .privacy-notice p {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .file-upload-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 120px;
+        border: 2px dashed rgba(108, 92, 231, 0.3);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: rgba(108, 92, 231, 0.05);
+    }
+    
+    .file-upload-label:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 15px rgba(108, 92, 231, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .file-upload-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-upload-text {
+        text-align: center;
+    }
+    
+    .file-upload-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .file-upload-label:hover .file-upload-icon {
+        transform: scale(1.1);
+    }
+    
+    .preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .preview-item {
+        position: relative;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+        transition: all 0.3s ease;
+    }
+    
+    .preview-item:hover {
+        transform: scale(1.05);
+        box-shadow: var(--neon-glow);
+    }
+    
+    .preview-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .preview-remove:hover {
+        background-color: red;
+        transform: scale(1.1);
+    }
+    
+    .preview-item {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .preview-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        background-color: rgba(0,0,0,0.5);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+    
+    .success-message {
+        text-align: center;
+        padding: 50px 30px;
+        background-color: rgba(108, 92, 231, 0.05);
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(108, 92, 231, 0.2);
+    }
+    
+    .success-icon {
+        font-size: 5rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.1);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="report-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4 hero-title">Report Corruption</h1>
+        <p class="lead mb-0 hero-subtitle">Your voice matters. Report corruption incidents anonymously and securely.</p>
+    </div>
+    <div class="wave-bottom">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- Form Section -->
+<section class="container mb-5">
+    <div class="form-container">
+        <div class="card form-card card-animate card-hover-lift">
+            <form id="corruptionReportForm">
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Basic Information</h3>
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="reportTitle" placeholder="Title" required>
+                        <label for="reportTitle">Title of the Report</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" id="department" required>
+                            <option value="" selected disabled>Select Department</option>
+                            <option value="Revenue">Revenue Department</option>
+                            <option value="Police">Police Department</option>
+                            <option value="Education">Education Department</option>
+                            <option value="Health">Health Department</option>
+                            <option value="PWD">Public Works Department</option>
+                            <option value="Food">Food & Civil Supplies Department</option>
+                            <option value="Agriculture">Agriculture Department</option>
+                            <option value="Other">Other Department</option>
+                        </select>
+                        <label for="department">Department Involved</label>
+                    </div>
+                    <div id="otherDepartmentContainer" style="display: none;">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="otherDepartment" placeholder="Other Department">
+                            <label for="otherDepartment">Specify Other Department</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Incident Details Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Incident Details</h3>
+                    <div class="form-floating">
+                        <textarea class="form-control" id="description" placeholder="Description" style="height: 150px;" required></textarea>
+                        <label for="description">Detailed Description of the Incident</label>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="location" placeholder="Location" required>
+                                <label for="location">Location of Incident</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="incidentDate" placeholder="Date of Incident" required>
+                                <label for="incidentDate">Date of Incident</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="peopleInvolved" placeholder="People Involved">
+                        <label for="peopleInvolved">People Involved (Optional)</label>
+                    </div>
+                </div>
+                
+                <!-- Evidence Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Evidence (Optional)</h3>
+                    <p class="text-muted mb-3">Upload any evidence you have, such as photos, documents, or audio recordings.</p>
+                    
+                    <div class="file-upload mb-3">
+                        <label for="evidenceFiles" class="file-upload-label">
+                            <div class="file-upload-text">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div>Drag & drop files here or click to browse</div>
+                                <div class="text-muted small">Max 5 files, 10MB each (JPG, PNG, PDF, MP3, MP4)</div>
+                            </div>
+                        </label>
+                        <input type="file" id="evidenceFiles" class="file-upload-input" multiple accept=".jpg,.jpeg,.png,.pdf,.mp3,.mp4">
+                    </div>
+                    
+                    <div class="preview-container" id="previewContainer"></div>
+                </div>
+                
+                <!-- Contact Information Section (Optional) -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Contact Information (Optional)</h3>
+                    <p class="text-muted mb-3">This information is optional and will be kept confidential. It may help in the investigation process.</p>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="stayAnonymous" checked>
+                        <label class="form-check-label" for="stayAnonymous">
+                            I want to remain anonymous
+                        </label>
+                    </div>
+                    
+                    <div id="contactInfoContainer" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="contactName" placeholder="Name">
+                                    <label for="contactName">Your Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="contactEmail" placeholder="Email">
+                                    <label for="contactEmail">Email Address</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-floating">
+                            <input type="tel" class="form-control" id="contactPhone" placeholder="Phone">
+                            <label for="contactPhone">Phone Number</label>
+                        </div>
+                    </div>
+                    
+                    <div class="privacy-notice">
+                        <p><i class="fas fa-shield-alt me-2"></i> Your privacy is our priority. All information is encrypted and stored securely. We do not track IP addresses or collect any identifying information unless you choose to provide it.</p>
+                    </div>
+                </div>
+                
+                <!-- Submit Section -->
+                <div class="form-section">
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="confirmCheck" required>
+                        <label class="form-check-label" for="confirmCheck">
+                            I confirm that the information provided is true to the best of my knowledge
+                        </label>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('corruption_bp.corruption_page') }}" class="btn btn-outline-secondary btn-rounded">
+                            <i class="fas fa-arrow-left me-2"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-rounded" id="submitBtn">
+                            <i class="fas fa-paper-plane me-2"></i> Submit Report
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Success Message (Initially Hidden) -->
+            <div class="success-message" id="successMessage" style="display: none;">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="mb-4">Report Submitted Successfully!</h2>
+                <p class="lead mb-4">Thank you for your report. Your contribution helps in building a corruption-free society.</p>
+                <p class="mb-4">Your report ID: <strong id="reportId">CR-12345</strong></p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('corruption_bp.corruption_page') }}" class="btn btn-outline-primary btn-rounded">
+                        <i class="fas fa-home me-2"></i> Go to Home
+                    </a>
+                    <a href="{{ url_for('corruption_bp.report_corruption_page') }}" class="btn btn-outline-danger btn-rounded">
+                        <i class="fas fa-plus-circle me-2"></i> Submit Another Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize date picker
+        flatpickr("#incidentDate", {
+            dateFormat: "Y-m-d",
+            maxDate: "today"
+        });
+        
+        // Handle "Other Department" selection
+        $('#department').change(function() {
+            if ($(this).val() === 'Other') {
+                $('#otherDepartmentContainer').slideDown();
+                $('#otherDepartment').prop('required', true);
+            } else {
+                $('#otherDepartmentContainer').slideUp();
+                $('#otherDepartment').prop('required', false);
+            }
+        });
+        
+        // Handle "Stay Anonymous" checkbox
+        $('#stayAnonymous').change(function() {
+            if ($(this).is(':checked')) {
+                $('#contactInfoContainer').slideUp();
+                $('#contactName, #contactEmail, #contactPhone').prop('required', false);
+            } else {
+                $('#contactInfoContainer').slideDown();
+                $('#contactName, #contactEmail').prop('required', true);
+            }
+        });
+        
+        // Handle file uploads
+        $('#evidenceFiles').change(function(e) {
+            const files = e.target.files;
+            
+            // Check file count
+            if (files.length > 5) {
+                alert('You can upload a maximum of 5 files.');
+                $(this).val('');
+                return;
+            }
+            
+            // Check file size and type
+            let validFiles = true;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileSize = file.size / 1024 / 1024; // in MB
+                const fileType = file.type;
+                
+                if (fileSize > 10) {
+                    alert(`File "${file.name}" exceeds the 10MB size limit.`);
+                    validFiles = false;
+                    break;
+                }
+                
+                if (!fileType.match('image.*') && !fileType.match('application/pdf') && !fileType.match('audio.*') && !fileType.match('video.*')) {
+                    alert(`File "${file.name}" is not a supported file type.`);
+                    validFiles = false;
+                    break;
+                }
+            }
+            
+            if (!validFiles) {
+                $(this).val('');
+                return;
+            }
+            
+            // Preview files
+            $('#previewContainer').empty();
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    let previewHtml = '';
+                    
+                    if (file.type.match('image.*')) {
+                        previewHtml = `
+                            <div class="preview-item">
+                                <img src="${e.target.result}" alt="${file.name}">
+                                <div class="preview-remove" data-index="${i}"><i class="fas fa-times"></i></div>
+                            </div>
+                        `;
+                    } else if (file.type.match('application/pdf')) {
+                        previewHtml = `
+                            <div class="preview-item" style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-file-pdf fa-2x text-danger"></i>
+                                <div class="preview-remove" data-index="${i}"><i class="fas fa-times"></i></div>
+                            </div>
+                        `;
+                    } else if (file.type.match('audio.*')) {
+                        previewHtml = `
+                            <div class="preview-item" style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-file-audio fa-2x text-primary"></i>
+                                <div class="preview-remove" data-index="${i}"><i class="fas fa-times"></i></div>
+                            </div>
+                        `;
+                    } else if (file.type.match('video.*')) {
+                        previewHtml = `
+                            <div class="preview-item" style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-file-video fa-2x text-info"></i>
+                                <div class="preview-remove" data-index="${i}"><i class="fas fa-times"></i></div>
+                            </div>
+                        `;
+                    }
+                    
+                    $('#previewContainer').append(previewHtml);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Handle preview item removal
+        $(document).on('click', '.preview-remove', function() {
+            const index = $(this).data('index');
+            
+            // Create a new FileList without the removed file
+            // Note: FileList is immutable, so we need to reset the input
+            $('#evidenceFiles').val('');
+            $(this).closest('.preview-item').remove();
+        });
+        
+        // Form submission
+        $('#corruptionReportForm').submit(function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            if (!this.checkValidity()) {
+                e.stopPropagation();
+                $(this).addClass('was-validated');
+                return;
+            }
+            
+            // Disable submit button and show loading state
+            $('#submitBtn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...').prop('disabled', true);
+            
+            // Simulate form submission (in a real app, this would be an AJAX call to the server)
+            setTimeout(function() {
+                // Hide form and show success message
+                $('#corruptionReportForm').hide();
+                $('#reportId').text('CR-' + Math.floor(10000 + Math.random() * 90000));
+                $('#successMessage').fadeIn();
+                
+                // Scroll to top of success message
+                $('html, body').animate({
+                    scrollTop: $('#successMessage').offset().top - 100
+                }, 500);
+            }, 2000);
+        });
+    });
+</script>
+{% endblock %}

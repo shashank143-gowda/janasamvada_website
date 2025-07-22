@@ -1,0 +1,453 @@
+{% extends 'base.html' %}
+
+{% block title %}Anti-Corruption - JanSamvaad{% endblock %}
+
+{% block extra_css %}
+<style>
+    .corruption-header {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 60px 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 40px;
+    }
+    
+    .report-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .report-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .info-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .info-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+    
+    .btn-rounded {
+        border-radius: 30px;
+        padding: 10px 25px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-rounded:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .status-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-under-review {
+        background-color: #f39c12;
+        color: white;
+    }
+    
+    .status-investigating {
+        background-color: #3498db;
+        color: white;
+    }
+    
+    .status-resolved {
+        background-color: #2ecc71;
+        color: white;
+    }
+    
+    .report-date {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .report-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .report-department {
+        font-size: 0.9rem;
+        color: #e74c3c;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .report-location {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .report-description {
+        margin-bottom: 15px;
+        color: #555;
+    }
+    
+    .report-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+        margin-top: 15px;
+    }
+    
+    .anonymous-tag {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+    }
+    
+    .report-actions a {
+        color: #6c757d;
+        margin-left: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .report-actions a:hover {
+        color: #e74c3c;
+    }
+    
+    .stats-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .stats-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="corruption-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">Anti-Corruption Portal</h1>
+        <p class="lead mb-4 animate__animated animate__fadeInUp">Report corruption and bribery incidents anonymously and securely</p>
+        <a href="{{ url_for('corruption_bp.report_corruption_page') }}" class="btn btn-light btn-lg btn-rounded animate__animated animate__fadeInUp">
+            <i class="fas fa-plus-circle me-2"></i> Report Corruption
+        </a>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="container mb-5">
+    <div class="row">
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card stats-card bg-primary text-white text-center p-4">
+                <div class="stats-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stats-number">127</div>
+                <div class="stats-label">Total Reports</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card stats-card bg-warning text-white text-center p-4">
+                <div class="stats-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stats-number">42</div>
+                <div class="stats-label">Under Review</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card stats-card bg-info text-white text-center p-4">
+                <div class="stats-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="stats-number">35</div>
+                <div class="stats-label">Investigating</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="card stats-card bg-success text-white text-center p-4">
+                <div class="stats-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stats-number">50</div>
+                <div class="stats-label">Resolved</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="container mb-5">
+    <h2 class="text-center mb-4" data-aos="fade-up">How It Works</h2>
+    <div class="row">
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card info-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">1</h3>
+                    </div>
+                    <h4>Report</h4>
+                    <p>Submit your corruption report with details about the incident, location, and department involved.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card info-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">2</h3>
+                    </div>
+                    <h4>Review</h4>
+                    <p>Our team reviews the report to verify details and determine the appropriate action.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card info-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">3</h3>
+                    </div>
+                    <h4>Investigate</h4>
+                    <p>The report is forwarded to the appropriate authorities for investigation and action.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="card info-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">4</h3>
+                    </div>
+                    <h4>Resolve</h4>
+                    <p>The issue is resolved, and appropriate action is taken against the corrupt practices.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Reports Section -->
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 data-aos="fade-right">Recent Reports</h2>
+        <div class="dropdown" data-aos="fade-left">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-filter me-2"></i> Filter
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                <li><a class="dropdown-item active" href="#">All Reports</a></li>
+                <li><a class="dropdown-item" href="#">Under Review</a></li>
+                <li><a class="dropdown-item" href="#">Investigating</a></li>
+                <li><a class="dropdown-item" href="#">Resolved</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Most Recent</a></li>
+                <li><a class="dropdown-item" href="#">Most Viewed</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card report-card">
+                <div class="card-body p-4">
+                    <span class="status-badge status-under-review">Under Review</span>
+                    <div class="report-date">Reported on May 15, 2023</div>
+                    <h3 class="report-title">Bribery for Ration Card</h3>
+                    <div class="report-department">Food & Civil Supplies Department</div>
+                    <div class="report-location"><i class="fas fa-map-marker-alt me-2"></i> Ranchi, Jharkhand</div>
+                    <p class="report-description">Official demanded ₹2,000 bribe for processing ration card application which should be free of cost.</p>
+                    <div class="report-footer">
+                        <span class="anonymous-tag"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                        <div class="report-actions">
+                            <a href="#" title="View Details"><i class="fas fa-eye"></i></a>
+                            <a href="#" title="Share"><i class="fas fa-share-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card report-card">
+                <div class="card-body p-4">
+                    <span class="status-badge status-investigating">Investigating</span>
+                    <div class="report-date">Reported on May 10, 2023</div>
+                    <h3 class="report-title">Corruption in Road Construction</h3>
+                    <div class="report-department">Public Works Department</div>
+                    <div class="report-location"><i class="fas fa-map-marker-alt me-2"></i> Patna, Bihar</div>
+                    <p class="report-description">Substandard materials being used in road construction despite full budget allocation. Road developed cracks within a month.</p>
+                    <div class="report-footer">
+                        <span class="anonymous-tag"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                        <div class="report-actions">
+                            <a href="#" title="View Details"><i class="fas fa-eye"></i></a>
+                            <a href="#" title="Share"><i class="fas fa-share-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card report-card">
+                <div class="card-body p-4">
+                    <span class="status-badge status-resolved">Resolved</span>
+                    <div class="report-date">Reported on April 28, 2023</div>
+                    <h3 class="report-title">Bribery for Land Registration</h3>
+                    <div class="report-department">Revenue Department</div>
+                    <div class="report-location"><i class="fas fa-map-marker-alt me-2"></i> Jaipur, Rajasthan</div>
+                    <p class="report-description">Official demanded ₹10,000 bribe for land registration process. After investigation, the official was suspended.</p>
+                    <div class="report-footer">
+                        <span class="anonymous-tag"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                        <div class="report-actions">
+                            <a href="#" title="View Details"><i class="fas fa-eye"></i></a>
+                            <a href="#" title="Share"><i class="fas fa-share-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="card report-card">
+                <div class="card-body p-4">
+                    <span class="status-badge status-under-review">Under Review</span>
+                    <div class="report-date">Reported on May 5, 2023</div>
+                    <h3 class="report-title">Corruption in School Supplies</h3>
+                    <div class="report-department">Education Department</div>
+                    <div class="report-location"><i class="fas fa-map-marker-alt me-2"></i> Lucknow, Uttar Pradesh</div>
+                    <p class="report-description">School supplies meant for students being sold in the market. Textbooks and uniforms not reaching the intended beneficiaries.</p>
+                    <div class="report-footer">
+                        <span class="anonymous-tag"><i class="fas fa-user-secret me-1"></i> Anonymous</span>
+                        <div class="report-actions">
+                            <a href="#" title="View Details"><i class="fas fa-eye"></i></a>
+                            <a href="#" title="Share"><i class="fas fa-share-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4" data-aos="fade-up">
+        <a href="#" class="btn btn-outline-danger btn-rounded">
+            <i class="fas fa-list me-2"></i> View All Reports
+        </a>
+    </div>
+</section>
+
+<!-- Information Section -->
+<section class="container mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+            <h2 class="mb-4">Your Identity is Protected</h2>
+            <p class="lead mb-4">We take your privacy and security seriously. All reports are submitted anonymously by default.</p>
+            <div class="d-flex mb-4">
+                <div class="info-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                    <h4>Secure Reporting</h4>
+                    <p class="mb-0">Your reports are encrypted and stored securely. We do not track IP addresses or collect any identifying information.</p>
+                </div>
+            </div>
+            <div class="d-flex mb-4">
+                <div class="info-icon">
+                    <i class="fas fa-user-secret"></i>
+                </div>
+                <div>
+                    <h4>Anonymous by Default</h4>
+                    <p class="mb-0">All reports are anonymous by default. You can choose to provide contact information if you wish to be updated on the progress.</p>
+                </div>
+            </div>
+            <div class="d-flex">
+                <div class="info-icon">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div>
+                    <h4>Legal Protection</h4>
+                    <p class="mb-0">Whistleblowers are protected under the Whistleblower Protection Act. Your rights are safeguarded.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-left">
+            <img src="https://img.freepik.com/free-vector/cyber-security-concept_23-2148532223.jpg" alt="Security" class="img-fluid rounded-4 shadow">
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="container mb-5">
+    <div class="card bg-danger text-white" data-aos="fade-up">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="mb-3">Stand Against Corruption</h3>
+                    <p class="mb-md-0">Your voice matters. Report corruption incidents and help build a transparent society.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="{{ url_for('corruption_bp.report_corruption_page') }}" class="btn btn-light btn-rounded">
+                        <i class="fas fa-plus-circle me-2"></i> Report Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
