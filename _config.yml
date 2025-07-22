@@ -1,0 +1,61 @@
+# GitHub Pages Configuration for JanSamvaad
+title: "JanSamvaad - The People's Voice Assistant"
+description: "Empowering rural communities through technology. Access government services, report hazards, find climate information, and more."
+url: "https://yourusername.github.io"
+baseurl: "/jansamvaad"
+
+# Theme
+theme: minima
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# SEO settings
+author: "JanSamvaad Team"
+twitter:
+  username: jansamvaad
+social:
+  name: JanSamvaad
+  links:
+    - https://twitter.com/jansamvaad
+    - https://github.com/yourusername/jansamvaad
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+# Include/Exclude files
+include:
+  - _pages
+exclude:
+  - app/
+  - __pycache__/
+  - "*.pyc"
+  - requirements.txt
+  - run.py
+  - config.py
+  - "*.py"
+  - migrations/
+  - instance/
+  - .vscode/
+  - .zencoder/
+
+# Collections
+collections:
+  pages:
+    output: true
+    permalink: /:name/
+
+# Default settings
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 from flask_cors import CORS
 from config import Config
 from app.models.models import db
@@ -29,7 +29,7 @@ def create_app(config_class=Config):
     from app.routes.dhvani import dhvani_bp
     from app.routes.speech import speech_bp
     
-    app.register_blueprint(main_bp)
+    app.register_blueprint(main_bp, url_prefix='/app')
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(services_bp, url_prefix='/services')
     app.register_blueprint(schemes_bp, url_prefix='/schemes')
@@ -41,6 +41,19 @@ def create_app(config_class=Config):
     app.register_blueprint(translator_bp, url_prefix='/translator')
     app.register_blueprint(dhvani_bp, url_prefix='/dhvani')
     app.register_blueprint(speech_bp, url_prefix='/speech')
+    
+    # Serve static index.html at root URL for GitHub Pages
+    @app.route('/')
+    def index():
+        return send_from_directory('.', 'index.html')
+    
+    # Alternative route to serve static files from root
+    @app.route('/<path:filename>')
+    def serve_static_files(filename):
+        try:
+            return send_from_directory('.', filename)
+        except:
+            return send_from_directory('app/static', filename)
     
     # Include chatbot in all templates
     @app.context_processor

@@ -1,0 +1,55 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout 🛎️
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: |
+        npm install -g html-minifier-terser
+        npm install -g clean-css-cli
+        npm install -g terser
+
+    - name: Optimize files
+      run: |
+        # Minify HTML
+        html-minifier-terser --input-dir . --output-dir dist --file-ext html --collapse-whitespace --remove-comments --remove-redundant-attributes --minify-css true --minify-js true || cp *.html dist/
+        
+        # Copy other files
+        cp -r *.json dist/ || true
+        cp -r *.js dist/ || true
+        cp -r *.yml dist/ || true
+        cp -r *.md dist/ || true
+        cp -r _config.yml dist/ || true
+        
+        # Create dist directory if it doesn't exist
+        mkdir -p dist
+        
+        # Copy all necessary files
+        cp index.html dist/
+        cp manifest.json dist/
+        cp sw.js dist/
+        cp _config.yml dist/
+        cp README.md dist/
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages
+        folder: dist
+        clean: true
